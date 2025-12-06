@@ -1,0 +1,310 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>com.codedstreams</groupId>
+  <artifactId>otter-streams</artifactId>
+  <version>1.0-SNAPSHOT</version>
+  <packaging>pom</packaging>
+  <name>otter-streams</name>
+  <url>http://maven.apache.org</url>
+
+  <modules>
+    <module>ml-inference-core</module>
+    <module>otter-stream-onnx</module>
+    <module>otter-stream-tensorflow</module>
+    <module>otter-stream-pytorch</module>
+    <module>otter-streams-xgboost</module>
+    <module>otter-stream-pmml</module>
+    <module>otter-stream-remote</module>
+    <module>otter-stream-examples</module>
+  </modules>
+
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <maven.compiler.source>11</maven.compiler.source>
+    <maven.compiler.target>11</maven.compiler.target>
+
+    <!-- Flink -->
+    <flink.version>1.17.0</flink.version>
+    <scala.binary.version>2.12</scala.binary.version>
+
+    <!-- ML Frameworks -->
+    <onnxruntime.version>1.16.3</onnxruntime.version>
+    <tensorflow.version>1.1.0</tensorflow.version>
+    <pytorch.version>2.1.1</pytorch.version>
+    <xgboost.version>0.90</xgboost.version>
+    <jpmml.version>1.5.16</jpmml.version>
+
+    <!-- Remote Inference -->
+    <aws.sdk.version>2.21.29</aws.sdk.version>
+    <google.cloud.version>3.81.0</google.cloud.version>
+    <azure.sdk.version>1.0.0-beta.3</azure.sdk.version>
+    <grpc.version>1.59.0</grpc.version>
+    <okhttp.version>4.12.0</okhttp.version>
+
+    <!-- Serialization & Utilities -->
+    <jackson.version>2.15.3</jackson.version>
+    <protobuf.version>3.24.4</protobuf.version>
+    <caffeine.version>3.1.8</caffeine.version>
+    <guava.version>32.1.3-jre</guava.version>
+
+    <!-- Logging & Metrics -->
+    <slf4j.version>1.7.36</slf4j.version>
+    <log4j.version>2.20.0</log4j.version>
+    <micrometer.version>1.12.0</micrometer.version>
+
+    <!-- Testing -->
+    <junit.version>5.10.1</junit.version>
+    <mockito.version>5.7.0</mockito.version>
+    <testcontainers.version>1.19.3</testcontainers.version>
+  </properties>
+
+
+  <dependencyManagement>
+    <dependencies>
+      <!-- Flink Core -->
+
+      <dependency>
+        <groupId>org.apache.flink</groupId>
+        <artifactId>flink-streaming-java</artifactId>
+        <version>${flink.version}</version>
+        <scope>provided</scope>
+      </dependency>
+
+      <dependency>
+        <groupId>org.apache.flink</groupId>
+        <artifactId>flink-clients</artifactId>
+        <version>${flink.version}</version>
+        <scope>provided</scope>
+      </dependency>
+
+      <!-- ONNX Runtime -->
+      <dependency>
+        <groupId>com.microsoft.onnxruntime</groupId>
+        <artifactId>onnxruntime</artifactId>
+        <version>${onnxruntime.version}</version>
+      </dependency>
+
+      <!-- TensorFlow -->
+      <dependency>
+        <groupId>org.tensorflow</groupId>
+        <artifactId>tensorflow-core-platform</artifactId>
+        <version>${tensorflow.version}</version>
+      </dependency>
+
+      <!-- PyTorch (via DJL) -->
+      <dependency>
+        <groupId>ai.djl.pytorch</groupId>
+        <artifactId>pytorch-engine</artifactId>
+        <version>0.25.0</version>
+      </dependency>
+
+      <dependency>
+        <groupId>ai.djl.pytorch</groupId>
+        <artifactId>pytorch-native-auto</artifactId>
+        <version>1.9.1</version>
+        <scope>runtime</scope>
+      </dependency>
+
+      <!-- XGBoost -->
+      <dependency>
+        <groupId>ml.dmlc</groupId>
+        <artifactId>xgboost4j</artifactId>
+        <version>${xgboost.version}</version>
+      </dependency>
+
+      <!-- PMML -->
+      <dependency>
+        <groupId>org.jpmml</groupId>
+        <artifactId>pmml-evaluator</artifactId>
+        <version>${jpmml.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jpmml</groupId>
+        <artifactId>pmml-evaluator-extension</artifactId>
+        <version>${jpmml.version}</version>
+      </dependency>
+
+      <!-- AWS SDK for SageMaker -->
+      <dependency>
+        <groupId>software.amazon.awssdk</groupId>
+        <artifactId>sagemakerruntime</artifactId>
+        <version>${aws.sdk.version}</version>
+      </dependency>
+
+      <!-- Google Cloud AI Platform -->
+      <dependency>
+        <groupId>com.google.cloud</groupId>
+        <artifactId>google-cloud-aiplatform</artifactId>
+        <version>${google.cloud.version}</version>
+      </dependency>
+
+      <!-- Azure ML -->
+      <dependency>
+        <groupId>com.azure</groupId>
+        <artifactId>azure-ai-ml</artifactId>
+        <version>${azure.sdk.version}</version>
+      </dependency>
+
+      <!-- gRPC -->
+      <dependency>
+        <groupId>io.grpc</groupId>
+        <artifactId>grpc-netty-shaded</artifactId>
+        <version>${grpc.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.grpc</groupId>
+        <artifactId>grpc-protobuf</artifactId>
+        <version>${grpc.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.grpc</groupId>
+        <artifactId>grpc-stub</artifactId>
+        <version>${grpc.version}</version>
+      </dependency>
+
+      <!-- HTTP Client -->
+      <dependency>
+        <groupId>com.squareup.okhttp3</groupId>
+        <artifactId>okhttp</artifactId>
+        <version>${okhttp.version}</version>
+      </dependency>
+
+      <!-- Jackson -->
+      <dependency>
+        <groupId>com.fasterxml.jackson.core</groupId>
+        <artifactId>jackson-databind</artifactId>
+        <version>${jackson.version}</version>
+      </dependency>
+
+      <!-- Caffeine Cache -->
+      <dependency>
+        <groupId>com.github.ben-manes.caffeine</groupId>
+        <artifactId>caffeine</artifactId>
+        <version>${caffeine.version}</version>
+      </dependency>
+
+      <!-- Guava -->
+      <dependency>
+        <groupId>com.google.guava</groupId>
+        <artifactId>guava</artifactId>
+        <version>${guava.version}</version>
+      </dependency>
+
+      <!-- Metrics -->
+      <dependency>
+        <groupId>io.micrometer</groupId>
+        <artifactId>micrometer-core</artifactId>
+        <version>${micrometer.version}</version>
+      </dependency>
+
+      <!-- Logging -->
+      <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>slf4j-api</artifactId>
+        <version>${slf4j.version}</version>
+      </dependency>
+
+      <!-- Testing -->
+      <dependency>
+        <groupId>org.junit.jupiter</groupId>
+        <artifactId>junit-jupiter</artifactId>
+        <version>${junit.version}</version>
+        <scope>test</scope>
+      </dependency>
+
+      <dependency>
+        <groupId>org.mockito</groupId>
+        <artifactId>mockito-core</artifactId>
+        <version>${mockito.version}</version>
+        <scope>test</scope>
+      </dependency>
+
+      <dependency>
+        <groupId>org.testcontainers</groupId>
+        <artifactId>testcontainers</artifactId>
+        <version>${testcontainers.version}</version>
+        <scope>test</scope>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
+  <!-- Distribution Management for GitHub Packages -->
+  <distributionManagement>
+    <repository>
+      <id>github</id>
+      <name>GitHub Packages</name>
+      <url>https://maven.pkg.github.com/OWNER/REPOSITORY</url>
+    </repository>
+  </distributionManagement>
+
+  <build>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-compiler-plugin</artifactId>
+          <version>3.11.0</version>
+          <configuration>
+            <source>11</source>
+            <target>11</target>
+          </configuration>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-shade-plugin</artifactId>
+          <version>3.5.1</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-surefire-plugin</artifactId>
+          <version>3.2.2</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-javadoc-plugin</artifactId>
+          <version>3.6.2</version>
+          <configuration>
+            <doclint>none</doclint>
+            <source>11</source>
+          </configuration>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-source-plugin</artifactId>
+          <version>3.3.0</version>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+
+    <plugins>
+      <!-- Generate sources JAR -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-source-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>attach-sources</id>
+            <goals>
+              <goal>jar-no-fork</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
+      <!-- Generate Javadoc JAR -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>attach-javadocs</id>
+            <goals>
+              <goal>jar</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+</project>
