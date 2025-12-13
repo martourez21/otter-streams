@@ -5,6 +5,7 @@ import com.codedstream.otterstream.inference.engine.InferenceEngine;
 import com.codedstream.otterstream.inference.engine.LocalInferenceEngine;
 import com.codedstream.otterstream.inference.exception.InferenceException;
 import com.codedstream.otterstream.inference.model.InferenceResult;
+import com.codedstream.otterstream.inference.model.ModelMetadata;
 import ml.dmlc.xgboost4j.java.Booster;
 import ml.dmlc.xgboost4j.java.DMatrix;
 import ml.dmlc.xgboost4j.java.XGBoost;
@@ -133,6 +134,11 @@ public class XGBoostInferenceEngine extends LocalInferenceEngine<Booster> {
             }
         }
         super.close();
+    }
+
+    @Override
+    public ModelMetadata getMetadata() {
+        return null;
     }
 
     private float[] extractFeatures(Map<String, Object> inputs) {

@@ -4,6 +4,7 @@ package com.codedstream.otterstream.inference.engine;
 import com.codedstream.otterstream.inference.config.ModelConfig;
 import com.codedstream.otterstream.inference.exception.InferenceException;
 import com.codedstream.otterstream.inference.model.InferenceResult;
+import com.codedstream.otterstream.inference.model.ModelMetadata;
 
 import java.util.Map;
 
@@ -20,6 +21,8 @@ public interface InferenceEngine<T> {
     void close() throws InferenceException;
 
     boolean isReady();
+
+    ModelMetadata getMetadata();
 
     ModelConfig getModelConfig();
 

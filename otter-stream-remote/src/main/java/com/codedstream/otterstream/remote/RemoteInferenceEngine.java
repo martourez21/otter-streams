@@ -43,20 +43,20 @@ public abstract class RemoteInferenceEngine implements InferenceEngine<Void> {
         return new InferenceResult(batchOutputs, totalTime, modelConfig.getModelId());
     }
 
-    @Override
-    public Void getModelConfig() {
-        return null; // Remote engines don't have loaded models
-    }
+//    @Override
+//    public Void getModelConfig() {
+//        return null; // Remote engines don't have loaded models
+//    }
 
     @Override
     public boolean isReady() {
         return initialized && endpointUrl != null;
     }
 
-    @Override
-    public ModelConfig getModelConfig() {
-        return modelConfig;
-    }
+//    @Override
+//    public ModelConfig getModelConfig() {
+//        return modelConfig;
+//    }
 
     @Override
     public void close() throws InferenceException {

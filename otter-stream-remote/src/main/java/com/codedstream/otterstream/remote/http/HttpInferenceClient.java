@@ -1,8 +1,11 @@
 package com.codedstream.otterstream.remote.http;
 
+import com.codedstream.otterstream.inference.config.InferenceConfig;
 import com.codedstream.otterstream.inference.config.ModelConfig;
 import com.codedstream.otterstream.inference.exception.InferenceException;
 import com.codedstream.otterstream.inference.model.InferenceResult;
+import com.codedstream.otterstream.inference.model.ModelMetadata;
+import com.codedstream.otterstream.remote.RemoteInferenceEngine;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import okhttp3.*;
 import java.util.Map;
@@ -12,6 +15,11 @@ public class HttpInferenceClient extends RemoteInferenceEngine {
 
     private OkHttpClient httpClient;
     private ObjectMapper objectMapper;
+
+    private InferenceConfig inferenceConfig;
+
+    private ModelMetadata metadata;
+
     private MediaType JSON_MEDIA_TYPE = MediaType.parse("application/json");
 
     @Override
@@ -91,5 +99,15 @@ public class HttpInferenceClient extends RemoteInferenceEngine {
             httpClient.connectionPool().evictAll();
         }
         super.close();
+    }
+
+    @Override
+    public ModelMetadata getMetadata() {
+        return metadata;
+    }
+
+    @Override
+    public ModelConfig getModelConfig() {
+        return inferenceConfig.getModelConfig();
     }
 }

@@ -27,15 +27,20 @@ public class TorchScriptInferenceEngine extends LocalInferenceEngine<ZooModel<Ma
             this.modelConfig = config;
             this.ndManager = NDManager.newBaseManager();
 
-            Criteria<Map<String, Object>, Map<String, Object>> criteria = Criteria.builder()
-                    .setTypes(Map.class, Map.class)
-                    .optModelPath(java.nio.file.Paths.get(config.getModelPath()))
-                    .optTranslator(new MapTranslator())
-                    .build();
+            Criteria<Map<String, Object>, Map<String, Object>> criteria =
+                    Criteria.<Map<String, Object>, Map<String, Object>>builder()
+                            .setTypes(
+                                    (Class<Map<String, Object>>) (Class<?>) Map.class,
+                                    (Class<Map<String, Object>>) (Class<?>) Map.class
+                            )
+                            .optModelPath(java.nio.file.Paths.get(config.getModelPath()))
+                            .optTranslator(new MapTranslator())
+                            .build();
 
             this.loadedModel = criteria.loadModel();
             this.predictor = loadedModel.newPredictor();
             this.initialized = true;
+
         } catch (Exception e) {
             throw new InferenceException("Failed to load PyTorch model", e);
         }
@@ -52,6 +57,11 @@ public class TorchScriptInferenceEngine extends LocalInferenceEngine<ZooModel<Ma
         } catch (Exception e) {
             throw new InferenceException("PyTorch inference failed", e);
         }
+    }
+
+    @Override
+    public InferenceResult inferBatch(Map<String, Object>[] batchInputs) throws InferenceException {
+        return null;
     }
 
     @Override
