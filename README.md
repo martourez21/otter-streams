@@ -1,4 +1,8 @@
 # Otter Streams - Real-time ML Inference for Apache Flink
+<p align="center">
+  <img src="docs/assets/logo.png" alt="DrimzSport User Auth SDK" width="200"/>
+</p>
+
 
 ![Java CI](https://github.com/YOUR_USERNAME/otter-streams/workflows/Java%20CI/badge.svg)
 ![GitHub release](https://img.shields.io/github/v/release/YOUR_USERNAME/otter-streams)
