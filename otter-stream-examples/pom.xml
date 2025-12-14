@@ -7,7 +7,9 @@
         <version>1.0-SNAPSHOT</version>
     </parent>
     <artifactId>otter-stream-examples</artifactId>
+    <packaging>jar</packaging>
     <name>otter-stream-examples</name>
+    <description>Example applications demonstrating Otter Stream usage</description>
     <url>http://maven.apache.org</url>
 
     <dependencies>
@@ -33,4 +35,29 @@
             <artifactId>flink-clients</artifactId>
         </dependency>
     </dependencies>
+
+    <build>
+        <plugins>
+            <!-- Shade plugin to create fat JAR for examples -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                        <configuration>
+                            <transformers>
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                                    <mainClass>com.codedstreams.otterstream.examples.FraudDetectionExample</mainClass>
+                                </transformer>
+                            </transformers>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 </project>

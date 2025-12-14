@@ -1,12 +1,39 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
+
   <groupId>com.codedstreams</groupId>
   <artifactId>otter-streams</artifactId>
   <version>1.0-SNAPSHOT</version>
   <packaging>pom</packaging>
-  <name>otter-streams</name>
-  <url>http://maven.apache.org</url>
+
+  <name>Otter Streams - ML Inference for Apache Flink</name>
+  <description>Production-grade ML inference library for Apache Flink streaming applications</description>
+  <url>https://github.com/YOUR_USERNAME/otter-streams</url>
+
+  <licenses>
+    <license>
+      <name>Apache License, Version 2.0</name>
+      <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
+
+  <developers>
+    <developer>
+      <id>YOUR_ID</id>
+      <name>YOUR_NAME</name>
+      <email>YOUR_EMAIL</email>
+    </developer>
+  </developers>
+
+  <scm>
+    <connection>scm:git:git://github.com/martourez21/otter-streams.git</connection>
+    <developerConnection>scm:git:ssh://github.com/martourez21/otter-streams.git</developerConnection>
+    <url>https://github.com/martourez21/otter-streams/tree/main</url>
+  </scm>
 
   <modules>
     <module>ml-inference-core</module>
@@ -21,6 +48,7 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <maven.compiler.source>11</maven.compiler.source>
     <maven.compiler.target>11</maven.compiler.target>
 
@@ -30,7 +58,7 @@
 
     <!-- ML Frameworks -->
     <onnxruntime.version>1.16.3</onnxruntime.version>
-    <tensorflow.version>1.1.0</tensorflow.version>
+    <tensorflow.version>0.5.0</tensorflow.version>
     <pytorch.version>2.1.1</pytorch.version>
     <xgboost.version>0.90</xgboost.version>
     <jpmml.version>1.5.16</jpmml.version>
@@ -57,13 +85,26 @@
     <junit.version>5.10.1</junit.version>
     <mockito.version>5.7.0</mockito.version>
     <testcontainers.version>1.19.3</testcontainers.version>
-  </properties>
 
+    <!-- Plugin Versions -->
+    <maven-compiler-plugin.version>3.11.0</maven-compiler-plugin.version>
+    <maven-shade-plugin.version>3.5.1</maven-shade-plugin.version>
+    <maven-surefire-plugin.version>3.2.2</maven-surefire-plugin.version>
+    <maven-javadoc-plugin.version>3.6.2</maven-javadoc-plugin.version>
+    <maven-source-plugin.version>3.3.0</maven-source-plugin.version>
+    <maven-deploy-plugin.version>3.1.1</maven-deploy-plugin.version>
+  </properties>
 
   <dependencyManagement>
     <dependencies>
-      <!-- Flink Core -->
+      <!-- Internal Modules -->
+      <dependency>
+        <groupId>com.codedstreams</groupId>
+        <artifactId>ml-inference-core</artifactId>
+        <version>${project.version}</version>
+      </dependency>
 
+      <!-- Flink Core -->
       <dependency>
         <groupId>org.apache.flink</groupId>
         <artifactId>flink-streaming-java</artifactId>
@@ -85,7 +126,7 @@
         <version>${onnxruntime.version}</version>
       </dependency>
 
-      <!-- TensorFlow -->
+      <!-- TensorFlow Java -->
       <dependency>
         <groupId>org.tensorflow</groupId>
         <artifactId>tensorflow-core-platform</artifactId>
@@ -234,8 +275,13 @@
     <repository>
       <id>github</id>
       <name>GitHub Packages</name>
-      <url>https://maven.pkg.github.com/OWNER/REPOSITORY</url>
+      <url>https://maven.pkg.github.com/YOUR_USERNAME/otter-streams</url>
     </repository>
+    <snapshotRepository>
+      <id>github</id>
+      <name>GitHub Packages</name>
+      <url>https://maven.pkg.github.com/YOUR_USERNAME/otter-streams</url>
+    </snapshotRepository>
   </distributionManagement>
 
   <build>
@@ -244,35 +290,51 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-compiler-plugin</artifactId>
-          <version>3.11.0</version>
+          <version>${maven-compiler-plugin.version}</version>
           <configuration>
             <source>11</source>
             <target>11</target>
+            <encoding>UTF-8</encoding>
           </configuration>
         </plugin>
+
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-shade-plugin</artifactId>
-          <version>3.5.1</version>
+          <version>${maven-shade-plugin.version}</version>
         </plugin>
+
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-surefire-plugin</artifactId>
-          <version>3.2.2</version>
+          <version>${maven-surefire-plugin.version}</version>
+          <configuration>
+            <skipTests>false</skipTests>
+            <useSystemClassLoader>false</useSystemClassLoader>
+          </configuration>
         </plugin>
+
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-javadoc-plugin</artifactId>
-          <version>3.6.2</version>
+          <version>${maven-javadoc-plugin.version}</version>
           <configuration>
             <doclint>none</doclint>
             <source>11</source>
+            <quiet>true</quiet>
           </configuration>
         </plugin>
+
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-source-plugin</artifactId>
-          <version>3.3.0</version>
+          <version>${maven-source-plugin.version}</version>
+        </plugin>
+
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-deploy-plugin</artifactId>
+          <version>${maven-deploy-plugin.version}</version>
         </plugin>
       </plugins>
     </pluginManagement>

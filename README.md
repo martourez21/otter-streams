@@ -3,7 +3,7 @@
   <img src="docs/assets/otterstream-sdk-icon.ico" alt="Otter Streams Logo" width="200"/>
 </p>
 
-![Java CI](https://github.com/YOUR_USERNAME/otter-streams/workflows/Java%20CI/badge.svg)
+![Java ](https://github.com/YOUR_USERNAME/otter-streams/workflows/Java/badge.svg)
 ![GitHub release](https://img.shields.io/github/v/release/YOUR_USERNAME/otter-streams)
 ![Maven Central](https://img.shields.io/maven-central/v/com.codedstreams/otter-streams)
 ![License](https://img.shields.io/github/license/YOUR_USERNAME/otter-streams)

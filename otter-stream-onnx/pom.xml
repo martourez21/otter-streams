@@ -7,7 +7,9 @@
         <version>1.0-SNAPSHOT</version>
     </parent>
     <artifactId>otter-stream-onnx</artifactId>
+    <packaging>jar</packaging>
     <name>otter-stream-onnx</name>
+    <description>ONNX Runtime inference engine for Otter Stream</description>
     <url>http://maven.apache.org</url>
 
     <dependencies>
@@ -38,8 +40,8 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
-                    <source>14</source>
-                    <target>14</target>
+                    <source>11</source>
+                    <target>11</target>
                 </configuration>
             </plugin>
         </plugins>

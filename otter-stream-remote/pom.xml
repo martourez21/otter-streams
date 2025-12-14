@@ -7,7 +7,9 @@
         <version>1.0-SNAPSHOT</version>
     </parent>
     <artifactId>otter-stream-remote</artifactId>
+    <packaging>jar</packaging>
     <name>otter-stream-remote</name>
+    <description>Remote inference engines (REST, gRPC, Cloud Services)</description>
     <url>http://maven.apache.org</url>
 
     <dependencies>

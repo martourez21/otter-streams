@@ -7,7 +7,9 @@
         <version>1.0-SNAPSHOT</version>
     </parent>
     <artifactId>otter-stream-pytorch</artifactId>
+    <packaging>jar</packaging>
     <name>otter-stream-pytorch</name>
+    <description>PyTorch TorchScript inference engine for Otter Stream</description>
     <url>http://maven.apache.org</url>
 
     <dependencies>

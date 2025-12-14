@@ -76,7 +76,7 @@ USER flink-ml
 EXPOSE 8081 6123
 
 # Labels
-LABEL maintainer="your-email@example.com"
+LABEL maintainer="nestorabiawuh@gmail.com"
 LABEL version="1.0.0"
 LABEL description="Flink ML Inference SDK Runtime"
 

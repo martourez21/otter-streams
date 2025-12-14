@@ -7,6 +7,7 @@
         <version>1.0-SNAPSHOT</version>
     </parent>
     <artifactId>otter-stream-pmml</artifactId>
+    <packaging>jar</packaging>
     <name>otter-stream-pmml</name>
     <url>http://maven.apache.org</url>
 

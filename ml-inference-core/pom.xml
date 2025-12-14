@@ -7,7 +7,9 @@
         <version>1.0-SNAPSHOT</version>
     </parent>
     <artifactId>ml-inference-core</artifactId>
+    <packaging>jar</packaging>
     <name>ml-inference-core</name>
+    <description>Core interfaces and abstractions for ML inference</description>
     <url>http://maven.apache.org</url>
 
     <dependencies>
