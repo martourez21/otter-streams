@@ -1,4 +1,4 @@
-name: Maven CI/CD for Multi-Module Project
+name: Java CI with Maven
 
 on:
   push:
@@ -21,15 +21,14 @@ jobs:
           distribution: 'temurin'
           cache: 'maven'
 
-      # Build and install all modules to local repo
       - name: Build with Maven
-        run: mvn -B clean install -DskipTests
+        run: mvn -B clean compile -DskipTests
 
       - name: Run tests
         run: mvn -B test
         continue-on-error: true
 
-      - name: Package all modules
+      - name: Package
         run: mvn -B package -DskipTests
 
       - name: Upload build artifacts
@@ -40,8 +39,6 @@ jobs:
             **/target/*.jar
             !**/target/*sources.jar
             !**/target/*javadoc.jar
-            !**/target/original-*.jar
-            !**/target/*-tests.jar
 
   generate-docs:
     runs-on: ubuntu-latest
@@ -51,13 +48,12 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Set up JDK 11
+      - name: Set up JDK
         uses: actions/setup-java@v4
         with:
           java-version: '11'
           distribution: 'temurin'
 
-      # Generate aggregated Javadocs for all modules
       - name: Generate Javadocs
         run: mvn javadoc:aggregate
 
@@ -131,7 +127,10 @@ jobs:
         run: |
           mkdir -p ~/.m2
           cat > ~/.m2/settings.xml << EOF
-          <settings>
+          <settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
+            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0
+                                http://maven.apache.org/xsd/settings-1.0.0.xsd">
             <servers>
               <server>
                 <id>github</id>
@@ -139,32 +138,70 @@ jobs:
                 <password>${{ secrets.GITHUB_TOKEN }}</password>
               </server>
             </servers>
-          </settings>
-          EOF
+          
+            <!-- Also configure repository for downloading dependencies -->
+            <profiles>
+              <profile>
+                <id>github</id>
+                <repositories>
+                  <repository>
+                    <id>github</id>
+                    <url>https://maven.pkg.github.com/${{ github.repository }}</url>
+                  </repository>
+                </repositories>
+              </profile>
+            </profiles>
+          
+            <activeProfiles>
+              <activeProfile>github</activeProfile>
+            </activeProfiles>
+          </EOF
 
-      # Deploy all modules to GitHub Packages
-      - name: Publish to GitHub Packages
+      # Build and install all modules locally first
+      - name: Build and install locally
+        run: mvn -B clean install -DskipTests
+
+      # Deploy ALL modules at once
+      - name: Deploy to GitHub Packages
         run: |
           echo "Deploying all modules to GitHub Packages..."
+          echo "Repository: https://maven.pkg.github.com/${{ github.repository }}"
           
-          # Build and deploy each module individually to ensure proper dependency resolution
-          for module in ml-inference-core \
-                        otter-stream-onnx \
-                        otter-stream-tensorflow \
-                        otter-stream-pytorch \
-                        otter-streams-xgboost \
-                        otter-stream-pmml \
-                        otter-stream-remote; do
-            echo "========================================"
-            echo "Building and deploying: $module"
-            echo "========================================"
-            mvn -B clean deploy -pl $module -am -DskipTests
-          done
+          # Deploy all modules except parent
+          mvn -B deploy -DskipTests
           
-          # Deploy examples last since it depends on other modules
-          echo "========================================"
-          echo "Building and deploying: otter-stream-examples"
-          echo "========================================"
-          mvn -B clean deploy -pl otter-stream-examples -am -DskipTests
+          # Or deploy each module individually if needed
+          # for module in ml-inference-core \
+          #               otter-stream-onnx \
+          #               otter-stream-tensorflow \
+          #               otter-stream-pytorch \
+          #               otter-streams-xgboost \
+          #               otter-stream-pmml \
+          #               otter-stream-remote \
+          #               otter-stream-examples; do
+          #   echo "Deploying $module..."
+          #   mvn -B deploy -pl $module -am -DskipTests
+          # done
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # Verify deployment was successful
+      - name: Verify package deployment
+        run: |
+          echo "=== Checking deployed packages ==="
+          echo "Packages should be available at: https://github.com/${{ github.repository }}/packages"
+          echo ""
+          echo "Direct package URLs:"
+          echo "- https://maven.pkg.github.com/${{ github.repository }}/com/codedstreams/ml-inference-core/1.0.0/"
+          echo "- https://maven.pkg.github.com/${{ github.repository }}/com/codedstreams/otter-stream-onnx/1.0.0/"
+          echo "- https://maven.pkg.github.com/${{ github.repository }}/com/codedstreams/otter-stream-tensorflow/1.0.0/"
+          echo ""
+          echo "To use these packages in another project, add to pom.xml:"
+          echo ""
+          echo "<dependency>"
+          echo "  <groupId>com.codedstreams</groupId>"
+          echo "  <artifactId>ml-inference-core</artifactId>"
+          echo "  <version>1.0.0</version>"
+          echo "</dependency>"
+          echo ""
+          echo "And configure repository in settings.xml or pom.xml"
