@@ -16,7 +16,6 @@
         <dependency>
             <groupId>com.codedstreams</groupId>
             <artifactId>ml-inference-core</artifactId>
-            <version>1.0.0</version>
         </dependency>
 
         <dependency>
@@ -28,10 +27,6 @@
             <artifactId>flink-shaded-zookeeper-3</artifactId>
             <version>3.7.1-17.0</version>
             <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.codedstreams</groupId>
-            <artifactId>ml-inference-core</artifactId>
         </dependency>
     </dependencies>
 </project>
