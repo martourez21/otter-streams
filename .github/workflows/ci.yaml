@@ -1,4 +1,4 @@
-name: Java CI with Maven
+name: Maven CI/CD for Multi-Module Project
 
 on:
   push:
@@ -9,41 +9,6 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Set up JDK 11
-        uses: actions/setup-java@v4
-        with:
-          java-version: '11'
-          distribution: 'temurin'
-          cache: 'maven'
-
-      # Build and install ALL modules in correct order using Maven's reactor
-      - name: Build and install all modules
-        run: mvn clean install -DskipTests
-
-      - name: Run Tests
-        run: mvn test
-        continue-on-error: true  # Remove this when tests are fully implemented
-
-      - name: Generate Test Report
-        if: always()
-        run: mvn surefire-report:report-only
-
-      - name: Upload Test Results
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: test-results
-          path: |
-            **/target/surefire-reports/
-            **/target/site/
-
-  code-quality:
-    runs-on: ubuntu-latest
-    needs: build
 
     steps:
       - name: Checkout code
@@ -56,54 +21,99 @@ jobs:
           distribution: 'temurin'
           cache: 'maven'
 
-      - name: Run Maven Verify
-        run: mvn -B verify -DskipTests
+      # Build and install all modules to local repo
+      - name: Build with Maven
+        run: mvn -B clean install -DskipTests
 
-      - name: Check Code Style (if configured)
-        run: |
-          if grep -q "maven-checkstyle-plugin" pom.xml; then
-            mvn checkstyle:check
-          else
-            echo "Checkstyle not configured, skipping"
-          fi
+      - name: Run tests
+        run: mvn -B test
         continue-on-error: true
 
-  package:
-    runs-on: ubuntu-latest
-    needs: build
-    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop')
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Set up JDK 11
-        uses: actions/setup-java@v4
-        with:
-          java-version: '11'
-          distribution: 'temurin'
-          cache: 'maven'
-
-      - name: Package artifacts
+      - name: Package all modules
         run: mvn -B package -DskipTests
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: maven-artifacts
+          name: build-artifacts
           path: |
             **/target/*.jar
+            !**/target/*sources.jar
+            !**/target/*javadoc.jar
             !**/target/original-*.jar
             !**/target/*-tests.jar
-          retention-days: 7
 
-  publish:
-    needs: [build, code-quality]
+  generate-docs:
     runs-on: ubuntu-latest
-    # Only publish from main branch
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs: build
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 11
+        uses: actions/setup-java@v4
+        with:
+          java-version: '11'
+          distribution: 'temurin'
+
+      # Generate aggregated Javadocs for all modules
+      - name: Generate Javadocs
+        run: mvn javadoc:aggregate
+
+      - name: Upload Javadocs
+        uses: actions/upload-artifact@v4
+        with:
+          name: javadocs
+          path: target/site/apidocs/
+
+  deploy-docs:
+    runs-on: ubuntu-latest
+    needs: generate-docs
     permissions:
       contents: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Configure Git
+        run: |
+          git config --global user.name "GitHub Actions"
+          git config --global user.email "actions@github.com"
+
+      - name: Setup gh-pages branch
+        run: |
+          if git ls-remote --exit-code --heads origin gh-pages; then
+            git checkout --orphan temp-gh-pages
+            git rm -rf .
+          else
+            git checkout --orphan gh-pages
+            git rm -rf .
+          fi
+
+      - name: Download Javadocs
+        uses: actions/download-artifact@v4
+        with:
+          name: javadocs
+          path: .
+
+      - name: Commit and push to gh-pages
+        run: |
+          git add .
+          git commit -m "Deploy Javadocs for ${{ github.sha }}" || echo "No changes to commit"
+          if git ls-remote --exit-code --heads origin gh-pages; then
+            git push --force origin HEAD:gh-pages
+          else
+            git push origin HEAD:gh-pages
+          fi
+
+  deploy-package:
+    runs-on: ubuntu-latest
+    needs: build
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    permissions:
+      contents: read
       packages: write
 
     steps:
@@ -132,53 +142,29 @@ jobs:
           </settings>
           EOF
 
-      # Build and install all modules first
-      - name: Build and install all modules
-        run: mvn clean install -DskipTests
-
-      - name: Generate documentation
-        run: mvn javadoc:javadoc -DskipTests
-
-      - name: Deploy Javadoc to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v3
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./target/site/apidocs
-          destination_dir: javadoc/latest
-
-      - name: Deploy each module individually if not exists
+      # Deploy all modules to GitHub Packages
+      - name: Publish to GitHub Packages
         run: |
-          # Note: Using otter-streams-xgboost (with 's') to match parent POM
+          echo "Deploying all modules to GitHub Packages..."
+          
+          # Build and deploy each module individually to ensure proper dependency resolution
           for module in ml-inference-core \
                         otter-stream-onnx \
                         otter-stream-tensorflow \
                         otter-stream-pytorch \
                         otter-streams-xgboost \
                         otter-stream-pmml \
-                        otter-stream-remote \
-                        otter-stream-examples; do
-            ART_URL="https://maven.pkg.github.com/${{ github.repository }}/com/codedstreams/$module/1.0-SNAPSHOT/$module-1.0-SNAPSHOT.jar"
-            if curl -s -o /dev/null -w "%{http_code}" -u "${GITHUB_ACTOR}:${GITHUB_TOKEN}" "$ART_URL" | grep -q "200"; then
-              echo "Artifact for $module already exists, skipping deploy."
-            else
-              echo "Deploying $module..."
-              mvn -B deploy -pl $module -am -DskipTests
-            fi
+                        otter-stream-remote; do
+            echo "========================================"
+            echo "Building and deploying: $module"
+            echo "========================================"
+            mvn -B clean deploy -pl $module -am -DskipTests
           done
+          
+          # Deploy examples last since it depends on other modules
+          echo "========================================"
+          echo "Building and deploying: otter-stream-examples"
+          echo "========================================"
+          mvn -B clean deploy -pl otter-stream-examples -am -DskipTests
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-  notify:
-    needs: [build, code-quality, package]
-    runs-on: ubuntu-latest
-    if: always()
-
-    steps:
-      - name: Check build status
-        run: |
-          if [ "${{ needs.build.result }}" == "failure" ] || [ "${{ needs.code-quality.result }}" == "failure" ]; then
-            echo "Build or quality checks failed"
-            exit 1
-          else
-            echo "All checks passed"
-          fi
