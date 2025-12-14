@@ -132,19 +132,9 @@ jobs:
           </settings>
           EOF
 
-      # Option 1: Build and install all modules first (recommended)
+      # Build and install all modules first
       - name: Build and install all modules
         run: mvn clean install -DskipTests
-
-      # Option 2: OR build modules in explicit order if Option 1 doesn't work
-      # - name: Build modules in dependency order
-      #   run: |
-      #     # Build core first
-      #     mvn clean install -pl ml-inference-core -am -DskipTests
-      #     # Build other ML modules
-      #     mvn clean install -pl otter-stream-onnx,otter-stream-tensorflow,otter-stream-pytorch,otter-stream-xgboost,otter-stream-pmml,otter-stream-remote -am -DskipTests
-      #     # Build examples last
-      #     mvn clean install -pl otter-stream-examples -am -DskipTests
 
       - name: Generate documentation
         run: mvn javadoc:javadoc -DskipTests
@@ -158,11 +148,12 @@ jobs:
 
       - name: Deploy each module individually if not exists
         run: |
+          # Note: Using otter-streams-xgboost (with 's') to match parent POM
           for module in ml-inference-core \
                         otter-stream-onnx \
                         otter-stream-tensorflow \
                         otter-stream-pytorch \
-                        otter-stream-xgboost \
+                        otter-streams-xgboost \
                         otter-stream-pmml \
                         otter-stream-remote \
                         otter-stream-examples; do
