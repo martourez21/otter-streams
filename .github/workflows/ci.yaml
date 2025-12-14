@@ -11,7 +11,6 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    # Removed matrix strategy since we're using only one JDK version
 
     steps:
       - name: Checkout code
@@ -24,14 +23,11 @@ jobs:
           distribution: 'temurin'
           cache: 'maven'
 
-      - name: Clean previous artifacts
-        run: mvn clean
-
-      - name: Build all modules
-        run: mvn -B verify -DskipTests
+      - name: Clean and install all modules
+        run: mvn clean install -DskipTests
 
       - name: Run tests
-        run: mvn -B test
+        run: mvn test
         continue-on-error: true  # remove once tests are stable
 
       - name: Upload Test Results
@@ -42,9 +38,6 @@ jobs:
           path: |
             **/target/surefire-reports/
             **/target/site/
-
-      - name: Package all modules
-        run: mvn -B package -DskipTests
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
@@ -71,7 +64,7 @@ jobs:
           distribution: 'temurin'
 
       - name: Generate Javadocs for all modules
-        run: mvn javadoc:javadoc
+        run: mvn javadoc:javadoc -DskipTests
 
       - name: Upload Javadocs
         uses: actions/upload-artifact@v4
@@ -196,6 +189,9 @@ jobs:
 
       - name: Update Maven version for all modules
         run: mvn versions:set -DnewVersion=${{ steps.version.outputs.VERSION }} -DgenerateBackupPoms=false
+
+      - name: Clean and install all modules with new version
+        run: mvn clean install -DskipTests
 
       - name: Deploy all modules for release if not exists
         run: |
