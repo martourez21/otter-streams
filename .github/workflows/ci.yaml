@@ -126,7 +126,7 @@ jobs:
       - name: Configure Maven for GitHub Packages
         run: |
           mkdir -p ~/.m2
-          cat > ~/.m2/settings.xml << EOF
+          cat > ~/.m2/settings.xml << 'EOF'
           <settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
             xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0
@@ -138,24 +138,8 @@ jobs:
                 <password>${{ secrets.GITHUB_TOKEN }}</password>
               </server>
             </servers>
-          
-            <!-- Also configure repository for downloading dependencies -->
-            <profiles>
-              <profile>
-                <id>github</id>
-                <repositories>
-                  <repository>
-                    <id>github</id>
-                    <url>https://maven.pkg.github.com/${{ github.repository }}</url>
-                  </repository>
-                </repositories>
-              </profile>
-            </profiles>
-          
-            <activeProfiles>
-              <activeProfile>github</activeProfile>
-            </activeProfiles>
-          </EOF
+          </settings>
+          EOF
 
       # Build and install all modules locally first
       - name: Build and install locally
@@ -167,21 +151,15 @@ jobs:
           echo "Deploying all modules to GitHub Packages..."
           echo "Repository: https://maven.pkg.github.com/${{ github.repository }}"
           
-          # Deploy all modules except parent
-          mvn -B deploy -DskipTests
+          # Debug: Show what will be deployed
+          echo "=== Maven effective POM for deploy plugin ==="
+          mvn help:effective-pom -Doutput=effective-pom.xml -pl ml-inference-core
+          grep -A20 "maven-deploy-plugin" effective-pom.xml || echo "No deploy plugin found"
           
-          # Or deploy each module individually if needed
-          # for module in ml-inference-core \
-          #               otter-stream-onnx \
-          #               otter-stream-tensorflow \
-          #               otter-stream-pytorch \
-          #               otter-streams-xgboost \
-          #               otter-stream-pmml \
-          #               otter-stream-remote \
-          #               otter-stream-examples; do
-          #   echo "Deploying $module..."
-          #   mvn -B deploy -pl $module -am -DskipTests
-          # done
+          # Deploy all modules except parent
+          echo "=== Starting deployment ==="
+          mvn -B deploy -DskipTests
+
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -191,17 +169,11 @@ jobs:
           echo "=== Checking deployed packages ==="
           echo "Packages should be available at: https://github.com/${{ github.repository }}/packages"
           echo ""
-          echo "Direct package URLs:"
-          echo "- https://maven.pkg.github.com/${{ github.repository }}/com/codedstreams/ml-inference-core/1.0.0/"
-          echo "- https://maven.pkg.github.com/${{ github.repository }}/com/codedstreams/otter-stream-onnx/1.0.0/"
-          echo "- https://maven.pkg.github.com/${{ github.repository }}/com/codedstreams/otter-stream-tensorflow/1.0.0/"
+          echo "Direct package URLs to check:"
+          echo "1. https://maven.pkg.github.com/${{ github.repository }}/com/codedstreams/ml-inference-core/1.0.0/"
+          echo "2. https://maven.pkg.github.com/${{ github.repository }}/com/codedstreams/otter-stream-onnx/1.0.0/"
+          echo "3. https://maven.pkg.github.com/${{ github.repository }}/com/codedstreams/otter-stream-tensorflow/1.0.0/"
           echo ""
-          echo "To use these packages in another project, add to pom.xml:"
-          echo ""
-          echo "<dependency>"
-          echo "  <groupId>com.codedstreams</groupId>"
-          echo "  <artifactId>ml-inference-core</artifactId>"
-          echo "  <version>1.0.0</version>"
-          echo "</dependency>"
-          echo ""
-          echo "And configure repository in settings.xml or pom.xml"
+          echo "If packages don't appear, check:"
+          echo "1. GitHub repository Settings → Packages → Ensure 'GitHub Packages' is enabled"
+          echo "2. Check workflow logs for deployment errors"
