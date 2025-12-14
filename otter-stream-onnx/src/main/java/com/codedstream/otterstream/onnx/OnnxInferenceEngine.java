@@ -5,6 +5,7 @@ import com.codedstream.otterstream.inference.config.ModelConfig;
 import com.codedstream.otterstream.inference.engine.LocalInferenceEngine;
 import com.codedstream.otterstream.inference.exception.InferenceException;
 import com.codedstream.otterstream.inference.model.InferenceResult;
+import com.codedstream.otterstream.inference.model.ModelMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -508,5 +509,10 @@ public class OnnxInferenceEngine extends LocalInferenceEngine<OrtSession> {
         } finally {
             super.close();
         }
+    }
+
+    @Override
+    public ModelMetadata getMetadata() {
+        return null;
     }
 }
