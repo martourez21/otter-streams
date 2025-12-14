@@ -1,4 +1,4 @@
-name: Java CI with Maven
+name: Java CI/CD for Multi-Module Maven Project
 
 on:
   push:
@@ -30,16 +30,12 @@ jobs:
       - name: Clean previous artifacts
         run: mvn clean
 
-      - name: Build and verify
+      - name: Build all modules
         run: mvn -B verify -DskipTests
 
-      - name: Run Tests
+      - name: Run tests
         run: mvn -B test
-        continue-on-error: true  # Remove once tests are stable
-
-      - name: Generate Test Report
-        if: always()
-        run: mvn surefire-report:report-only
+        continue-on-error: true  # remove once tests are stable
 
       - name: Upload Test Results
         if: always()
@@ -50,26 +46,7 @@ jobs:
             **/target/surefire-reports/
             **/target/site/
 
-  package:
-    runs-on: ubuntu-latest
-    needs: build
-    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop')
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Set up JDK 11
-        uses: actions/setup-java@v4
-        with:
-          java-version: '11'
-          distribution: 'temurin'
-          cache: 'maven'
-
-      - name: Clean target folder
-        run: mvn clean
-
-      - name: Package artifacts
+      - name: Package all modules
         run: mvn -B package -DskipTests
 
       - name: Upload build artifacts
@@ -82,10 +59,74 @@ jobs:
             !**/target/*-tests.jar
           retention-days: 7
 
-  publish:
-    needs: [build, package]
+  generate-docs:
     runs-on: ubuntu-latest
+    needs: build
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 11
+        uses: actions/setup-java@v4
+        with:
+          java-version: '11'
+          distribution: 'temurin'
+
+      - name: Generate Javadocs for all modules
+        run: mvn javadoc:javadoc
+
+      - name: Upload Javadocs
+        uses: actions/upload-artifact@v4
+        with:
+          name: javadocs
+          path: target/site/apidocs/
+
+  deploy-docs:
+    runs-on: ubuntu-latest
+    needs: generate-docs
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Configure Git
+        run: |
+          git config --global user.name "GitHub Actions"
+          git config --global user.email "actions@github.com"
+
+      - name: Download Javadocs
+        uses: actions/download-artifact@v4
+        with:
+          name: javadocs
+          path: .
+
+      - name: Push to gh-pages branch
+        run: |
+          if git ls-remote --exit-code --heads origin gh-pages; then
+            git checkout --orphan temp-gh-pages
+            git rm -rf .
+          else
+            git checkout --orphan gh-pages
+            git rm -rf .
+          fi
+          git add .
+          git commit -m "Deploy Javadocs for ${{ github.sha }}" || echo "No changes to commit"
+          if git ls-remote --exit-code --heads origin gh-pages; then
+            git push --force origin HEAD:gh-pages
+          else
+            git push origin HEAD:gh-pages
+          fi
+
+  publish-modules:
+    runs-on: ubuntu-latest
+    needs: [build, generate-docs]
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    permissions:
+      contents: read
+      packages: write
 
     steps:
       - name: Checkout code
@@ -97,21 +138,45 @@ jobs:
           java-version: '11'
           distribution: 'temurin'
           cache: 'maven'
-          server-id: github
-          settings-path: ${{ github.workspace }}
 
-      - name: Clean target folder
-        run: mvn clean
+      - name: Configure Maven for GitHub Packages
+        run: |
+          mkdir -p ~/.m2
+          cat > ~/.m2/settings.xml << EOF
+          <settings>
+            <servers>
+              <server>
+                <id>github</id>
+                <username>${{ github.actor }}</username>
+                <password>${{ secrets.GITHUB_TOKEN }}</password>
+              </server>
+            </servers>
+          </settings>
+          EOF
 
-      - name: Build and deploy to GitHub Packages
-        run: mvn -B deploy -DskipTests
+      - name: Deploy each module individually
+        run: |
+          for module in ml-inference-core \
+                        otter-stream-onnx \
+                        otter-stream-tensorflow \
+                        otter-stream-pytorch \
+                        otter-stream-xgboost \
+                        otter-stream-pmml \
+                        otter-stream-remote \
+                        otter-stream-examples; do
+            echo "Deploying $module..."
+            mvn -B deploy -pl $module -am -DskipTests
+          done
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   publish-release:
-    needs: [build, package]
     runs-on: ubuntu-latest
+    needs: [build, generate-docs]
     if: github.event_name == 'release'
+    permissions:
+      contents: write
+      packages: write
 
     steps:
       - name: Checkout code
@@ -122,48 +187,26 @@ jobs:
         with:
           java-version: '11'
           distribution: 'temurin'
-          cache: 'maven'
 
       - name: Extract version from tag
         id: version
         run: echo "VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
 
-      - name: Update Maven version
+      - name: Update Maven version for all modules
         run: mvn versions:set -DnewVersion=${{ steps.version.outputs.VERSION }} -DgenerateBackupPoms=false
 
-      - name: Clean previous artifacts
-        run: mvn clean
-
-      - name: Build release artifacts
-        run: mvn -B verify -DskipTests
-
-      - name: Package release JARs
+      - name: Deploy all modules for release
         run: |
-          mkdir -p release-artifacts
-          find . -name "*.jar" -not -path "*/target/original-*" -not -path "*/target/*-tests.jar" -exec cp {} release-artifacts/ \;
-
-      - name: Generate Javadoc archive
-        run: |
-          cd target/site
-          tar -czf ../../release-artifacts/otter-stream-javadoc-${{ steps.version.outputs.VERSION }}.tar.gz apidocs/
-
-      - name: Upload Release Assets
-        uses: softprops/action-gh-release@v1
-        with:
-          files: release-artifacts/*
-          fail_on_unmatched_files: false
-          generate_release_notes: true
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Deploy Javadoc to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v3
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./target/site/apidocs
-          destination_dir: javadoc/${{ steps.version.outputs.VERSION }}
-
-      - name: Deploy to GitHub Packages
-        run: mvn -B deploy -DskipTests
+          for module in ml-inference-core \
+                        otter-stream-onnx \
+                        otter-stream-tensorflow \
+                        otter-stream-pytorch \
+                        otter-stream-xgboost \
+                        otter-stream-pmml \
+                        otter-stream-remote \
+                        otter-stream-examples; do
+            echo "Deploying $module release..."
+            mvn -B deploy -pl $module -am -DskipTests
+          done
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
