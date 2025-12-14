@@ -9,7 +9,6 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    # Using only JDK 11 to avoid artifact naming conflicts
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -21,15 +20,12 @@ jobs:
           distribution: 'temurin'
           cache: 'maven'
 
-      # First build and install the core module to local repository
-      - name: Build and install core module
-        run: mvn clean install -pl ml-inference-core -am -DskipTests
-
-      - name: Build with Maven
-        run: mvn -B clean compile -DskipTests
+      # Build and install ALL modules in correct order using Maven's reactor
+      - name: Build and install all modules
+        run: mvn clean install -DskipTests
 
       - name: Run Tests
-        run: mvn -B test
+        run: mvn test
         continue-on-error: true  # Remove this when tests are fully implemented
 
       - name: Generate Test Report
@@ -88,9 +84,6 @@ jobs:
           distribution: 'temurin'
           cache: 'maven'
 
-      - name: Build and install core module first
-        run: mvn clean install -pl ml-inference-core -am -DskipTests
-
       - name: Package artifacts
         run: mvn -B package -DskipTests
 
@@ -139,9 +132,19 @@ jobs:
           </settings>
           EOF
 
-      # Build and install core module first
-      - name: Build core module
-        run: mvn clean install -pl ml-inference-core -am -DskipTests
+      # Option 1: Build and install all modules first (recommended)
+      - name: Build and install all modules
+        run: mvn clean install -DskipTests
+
+      # Option 2: OR build modules in explicit order if Option 1 doesn't work
+      # - name: Build modules in dependency order
+      #   run: |
+      #     # Build core first
+      #     mvn clean install -pl ml-inference-core -am -DskipTests
+      #     # Build other ML modules
+      #     mvn clean install -pl otter-stream-onnx,otter-stream-tensorflow,otter-stream-pytorch,otter-stream-xgboost,otter-stream-pmml,otter-stream-remote -am -DskipTests
+      #     # Build examples last
+      #     mvn clean install -pl otter-stream-examples -am -DskipTests
 
       - name: Generate documentation
         run: mvn javadoc:javadoc -DskipTests
