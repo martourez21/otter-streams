@@ -6,10 +6,13 @@ import com.codedstream.otterstream.inference.exception.InferenceException;
 import com.codedstream.otterstream.inference.model.InferenceResult;
 import com.codedstream.otterstream.inference.model.ModelFormat;
 import com.codedstream.otterstream.inference.model.ModelMetadata;
-import org.tensorflow.*;
+import org.tensorflow.Result;
+import org.tensorflow.SavedModelBundle;
+import org.tensorflow.Session;
+import org.tensorflow.Tensor;
 import org.tensorflow.ndarray.Shape;
-import org.tensorflow.proto.SignatureDef;
-import org.tensorflow.proto.TensorInfo;
+import org.tensorflow.proto.framework.SignatureDef;
+import org.tensorflow.proto.framework.TensorInfo;
 import org.tensorflow.types.TFloat32;
 import org.tensorflow.types.TInt32;
 

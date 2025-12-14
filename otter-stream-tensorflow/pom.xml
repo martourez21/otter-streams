@@ -29,5 +29,9 @@
             <version>3.7.1-17.0</version>
             <scope>compile</scope>
         </dependency>
+        <dependency>
+            <groupId>com.codedstreams</groupId>
+            <artifactId>ml-inference-core</artifactId>
+        </dependency>
     </dependencies>
 </project>
