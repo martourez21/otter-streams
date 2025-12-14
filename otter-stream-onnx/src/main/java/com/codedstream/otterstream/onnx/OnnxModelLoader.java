@@ -102,11 +102,36 @@ public class OnnxModelLoader implements ModelLoader<InferenceSession> {
         if (modelOptions.containsKey("optimizationLevel")) {
             String level = String.valueOf(modelOptions.get("optimizationLevel")).toLowerCase();
             switch (level) {
-                case "disable" -> opts.setOptimizationLevel(OrtSession.SessionOptions.OptLevel.NO_OPT);
-                case "basic" -> opts.setOptimizationLevel(OrtSession.SessionOptions.OptLevel.BASIC_OPT);
-                case "extended" -> opts.setOptimizationLevel(OrtSession.SessionOptions.OptLevel.EXTENDED_OPT);
-                case "all" -> opts.setOptimizationLevel(OrtSession.SessionOptions.OptLevel.ALL_OPT);
+                case "disable":
+                    opts.setOptimizationLevel(
+                            OrtSession.SessionOptions.OptLevel.NO_OPT
+                    );
+                    break;
+
+                case "basic":
+                    opts.setOptimizationLevel(
+                            OrtSession.SessionOptions.OptLevel.BASIC_OPT
+                    );
+                    break;
+
+                case "extended":
+                    opts.setOptimizationLevel(
+                            OrtSession.SessionOptions.OptLevel.EXTENDED_OPT
+                    );
+                    break;
+
+                case "all":
+                    opts.setOptimizationLevel(
+                            OrtSession.SessionOptions.OptLevel.ALL_OPT
+                    );
+                    break;
+
+                default:
+                    throw new IllegalArgumentException(
+                            "Unknown optimization level: " + level
+                    );
             }
+
         }
 
         if (Boolean.TRUE.equals(modelOptions.get("useGpu"))) {
@@ -138,8 +163,4 @@ public class OnnxModelLoader implements ModelLoader<InferenceSession> {
 
         return schema;
     }
-
-
-
-
 }
