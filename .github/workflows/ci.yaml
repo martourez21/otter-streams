@@ -1,8 +1,10 @@
 name: Java CI with Maven
 
+# (updated to run publish for pushes to main and tag pushes)
 on:
   push:
     branches: [ main, develop ]
+    tags: [ 'v*' ]
   pull_request:
     branches: [ main, develop ]
   release:
@@ -106,7 +108,8 @@ jobs:
   publish:
     needs: [build, code-quality]
     runs-on: ubuntu-latest
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    # Allow publish for pushes to main OR pushes of tags like v1.2.3
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/'))
 
     steps:
       - name: Checkout code
