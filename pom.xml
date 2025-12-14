@@ -342,6 +342,15 @@
           </configuration>
         </plugin>
 
+        <!-- Skip deployment of parent POM to GitHub Packages -->
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-deploy-plugin</artifactId>
+          <configuration>
+            <skip>true</skip>
+          </configuration>
+        </plugin>
+
         <!-- Deploy -->
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
