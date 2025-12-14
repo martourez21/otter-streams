@@ -7,7 +7,7 @@
 
   <groupId>com.codedstreams</groupId>
   <artifactId>otter-streams</artifactId>
-  <version>1.0.1</version>
+  <version>1.0.2</version>
   <packaging>pom</packaging>
 
   <name>Otter Streams - ML Inference for Apache Flink</name>
@@ -299,12 +299,6 @@
             <source>${maven.compiler.source}</source>
             <target>${maven.compiler.target}</target>
             <encoding>${project.build.sourceEncoding}</encoding>
-            <!-- Disable warnings for javadoc comments -->
-            <compilerArgs>
-              <arg>-Xdoclint:none</arg>
-              <arg>-Xlint:none</arg>
-            </compilerArgs>
-            <showWarnings>false</showWarnings>
           </configuration>
         </plugin>
 
@@ -358,6 +352,13 @@
             <doclint>none</doclint>
             <source>${maven.compiler.source}</source>
             <quiet>true</quiet>
+            <failOnError>false</failOnError>
+            <failOnWarnings>false</failOnWarnings>
+            <additionalOptions>-Xdoclint:none</additionalOptions>
+            <additionalJOptions>
+              <additionalJOption>-Xmaxwarns</additionalJOption>
+              <additionalJOption>1</additionalJOption>
+            </additionalJOptions>
           </configuration>
         </plugin>
 

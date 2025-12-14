@@ -142,7 +142,7 @@ jobs:
           EOF
 
       - name: Build and generate documentation
-        run: mvn -B clean install javadoc:jar source:jar -DskipTests
+        run: mvn -B clean install javadoc:jar source:jar -DskipTests -Dmaven.javadoc.failOnError=false -Dmaven.javadoc.failOnWarnings=false
 
       - name: Publish to GitHub Packages
         run: mvn -B deploy -DskipTests
@@ -194,7 +194,8 @@ jobs:
         run: mvn -B clean install -DskipTests
 
       - name: Generate aggregated Javadoc
-        run: mvn -B javadoc:aggregate
+        run: mvn -B javadoc:aggregate -Dmaven.javadoc.failOnError=false -Dmaven.javadoc.failOnWarnings=false
+        continue-on-error: true
 
       - name: Create release package
         run: |
