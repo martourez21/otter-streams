@@ -279,6 +279,18 @@
   </distributionManagement>
 
   <build>
+    <!-- Only skip deployment for the parent POM, not for child modules -->
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-deploy-plugin</artifactId>
+        <version>${maven-deploy-plugin.version}</version>
+        <configuration>
+          <skip>true</skip> <!-- Skip only parent POM deployment -->
+        </configuration>
+      </plugin>
+    </plugins>
+
     <pluginManagement>
       <plugins>
         <!-- Compiler -->
@@ -342,14 +354,12 @@
           </configuration>
         </plugin>
 
-        <!-- Skip deployment of parent POM to GitHub Packages -->
+        <!-- Deploy plugin configuration for child modules (no skip) -->
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-deploy-plugin</artifactId>
-          <version>${maven-deploy-plugin.version}</version>  <!-- Added version -->
-          <configuration>
-            <skip>true</skip>
-          </configuration>
+          <version>${maven-deploy-plugin.version}</version>
+          <!-- No skip configuration here - child modules will deploy by default -->
         </plugin>
       </plugins>
     </pluginManagement>
