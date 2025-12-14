@@ -154,7 +154,7 @@ jobs:
           </settings>
           EOF
 
-      - name: Deploy each module individually
+      - name: Deploy each module individually if not exists
         run: |
           for module in ml-inference-core \
                         otter-stream-onnx \
@@ -164,8 +164,13 @@ jobs:
                         otter-stream-pmml \
                         otter-stream-remote \
                         otter-stream-examples; do
-            echo "Deploying $module..."
-            mvn -B deploy -pl $module -am -DskipTests
+            ART_URL="https://maven.pkg.github.com/${{ github.repository }}/com/codedstreams/$module/1.0-SNAPSHOT/$module-1.0-SNAPSHOT.jar"
+            if curl -s -o /dev/null -w "%{http_code}" -u "${GITHUB_ACTOR}:${GITHUB_TOKEN}" "$ART_URL" | grep -q "200"; then
+              echo "Artifact for $module already exists, skipping deploy."
+            else
+              echo "Deploying $module..."
+              mvn -B deploy -pl $module -am -DskipTests
+            fi
           done
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -195,7 +200,7 @@ jobs:
       - name: Update Maven version for all modules
         run: mvn versions:set -DnewVersion=${{ steps.version.outputs.VERSION }} -DgenerateBackupPoms=false
 
-      - name: Deploy all modules for release
+      - name: Deploy all modules for release if not exists
         run: |
           for module in ml-inference-core \
                         otter-stream-onnx \
@@ -205,8 +210,13 @@ jobs:
                         otter-stream-pmml \
                         otter-stream-remote \
                         otter-stream-examples; do
-            echo "Deploying $module release..."
-            mvn -B deploy -pl $module -am -DskipTests
+            ART_URL="https://maven.pkg.github.com/${{ github.repository }}/com/codedstreams/$module/${{ steps.version.outputs.VERSION }}/$module-${{ steps.version.outputs.VERSION }}.jar"
+            if curl -s -o /dev/null -w "%{http_code}" -u "${GITHUB_ACTOR}:${GITHUB_TOKEN}" "$ART_URL" | grep -q "200"; then
+              echo "Artifact for $module release already exists, skipping deploy."
+            else
+              echo "Deploying $module release..."
+              mvn -B deploy -pl $module -am -DskipTests
+            fi
           done
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
