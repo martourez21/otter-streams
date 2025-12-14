@@ -1,33 +1,29 @@
 name: Java CI with Maven
 
-# (updated to run publish for pushes to main and tag pushes)
 on:
   push:
     branches: [ main, develop ]
-    tags: [ 'v*' ]
   pull_request:
     branches: [ main, develop ]
-  release:
-    types: [ published ]
 
 jobs:
   build:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        java: [ '11', '17' ]
-      fail-fast: false
-
+    # Using only JDK 11 to avoid artifact naming conflicts
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Set up JDK ${{ matrix.java }}
+      - name: Set up JDK 11
         uses: actions/setup-java@v4
         with:
-          java-version: ${{ matrix.java }}
+          java-version: '11'
           distribution: 'temurin'
           cache: 'maven'
+
+      # First build and install the core module to local repository
+      - name: Build and install core module
+        run: mvn clean install -pl ml-inference-core -am -DskipTests
 
       - name: Build with Maven
         run: mvn -B clean compile -DskipTests
@@ -44,7 +40,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: test-results-jdk-${{ matrix.java }}
+          name: test-results
           path: |
             **/target/surefire-reports/
             **/target/site/
@@ -92,6 +88,9 @@ jobs:
           distribution: 'temurin'
           cache: 'maven'
 
+      - name: Build and install core module first
+        run: mvn clean install -pl ml-inference-core -am -DskipTests
+
       - name: Package artifacts
         run: mvn -B package -DskipTests
 
@@ -108,34 +107,11 @@ jobs:
   publish:
     needs: [build, code-quality]
     runs-on: ubuntu-latest
-    # Allow publish for pushes to main OR pushes of tags like v1.2.3
-    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/'))
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Set up JDK 11
-        uses: actions/setup-java@v4
-        with:
-          java-version: '11'
-          distribution: 'temurin'
-          cache: 'maven'
-          server-id: github
-          settings-path: ${{ github.workspace }}
-
-      - name: Build and generate documentation
-        run: mvn -B clean javadoc:jar source:jar package -DskipTests
-
-      - name: Publish to GitHub Packages
-        run: mvn -B deploy -DskipTests
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-  publish-release:
-    needs: [build, code-quality]
-    runs-on: ubuntu-latest
-    if: github.event_name == 'release'
+    # Only publish from main branch
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    permissions:
+      contents: write
+      packages: write
 
     steps:
       - name: Checkout code
@@ -148,47 +124,53 @@ jobs:
           distribution: 'temurin'
           cache: 'maven'
 
-      - name: Extract version from tag
-        id: version
-        run: echo "VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
-
-      - name: Update Maven version
-        run: mvn versions:set -DnewVersion=${{ steps.version.outputs.VERSION }} -DgenerateBackupPoms=false
-
-      - name: Build release artifacts
+      - name: Configure Maven for GitHub Packages
         run: |
-          mvn -B clean install -DskipTests
-          mvn -B javadoc:aggregate
-          mvn -B source:jar
+          mkdir -p ~/.m2
+          cat > ~/.m2/settings.xml << EOF
+          <settings>
+            <servers>
+              <server>
+                <id>github</id>
+                <username>${{ github.actor }}</username>
+                <password>${{ secrets.GITHUB_TOKEN }}</password>
+              </server>
+            </servers>
+          </settings>
+          EOF
 
-      - name: Create release package
-        run: |
-          mkdir -p release-artifacts
-          find . -name "*.jar" -not -path "*/target/original-*" -not -path "*/target/*-tests.jar" -exec cp {} release-artifacts/ \;
+      # Build and install core module first
+      - name: Build core module
+        run: mvn clean install -pl ml-inference-core -am -DskipTests
 
-      - name: Generate Javadoc archive
-        run: |
-          cd target/site
-          tar -czf ../../release-artifacts/otter-stream-javadoc-${{ steps.version.outputs.VERSION }}.tar.gz apidocs/
-
-      - name: Upload Release Assets
-        uses: softprops/action-gh-release@v1
-        with:
-          files: release-artifacts/*
-          fail_on_unmatched_files: false
-          generate_release_notes: true
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Generate documentation
+        run: mvn javadoc:javadoc -DskipTests
 
       - name: Deploy Javadoc to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./target/site/apidocs
-          destination_dir: javadoc/${{ steps.version.outputs.VERSION }}
+          destination_dir: javadoc/latest
 
-      - name: Publish to GitHub Packages
-        run: mvn -B deploy -DskipTests
+      - name: Deploy each module individually if not exists
+        run: |
+          for module in ml-inference-core \
+                        otter-stream-onnx \
+                        otter-stream-tensorflow \
+                        otter-stream-pytorch \
+                        otter-stream-xgboost \
+                        otter-stream-pmml \
+                        otter-stream-remote \
+                        otter-stream-examples; do
+            ART_URL="https://maven.pkg.github.com/${{ github.repository }}/com/codedstreams/$module/1.0-SNAPSHOT/$module-1.0-SNAPSHOT.jar"
+            if curl -s -o /dev/null -w "%{http_code}" -u "${GITHUB_ACTOR}:${GITHUB_TOKEN}" "$ART_URL" | grep -q "200"; then
+              echo "Artifact for $module already exists, skipping deploy."
+            else
+              echo "Deploying $module..."
+              mvn -B deploy -pl $module -am -DskipTests
+            fi
+          done
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
