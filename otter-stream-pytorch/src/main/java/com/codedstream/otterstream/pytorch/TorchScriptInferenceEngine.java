@@ -12,6 +12,7 @@ import com.codedstream.otterstream.inference.config.ModelConfig;
 import com.codedstream.otterstream.inference.engine.LocalInferenceEngine;
 import com.codedstream.otterstream.inference.exception.InferenceException;
 import com.codedstream.otterstream.inference.model.InferenceResult;
+import com.codedstream.otterstream.inference.model.ModelMetadata;
 
 import java.util.Map;
 import java.util.HashMap;
@@ -76,6 +77,11 @@ public class TorchScriptInferenceEngine extends LocalInferenceEngine<ZooModel<Ma
             ndManager.close();
         }
         super.close();
+    }
+
+    @Override
+    public ModelMetadata getMetadata() {
+        return null;
     }
 
     @Override

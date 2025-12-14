@@ -4,6 +4,7 @@ import com.codedstream.otterstream.inference.config.ModelConfig;
 import com.codedstream.otterstream.inference.engine.LocalInferenceEngine;
 import com.codedstream.otterstream.inference.exception.InferenceException;
 import com.codedstream.otterstream.inference.model.InferenceResult;
+import com.codedstream.otterstream.inference.model.ModelMetadata;
 import org.dmg.pmml.FieldName;
 import org.jpmml.evaluator.*;
 import org.jpmml.model.PMMLUtil;
@@ -34,7 +35,8 @@ public class PmmlInferenceEngine extends LocalInferenceEngine<Evaluator> {
                 ModelEvaluatorFactory factory = ModelEvaluatorFactory.newInstance();
 
                 // This method exists ONLY if pmml-evaluator is included
-                this.evaluator = factory.newModelEvaluator(pmml);
+               // this.evaluator = factory.newModelEvaluator(pmml);
+
 
                 this.evaluator.verify();
                 this.initialized = true;
@@ -62,7 +64,7 @@ public class PmmlInferenceEngine extends LocalInferenceEngine<Evaluator> {
                     Object raw = inputs.get(name.getValue());
                     FieldValue prepared = inputField.prepare(raw);
                     arguments.put(name, prepared);
-                }w
+                }
             }
 
             Map<FieldName, ?> results = evaluator.evaluate(arguments);
@@ -133,5 +135,10 @@ public class PmmlInferenceEngine extends LocalInferenceEngine<Evaluator> {
     public void close() throws InferenceException {
         this.evaluator = null;
         super.close();
+    }
+
+    @Override
+    public ModelMetadata getMetadata() {
+        return null;
     }
 }
