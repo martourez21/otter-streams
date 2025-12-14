@@ -32,7 +32,7 @@
 
   <scm>
     <connection>scm:git:git://github.com/martourez21/otter-streams.git</connection>
-    <developerConnection>scm:github.com/martourez21/otter-streams.git</developerConnection>
+    <developerConnection>scm:git:ssh://github.com:martourez21/otter-streams.git</developerConnection>
     <url>https://github.com/martourez21/otter-streams/tree/main</url>
   </scm>
 
@@ -276,14 +276,14 @@
   </distributionManagement>
 
   <build>
-    <!-- Only skip deployment for the parent POM, not for child modules -->
     <plugins>
+      <!-- Skip deployment of parent POM to GitHub Packages -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-deploy-plugin</artifactId>
         <version>${maven-deploy-plugin.version}</version>
         <configuration>
-          <skip>true</skip> <!-- Skip only parent POM deployment -->
+          <skip>true</skip>
         </configuration>
       </plugin>
     </plugins>
@@ -328,7 +328,9 @@
           <executions>
             <execution>
               <id>attach-sources</id>
-              <goals><goal>jar</goal></goals>
+              <goals>
+                <goal>jar</goal>
+              </goals>
             </execution>
           </executions>
         </plugin>
@@ -341,7 +343,9 @@
           <executions>
             <execution>
               <id>attach-javadocs</id>
-              <goals><goal>jar</goal></goals>
+              <goals>
+                <goal>jar</goal>
+              </goals>
             </execution>
           </executions>
           <configuration>
@@ -351,12 +355,11 @@
           </configuration>
         </plugin>
 
-        <!-- Deploy plugin configuration for child modules (no skip) -->
+        <!-- Deploy - Child modules will override skip=false -->
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-deploy-plugin</artifactId>
           <version>${maven-deploy-plugin.version}</version>
-          <!-- No skip configuration here - child modules will deploy by default -->
         </plugin>
       </plugins>
     </pluginManagement>
