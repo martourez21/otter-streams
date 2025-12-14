@@ -274,15 +274,14 @@
   <distributionManagement>
     <repository>
       <id>github</id>
-      <name>GitHub Packages</name>
-      <url>https://maven.pkg.github.com/YOUR_USERNAME/otter-streams</url>
+      <url>https://maven.pkg.github.com/martourez21/otter-streams</url>
     </repository>
     <snapshotRepository>
       <id>github</id>
-      <name>GitHub Packages</name>
-      <url>https://maven.pkg.github.com/YOUR_USERNAME/otter-streams</url>
+      <url>https://maven.pkg.github.com/martourez21/otter-streams</url>
     </snapshotRepository>
   </distributionManagement>
+
 
   <build>
     <pluginManagement>
