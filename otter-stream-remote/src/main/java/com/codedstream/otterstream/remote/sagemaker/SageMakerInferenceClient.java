@@ -6,13 +6,14 @@ import com.codedstream.otterstream.inference.exception.InferenceException;
 import com.codedstream.otterstream.inference.model.InferenceResult;
 import com.codedstream.otterstream.inference.model.ModelMetadata;
 import com.codedstream.otterstream.remote.RemoteInferenceEngine;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
+import software.amazon.awssdk.core.SdkBytes;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.sagemakerruntime.SageMakerRuntimeClient;
+import software.amazon.awssdk.services.sagemakerruntime.SageMakerRuntimeClientBuilder;
 import software.amazon.awssdk.services.sagemakerruntime.model.InvokeEndpointRequest;
-import software.amazon.awssdk.core.SdkBytes;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.util.Map;
 
@@ -26,36 +27,41 @@ public class SageMakerInferenceClient extends RemoteInferenceEngine {
     @Override
     public void initialize(ModelConfig config) throws InferenceException {
         super.initialize(config);
-        this.inferenceConfig = new InferenceConfig.Builder()
+
+        this.inferenceConfig = InferenceConfig.builder()
                 .modelConfig(config)
-                .build(); // Wrap ModelConfig into InferenceConfig if needed
+                .build();
 
         try {
-            SageMakerRuntimeClient.Builder clientBuilder = SageMakerRuntimeClient.builder()
-                    .region(Region.US_EAST_1); // default, make configurable if needed
+            SageMakerRuntimeClientBuilder clientBuilder =
+                    SageMakerRuntimeClient.builder()
+                            .region(Region.US_EAST_1); // make configurable if needed
 
-            // Configure credentials if provided
+            // Optional static credentials
             if (config.getAuthConfig() != null && config.getAuthConfig().getApiKey() != null) {
                 String[] credentials = config.getAuthConfig().getApiKey().split(":");
                 if (credentials.length == 2) {
-                    AwsBasicCredentials awsCreds = AwsBasicCredentials.create(credentials[0], credentials[1]);
-                    clientBuilder.credentialsProvider(StaticCredentialsProvider.create(awsCreds));
+                    AwsBasicCredentials awsCreds =
+                            AwsBasicCredentials.create(credentials[0], credentials[1]);
+                    clientBuilder.credentialsProvider(
+                            StaticCredentialsProvider.create(awsCreds)
+                    );
                 }
             }
 
             this.sageMakerClient = clientBuilder.build();
             this.objectMapper = new ObjectMapper();
 
-            // Initialize metadata
             this.metadata = new ModelMetadata(
                     config.getModelId(),
                     config.getModelVersion(),
                     config.getFormat(),
-                    Map.of(), // empty input schema placeholder
-                    Map.of(), // empty output schema placeholder
+                    Map.of(),
+                    Map.of(),
                     0,
                     System.currentTimeMillis()
             );
+
         } catch (Exception e) {
             throw new InferenceException("Failed to initialize SageMaker client", e);
         }
@@ -64,35 +70,38 @@ public class SageMakerInferenceClient extends RemoteInferenceEngine {
     @Override
     public InferenceResult infer(Map<String, Object> inputs) throws InferenceException {
         try {
-            long startTime = System.currentTimeMillis();
+            long start = System.currentTimeMillis();
 
-            String jsonBody = objectMapper.writeValueAsString(inputs);
-            SdkBytes body = SdkBytes.fromUtf8String(jsonBody);
+            String json = objectMapper.writeValueAsString(inputs);
+            SdkBytes body = SdkBytes.fromUtf8String(json);
 
             InvokeEndpointRequest request = InvokeEndpointRequest.builder()
-                    .endpointName(endpointUrl) // make sure endpointUrl is set from config
+                    .endpointName(endpointUrl)
                     .contentType("application/json")
                     .body(body)
                     .build();
 
             var response = sageMakerClient.invokeEndpoint(request);
-            String responseBody = response.body().asUtf8String();
 
             @SuppressWarnings("unchecked")
-            Map<String, Object> outputs = objectMapper.readValue(responseBody, Map.class);
+            Map<String, Object> outputs =
+                    objectMapper.readValue(response.body().asUtf8String(), Map.class);
 
-            long endTime = System.currentTimeMillis();
-            return new InferenceResult(outputs, endTime - startTime, inferenceConfig.getModelConfig().getModelId());
+            return new InferenceResult(
+                    outputs,
+                    System.currentTimeMillis() - start,
+                    inferenceConfig.getModelConfig().getModelId()
+            );
+
         } catch (Exception e) {
             throw new InferenceException("SageMaker inference failed", e);
         }
     }
 
     @Override
-    public boolean validateConnection() throws InferenceException {
+    public boolean validateConnection() {
         try {
-            Map<String, Object> dummyInput = Map.of("validate", "connection");
-            infer(dummyInput);
+            infer(Map.of("ping", "ok"));
             return true;
         } catch (Exception e) {
             return false;
