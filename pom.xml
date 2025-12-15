@@ -7,7 +7,7 @@
 
   <groupId>com.codedstreams</groupId>
   <artifactId>otter-streams</artifactId>
-  <version>1.0.2</version>
+  <version>1.0.3</version>
   <packaging>pom</packaging>
 
   <name>Otter Streams - ML Inference for Apache Flink</name>
@@ -269,7 +269,7 @@
 
   <distributionManagement>
     <repository>
-      <id>github</id>
+      <id>otter-streams-github</id>
       <name>GitHub Packages</name>
       <url>https://maven.pkg.github.com/martourez21/otter-streams</url>
     </repository>
@@ -283,7 +283,7 @@
         <artifactId>maven-deploy-plugin</artifactId>
         <version>${maven-deploy-plugin.version}</version>
         <configuration>
-          <skip>true</skip>
+          <skip>false</skip>
         </configuration>
       </plugin>
     </plugins>
