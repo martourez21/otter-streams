@@ -269,7 +269,7 @@
 
   <distributionManagement>
     <repository>
-      <id>github-otter-stream</id>
+      <id>github</id>
       <name>GitHub Packages</name>
       <url>https://maven.pkg.github.com/martourez21/otter-streams</url>
     </repository>
