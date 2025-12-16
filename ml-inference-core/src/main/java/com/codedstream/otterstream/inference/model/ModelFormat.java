@@ -55,6 +55,9 @@ public enum ModelFormat {
     /** XGBoost binary format - gradient boosting models */
     XGBOOST_BINARY("bin", "XGBoost Binary"),
 
+    XGBOOST_JSON("json", "XGBoost JSON"),
+
+
     /** Predictive Model Markup Language - XML-based standard */
     PMML("pmml", "Predictive Model Markup Language"),
 

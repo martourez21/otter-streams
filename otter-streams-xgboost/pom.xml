@@ -4,7 +4,7 @@
     <parent>
         <groupId>com.codedstreams</groupId>
         <artifactId>otter-streams</artifactId>
-        <version>1.0.3</version>
+        <version>1.0.4</version>
     </parent>
     <artifactId>otter-stream-xgboost</artifactId>
     <packaging>jar</packaging>
@@ -19,7 +19,7 @@
 
         <dependency>
             <groupId>ml.dmlc</groupId>
-            <artifactId>xgboost4j</artifactId>
+            <artifactId>xgboost4j_2.13</artifactId>
         </dependency>
     </dependencies>
 

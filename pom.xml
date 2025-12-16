@@ -7,7 +7,7 @@
 
   <groupId>com.codedstreams</groupId>
   <artifactId>otter-streams</artifactId>
-  <version>1.0.3</version>
+  <version>1.0.4</version>
   <packaging>pom</packaging>
 
   <name>Otter Streams - ML Inference for Apache Flink</name>
@@ -58,10 +58,10 @@
     <scala.binary.version>2.12</scala.binary.version>
 
     <!-- ML Frameworks -->
-    <onnxruntime.version>1.16.3</onnxruntime.version>
+    <onnxruntime.version>1.23.2</onnxruntime.version>
     <tensorflow.version>0.5.0</tensorflow.version>
     <pytorch.version>2.1.1</pytorch.version>
-    <xgboost.version>0.90</xgboost.version>
+    <xgboost.version>3.1.1</xgboost.version>
     <jpmml.version>1.5.16</jpmml.version>
 
     <!-- Remote Inference -->
@@ -149,7 +149,17 @@
       <!-- XGBoost -->
       <dependency>
         <groupId>ml.dmlc</groupId>
-        <artifactId>xgboost4j</artifactId>
+        <artifactId>xgboost4j_2.13</artifactId>
+        <version>${xgboost.version}</version>
+      </dependency>
+<!--      <dependency>-->
+<!--        <groupId>ml.dmlc</groupId>-->
+<!--        <artifactId>xgboost4j</artifactId>-->
+<!--        <version>${xgboost.version}</version>-->
+<!--      </dependency>-->
+      <dependency>
+        <groupId>ml.dmlc</groupId>
+        <artifactId>xgboost4j-spark</artifactId>
         <version>${xgboost.version}</version>
       </dependency>
 
@@ -360,13 +370,6 @@
               <additionalJOption>1</additionalJOption>
             </additionalJOptions>
           </configuration>
-        </plugin>
-
-        <!-- Deploy - Child modules will override skip=false -->
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-deploy-plugin</artifactId>
-          <version>${maven-deploy-plugin.version}</version>
         </plugin>
       </plugins>
     </pluginManagement>
