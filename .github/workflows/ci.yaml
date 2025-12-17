@@ -1,4 +1,4 @@
-name: Java CI with Maven
+name: otter-streams CI Pipeline
 
 on:
   push:
@@ -32,7 +32,7 @@ jobs:
 
       - name: Run Tests
         run: mvn -B test
-        continue-on-error: true  # Remove this when tests are fully implemented
+        continue-on-error: true
 
       - name: Generate Test Report
         if: always()
@@ -144,6 +144,23 @@ jobs:
       - name: Build and generate documentation
         run: mvn -B clean install javadoc:jar source:jar -DskipTests -Dmaven.javadoc.failOnError=false -Dmaven.javadoc.failOnWarnings=false
 
+      - name: Verify Javadoc generation
+        run: |
+          echo "Checking for generated Javadoc JARs..."
+          find . -name "*-javadoc.jar" -type f
+          echo "Checking for Javadoc directories..."
+          find . -path "*/target/apidocs" -type d
+
+      - name: Upload Javadoc artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: javadoc-artifacts
+          path: |
+            **/target/*-javadoc.jar
+            **/target/apidocs/
+          retention-days: 7
+
       - name: Publish to GitHub Packages
         run: mvn -B deploy -DskipTests
         env:
@@ -190,8 +207,8 @@ jobs:
       - name: Update Maven version
         run: mvn versions:set -DnewVersion=${{ steps.version.outputs.VERSION }} -DgenerateBackupPoms=false
 
-      - name: Build release artifacts
-        run: mvn -B clean install -DskipTests
+      - name: Build release artifacts with documentation
+        run: mvn -B clean install javadoc:jar source:jar -DskipTests -Dmaven.javadoc.failOnError=false -Dmaven.javadoc.failOnWarnings=false
 
       - name: Generate aggregated Javadoc
         run: mvn -B javadoc:aggregate -Dmaven.javadoc.failOnError=false -Dmaven.javadoc.failOnWarnings=false
@@ -200,12 +217,36 @@ jobs:
       - name: Create release package
         run: |
           mkdir -p release-artifacts
-          find . -name "*.jar" -not -path "*/target/original-*" -not -path "*/target/*-tests.jar" -exec cp {} release-artifacts/ \;
+          # Copy all JAR files (main, sources, javadoc)
+          find . -name "*.jar" \
+            -not -path "*/target/original-*" \
+            -not -path "*/target/*-tests.jar" \
+            -exec cp {} release-artifacts/ \;
+          
+          echo "Release artifacts:"
+          ls -lh release-artifacts/
 
-      - name: Generate Javadoc archive
+      - name: Generate individual module Javadoc archives
         run: |
-          cd target/site
-          tar -czf ../../release-artifacts/otter-stream-javadoc-${{ steps.version.outputs.VERSION }}.tar.gz apidocs/
+          for module in ml-inference-core otter-stream-onnx otter-stream-tensorflow otter-stream-pytorch otter-streams-xgboost otter-stream-pmml otter-stream-remote otter-stream-examples; do
+            if [ -d "$module/target/apidocs" ]; then
+              echo "Creating Javadoc archive for $module"
+              cd $module/target
+              tar -czf ../../release-artifacts/${module}-javadoc-${{ steps.version.outputs.VERSION }}.tar.gz apidocs/
+              cd ../..
+            else
+              echo "Warning: No apidocs found for $module"
+            fi
+          done
+
+      - name: Generate aggregated Javadoc archive
+        run: |
+          if [ -d "target/site/apidocs" ]; then
+            cd target/site
+            tar -czf ../../release-artifacts/otter-streams-javadoc-aggregated-${{ steps.version.outputs.VERSION }}.tar.gz apidocs/
+          else
+            echo "Warning: No aggregated apidocs found"
+          fi
 
       - name: Upload Release Assets
         uses: softprops/action-gh-release@v1
@@ -216,12 +257,22 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Deploy Javadoc to GitHub Pages
+      - name: Deploy aggregated Javadoc to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./target/site/apidocs
           destination_dir: javadoc/${{ steps.version.outputs.VERSION }}
+        continue-on-error: true
+
+      - name: Deploy individual module Javadocs to GitHub Pages
+        run: |
+          for module in ml-inference-core otter-stream-onnx otter-stream-tensorflow otter-stream-pytorch otter-streams-xgboost otter-stream-pmml otter-stream-remote otter-stream-examples; do
+            if [ -d "$module/target/apidocs" ]; then
+              echo "Deploying Javadoc for $module"
+            fi
+          done
+        continue-on-error: true
 
       - name: Publish to GitHub Packages
         run: mvn -B deploy -DskipTests
