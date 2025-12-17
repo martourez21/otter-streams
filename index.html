@@ -1,574 +1,651 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Otter Streams - Production ML Inference for Apache Flink</title>
-  <meta name="description" content="Production-grade ML inference library for Apache Flink streaming applications">
-  <link rel="icon" href="https://raw.githubusercontent.com/martourez21/otter-streams/main/docs/assets/otterstream-sdk-icon.ico" type="image/x-icon">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Otter Streams - Production ML Inference for Apache Flink</title>
+    <meta name="description" content="Production-grade ML inference library for Apache Flink streaming applications">
+    <link rel="icon" href="https://raw.githubusercontent.com/martourez21/otter-streams/main/docs/assets/otterstream-sdk-icon.ico" type="image/x-icon">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-    :root {
-      --primary: #667eea;
-      --primary-dark: #5568d3;
-      --secondary: #764ba2;
-      --accent: #4facfe;
-      --dark-bg: #0f1419;
-      --card-bg: #1a1f2e;
-      --text-primary: #e4e6eb;
-      --text-secondary: #8b92a8;
-      --border: #2d3748;
-      --success: #00d9a5;
-    }
+        :root {
+            --primary: #0091d5;
+            --primary-dark: #006ba1;
+            --secondary: #4db8e8;
+            --accent: #5c4033;
+            --dark-bg: #0f1419;
+            --card-bg: #1a1f2e;
+            --text-primary: #e4e6eb;
+            --text-secondary: #8b92a8;
+            --border: #2d3748;
+            --success: #0091d5;
+        }
 
-    body {
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-      line-height: 1.6;
-      color: var(--text-primary);
-      background: var(--dark-bg);
-      min-height: 100vh;
-    }
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            line-height: 1.6;
+            color: var(--text-primary);
+            background: var(--dark-bg);
+            min-height: 100vh;
+        }
 
-    /* Header */
-    .header {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      padding: 0;
-      position: relative;
-      overflow: hidden;
-    }
+        .header {
+            background: linear-gradient(135deg, #0091d5 0%, #006ba1 100%);
+            padding: 0;
+            position: relative;
+            overflow: hidden;
+        }
 
-    .header::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: url('data:image/svg+xml,<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg"><defs><pattern id="grid" width="50" height="50" patternUnits="userSpaceOnUse"><path d="M 50 0 L 0 0 0 50" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="1"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
-      opacity: 0.3;
-    }
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg"><defs><pattern id="grid" width="50" height="50" patternUnits="userSpaceOnUse"><path d="M 50 0 L 0 0 0 50" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="1"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
+            opacity: 0.3;
+        }
 
-    .nav {
-      max-width: 1400px;
-      margin: 0 auto;
-      padding: 20px 40px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      position: relative;
-      z-index: 1;
-    }
+        .nav {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+            z-index: 1;
+        }
 
-    .logo-section {
-      display: flex;
-      align-items: center;
-      gap: 15px;
-    }
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
 
-    .logo {
-      width: 45px;
-      height: 45px;
-      background: white;
-      border-radius: 8px;
-      padding: 8px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
+        .logo {
+            width: 45px;
+            height: 45px;
+            background: white;
+            border-radius: 8px;
+            padding: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
 
-    .logo img {
-      width: 100%;
-      height: 100%;
-      object-fit: contain;
-    }
+        .logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
 
-    .brand {
-      color: white;
-      font-size: 1.4em;
-      font-weight: 700;
-    }
+        .brand {
+            color: white;
+            font-size: 1.4em;
+            font-weight: 700;
+        }
 
-    .nav-links {
-      display: flex;
-      gap: 30px;
-      align-items: center;
-    }
+        .nav-links {
+            display: flex;
+            gap: 30px;
+            align-items: center;
+        }
 
-    .nav-link {
-      color: rgba(255,255,255,0.9);
-      text-decoration: none;
-      font-weight: 500;
-      font-size: 0.95em;
-      transition: color 0.3s;
-    }
+        .nav-link {
+            color: rgba(255,255,255,0.9);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.95em;
+            transition: color 0.3s;
+        }
 
-    .nav-link:hover {
-      color: white;
-    }
+        .nav-link:hover {
+            color: white;
+        }
 
-    /* Hero Section */
-    .hero {
-      max-width: 1400px;
-      margin: 0 auto;
-      padding: 100px 40px 120px;
-      text-align: center;
-      position: relative;
-      z-index: 1;
-    }
+        .hero {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 100px 40px 120px;
+            text-align: center;
+            position: relative;
+            z-index: 1;
+        }
 
-    .hero h1 {
-      font-size: 3.5em;
-      font-weight: 700;
-      margin-bottom: 20px;
-      color: white;
-      line-height: 1.2;
-    }
+        .hero h1 {
+            font-size: 3.5em;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: white;
+            line-height: 1.2;
+        }
 
-    .hero p {
-      font-size: 1.3em;
-      color: rgba(255,255,255,0.9);
-      max-width: 700px;
-      margin: 0 auto 40px;
-      font-weight: 300;
-    }
+        .hero p {
+            font-size: 1.3em;
+            color: rgba(255,255,255,0.9);
+            max-width: 700px;
+            margin: 0 auto 40px;
+            font-weight: 300;
+        }
 
-    .version-tag {
-      display: inline-block;
-      background: rgba(255,255,255,0.2);
-      backdrop-filter: blur(10px);
-      padding: 8px 20px;
-      border-radius: 20px;
-      color: white;
-      font-weight: 600;
-      font-size: 0.9em;
-      margin-bottom: 20px;
-    }
+        .version-tag {
+            display: inline-block;
+            background: rgba(255,255,255,0.2);
+            backdrop-filter: blur(10px);
+            padding: 8px 20px;
+            border-radius: 20px;
+            color: white;
+            font-weight: 600;
+            font-size: 0.9em;
+            margin-bottom: 20px;
+        }
 
-    /* Main Content */
-    .container {
-      max-width: 1400px;
-      margin: -60px auto 0;
-      padding: 0 40px 80px;
-      position: relative;
-      z-index: 2;
-    }
+        .container {
+            max-width: 1400px;
+            margin: -60px auto 0;
+            padding: 0 40px 80px;
+            position: relative;
+            z-index: 2;
+        }
 
-    /* Cards Grid */
-    .cards-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-      gap: 30px;
-      margin-bottom: 60px;
-    }
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+            margin-bottom: 60px;
+        }
 
-    .card {
-      background: var(--card-bg);
-      border-radius: 12px;
-      padding: 40px;
-      border: 1px solid var(--border);
-      transition: transform 0.3s, box-shadow 0.3s, border-color 0.3s;
-      position: relative;
-      overflow: hidden;
-    }
+        .card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 40px;
+            border: 1px solid var(--border);
+            transition: transform 0.3s, box-shadow 0.3s, border-color 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
 
-    .card::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 3px;
-      background: linear-gradient(90deg, var(--primary), var(--secondary));
-      transform: scaleX(0);
-      transition: transform 0.3s;
-    }
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            transform: scaleX(0);
+            transition: transform 0.3s;
+        }
 
-    .card:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 20px 40px rgba(102, 126, 234, 0.15);
-      border-color: var(--primary);
-    }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0, 145, 213, 0.15);
+            border-color: var(--primary);
+        }
 
-    .card:hover::before {
-      transform: scaleX(1);
-    }
+        .card:hover::before {
+            transform: scaleX(1);
+        }
 
-    .card-icon {
-      width: 60px;
-      height: 60px;
-      background: linear-gradient(135deg, var(--primary), var(--secondary));
-      border-radius: 12px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.8em;
-      margin-bottom: 20px;
-    }
+        .card-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #0091d5, #006ba1);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8em;
+            margin-bottom: 20px;
+        }
 
-    .card h3 {
-      font-size: 1.5em;
-      margin-bottom: 15px;
-      color: var(--text-primary);
-      font-weight: 600;
-    }
+        .card h3 {
+            font-size: 1.5em;
+            margin-bottom: 15px;
+            color: var(--text-primary);
+            font-weight: 600;
+        }
 
-    .card p {
-      color: var(--text-secondary);
-      line-height: 1.7;
-      margin-bottom: 25px;
-      font-size: 0.95em;
-    }
+        .card p {
+            color: var(--text-secondary);
+            line-height: 1.7;
+            margin-bottom: 25px;
+            font-size: 0.95em;
+        }
 
-    .card-link {
-      color: var(--primary);
-      text-decoration: none;
-      font-weight: 600;
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      transition: gap 0.3s;
-    }
+        .card-link {
+            color: #0091d5;
+            text-decoration: none;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: gap 0.3s;
+        }
 
-    .card-link:hover {
-      gap: 12px;
-    }
+        .card-link:hover {
+            gap: 12px;
+            color: #4db8e8;
+        }
 
-    .card-link::after {
-      content: '→';
-      font-size: 1.2em;
-    }
+        .card-link svg {
+            flex-shrink: 0;
+        }
 
-    /* Features Section */
-    .features-section {
-      margin: 80px 0;
-    }
+        .features-section {
+            margin: 80px 0;
+        }
 
-    .section-title {
-      text-align: center;
-      font-size: 2.2em;
-      margin-bottom: 50px;
-      color: var(--text-primary);
-      font-weight: 700;
-    }
+        .section-title {
+            text-align: center;
+            font-size: 2.2em;
+            margin-bottom: 50px;
+            color: var(--text-primary);
+            font-weight: 700;
+        }
 
-    .features-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 30px;
-    }
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+        }
 
-    .feature {
-      text-align: center;
-      padding: 30px;
-    }
+        .feature {
+            text-align: center;
+            padding: 30px;
+        }
 
-    .feature-icon {
-      width: 70px;
-      height: 70px;
-      margin: 0 auto 20px;
-      background: var(--card-bg);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 2em;
-    }
+        .feature-icon {
+            width: 70px;
+            height: 70px;
+            margin: 0 auto 20px;
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #0091d5;
+        }
 
-    .feature h4 {
-      font-size: 1.2em;
-      margin-bottom: 12px;
-      color: var(--text-primary);
-    }
+        .feature h4 {
+            font-size: 1.2em;
+            margin-bottom: 12px;
+            color: var(--text-primary);
+        }
 
-    .feature p {
-      color: var(--text-secondary);
-      font-size: 0.95em;
-      line-height: 1.6;
-    }
+        .feature p {
+            color: var(--text-secondary);
+            font-size: 0.95em;
+            line-height: 1.6;
+        }
 
-    /* Footer */
-    .footer {
-      background: var(--card-bg);
-      border-top: 1px solid var(--border);
-      padding: 60px 40px 40px;
-      margin-top: 80px;
-    }
+        .footer {
+            background: var(--card-bg);
+            border-top: 1px solid var(--border);
+            padding: 60px 40px 40px;
+            margin-top: 80px;
+        }
 
-    .footer-content {
-      max-width: 1400px;
-      margin: 0 auto;
-    }
+        .footer-content {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
 
-    .footer-grid {
-      display: grid;
-      grid-template-columns: 2fr 1fr 1fr;
-      gap: 60px;
-      margin-bottom: 50px;
-    }
+        .footer-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr;
+            gap: 60px;
+            margin-bottom: 50px;
+        }
 
-    .footer-section h4 {
-      color: var(--text-primary);
-      font-size: 1.1em;
-      margin-bottom: 20px;
-      font-weight: 600;
-    }
+        .footer-section h4 {
+            color: var(--text-primary);
+            font-size: 1.1em;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
 
-    .footer-section p {
-      color: var(--text-secondary);
-      line-height: 1.7;
-      margin-bottom: 20px;
-    }
+        .footer-section p {
+            color: var(--text-secondary);
+            line-height: 1.7;
+            margin-bottom: 20px;
+        }
 
-    .footer-links {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
+        .footer-links {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
 
-    .footer-link {
-      color: var(--text-secondary);
-      text-decoration: none;
-      transition: color 0.3s;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
+        .footer-link {
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: color 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
 
-    .footer-link:hover {
-      color: var(--primary);
-    }
+        .footer-link:hover {
+            color: var(--primary);
+        }
 
-    .footer-bottom {
-      padding-top: 30px;
-      border-top: 1px solid var(--border);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 20px;
-    }
+        .footer-link svg {
+            flex-shrink: 0;
+        }
 
-    .org-info {
-      color: var(--text-secondary);
-      font-size: 0.9em;
-    }
+        .footer-bottom {
+            padding-top: 30px;
+            border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
 
-    .org-name {
-      color: var(--primary);
-      font-weight: 600;
-    }
+        .org-info {
+            color: var(--text-secondary);
+            font-size: 0.9em;
+        }
 
-    .social-links {
-      display: flex;
-      gap: 20px;
-    }
+        .org-name {
+            color: var(--primary);
+            font-weight: 600;
+        }
 
-    .social-link {
-      color: var(--text-secondary);
-      text-decoration: none;
-      transition: color 0.3s;
-      font-size: 0.95em;
-    }
+        .social-links {
+            display: flex;
+            gap: 20px;
+        }
 
-    .social-link:hover {
-      color: var(--primary);
-    }
+        .social-link {
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: color 0.3s;
+            font-size: 0.95em;
+        }
 
-    @media (max-width: 1024px) {
-      .footer-grid {
-        grid-template-columns: 1fr;
-        gap: 40px;
-      }
-    }
+        .social-link:hover {
+            color: var(--primary);
+        }
 
-    @media (max-width: 768px) {
-      .hero h1 {
-        font-size: 2.5em;
-      }
+        @media (max-width: 1024px) {
+            .footer-grid {
+                grid-template-columns: 1fr;
+                gap: 40px;
+            }
+        }
 
-      .hero p {
-        font-size: 1.1em;
-      }
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2.5em;
+            }
 
-      .nav {
-        flex-direction: column;
-        gap: 20px;
-      }
+            .hero p {
+                font-size: 1.1em;
+            }
 
-      .cards-grid,
-      .features-grid {
-        grid-template-columns: 1fr;
-      }
+            .nav {
+                flex-direction: column;
+                gap: 20px;
+            }
 
-      .container {
-        padding: 0 20px 60px;
-      }
+            .cards-grid,
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
 
-      .footer-bottom {
-        flex-direction: column;
-        text-align: center;
-      }
-    }
-  </style>
+            .container {
+                padding: 0 20px 60px;
+            }
+
+            .footer-bottom {
+                flex-direction: column;
+                text-align: center;
+            }
+        }
+    </style>
 </head>
 <body>
-  <!-- Header -->
-  <header class="header">
+<header class="header">
     <nav class="nav">
-      <div class="logo-section">
-        <div class="logo">
-          <img src="https://raw.githubusercontent.com/martourez21/otter-streams/main/docs/assets/otterstream-sdk-icon.ico" alt="Otter Streams">
+        <div class="logo-section">
+            <div class="logo">
+                <img src="https://raw.githubusercontent.com/martourez21/otter-streams/main/docs/assets/otterstream-sdk-icon.ico" alt="Otter Streams">
+            </div>
+            <span class="brand">Otter Streams</span>
         </div>
-        <span class="brand">Otter Streams</span>
-      </div>
-      <div class="nav-links">
-        <a href="https://github.com/martourez21/otter-streams" class="nav-link">GitHub</a>
-        <a href="https://github.com/martourez21/otter-streams/releases" class="nav-link">Releases</a>
-        <a href="mailto:nestorabiawuh@gmail.com" class="nav-link">Contact</a>
-      </div>
+        <div class="nav-links">
+            <a href="https://github.com/martourez21/otter-streams" class="nav-link">GitHub</a>
+            <a href="https://github.com/martourez21/otter-streams/releases" class="nav-link">Releases</a>
+            <a href="mailto:nestorabiawuh@gmail.com" class="nav-link">Contact</a>
+        </div>
     </nav>
 
     <div class="hero">
-      <div class="version-tag">v1.0.9-SNAPSHOT</div>
-      <h1>Production ML Inference<br>for Apache Flink</h1>
-      <p>High-performance machine learning inference library for real-time streaming applications. Integrate ML models seamlessly into your data pipelines.</p>
+        <div class="version-tag">v1.0.11-SNAPSHOT</div>
+        <h1>Production ML Inference<br>for Apache Flink</h1>
+        <p>High-performance machine learning inference library for real-time streaming applications. Integrate ML models seamlessly into your data pipelines.</p>
     </div>
-  </header>
+</header>
 
-  <!-- Main Content -->
-  <main class="container">
-    <!-- Primary Cards -->
+<main class="container">
     <div class="cards-grid">
-      <div class="card">
-        <div class="card-icon">📚</div>
-        <h3>API Documentation</h3>
-        <p>Complete API reference with detailed documentation for all modules, classes, and methods in the Otter Streams library.</p>
-        <a href="javadoc/1.0.9-SNAPSHOT/index.html" class="card-link">View Documentation</a>
-      </div>
+        <div class="card">
+            <div class="card-icon">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
+                    <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
+                </svg>
+            </div>
+            <h3>API Documentation</h3>
+            <p>Complete API reference with detailed documentation for all modules, classes, and methods in the Otter Streams library.</p>
+            <a href="javadoc/1.0.11-SNAPSHOT/index.html" class="card-link">
+                View Documentation
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                    <polyline points="12 5 19 12 12 19"></polyline>
+                </svg>
+            </a>
+        </div>
 
-      <div class="card">
-        <div class="card-icon">🚀</div>
-        <h3>Getting Started</h3>
-        <p>Quick start guides and examples to help you integrate ML inference into your Flink applications in minutes.</p>
-        <a href="https://github.com/martourez21/otter-streams#getting-started" class="card-link">Get Started</a>
-      </div>
+        <div class="card">
+            <div class="card-icon">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <polyline points="12 6 12 12 16 14"></polyline>
+                </svg>
+            </div>
+            <h3>Getting Started</h3>
+            <p>Quick start guides and examples to help you integrate ML inference into your Flink applications in minutes.</p>
+            <a href="https://github.com/martourez21/otter-streams#getting-started" class="card-link">
+                Get Started
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                    <polyline points="12 5 19 12 12 19"></polyline>
+                </svg>
+            </a>
+        </div>
 
-      <div class="card">
-        <div class="card-icon">💡</div>
-        <h3>Examples</h3>
-        <p>Real-world examples demonstrating best practices for ML inference in production streaming environments.</p>
-        <a href="https://github.com/martourez21/otter-streams/tree/main/otter-stream-examples" class="card-link">View Examples</a>
-      </div>
+        <div class="card">
+            <div class="card-icon">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="16 18 22 12 16 6"></polyline>
+                    <polyline points="8 6 2 12 8 18"></polyline>
+                </svg>
+            </div>
+            <h3>Examples</h3>
+            <p>Real-world examples demonstrating best practices for ML inference in production streaming environments.</p>
+            <a href="https://github.com/martourez21/otter-streams/tree/main/otter-stream-examples" class="card-link">
+                View Examples
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                    <polyline points="12 5 19 12 12 19"></polyline>
+                </svg>
+            </a>
+        </div>
     </div>
 
-    <!-- Features Section -->
     <section class="features-section">
-      <h2 class="section-title">Why Otter Streams?</h2>
-      <div class="features-grid">
-        <div class="feature">
-          <div class="feature-icon">⚡</div>
-          <h4>High Performance</h4>
-          <p>Optimized for low-latency inference with efficient resource management and parallel processing</p>
-        </div>
+        <h2 class="section-title">Why Otter Streams?</h2>
+        <div class="features-grid">
+            <div class="feature">
+                <div class="feature-icon">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+                    </svg>
+                </div>
+                <h4>High Performance</h4>
+                <p>Optimized for low-latency inference with efficient resource management and parallel processing</p>
+            </div>
 
-        <div class="feature">
-          <div class="feature-icon">🔧</div>
-          <h4>Multi-Framework</h4>
-          <p>Native support for ONNX, TensorFlow, PyTorch, XGBoost, and PMML model formats</p>
-        </div>
+            <div class="feature">
+                <div class="feature-icon">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path>
+                    </svg>
+                </div>
+                <h4>Multi-Framework</h4>
+                <p>Native support for ONNX, TensorFlow, PyTorch, XGBoost, and PMML model formats</p>
+            </div>
 
-        <div class="feature">
-          <div class="feature-icon">📊</div>
-          <h4>Production Ready</h4>
-          <p>Built-in monitoring, caching, error handling, and fault tolerance for enterprise deployments</p>
-        </div>
+            <div class="feature">
+                <div class="feature-icon">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+                    </svg>
+                </div>
+                <h4>Production Ready</h4>
+                <p>Built-in monitoring, caching, error handling, and fault tolerance for enterprise deployments</p>
+            </div>
 
-        <div class="feature">
-          <div class="feature-icon">🔌</div>
-          <h4>Easy Integration</h4>
-          <p>Simple API that integrates seamlessly with existing Flink applications and workflows</p>
-        </div>
+            <div class="feature">
+                <div class="feature-icon">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+                        <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+                        <line x1="12" y1="22.08" x2="12" y2="12"></line>
+                    </svg>
+                </div>
+                <h4>Easy Integration</h4>
+                <p>Simple API that integrates seamlessly with existing Flink applications and workflows</p>
+            </div>
 
-        <div class="feature">
-          <div class="feature-icon">☁️</div>
-          <h4>Cloud Native</h4>
-          <p>Support for remote inference endpoints including AWS SageMaker, GCP Vertex AI, and Azure ML</p>
-        </div>
+            <div class="feature">
+                <div class="feature-icon">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"></path>
+                    </svg>
+                </div>
+                <h4>Cloud Native</h4>
+                <p>Support for remote inference endpoints including AWS SageMaker, GCP Vertex AI, and Azure ML</p>
+            </div>
 
-        <div class="feature">
-          <div class="feature-icon">📈</div>
-          <h4>Scalable</h4>
-          <p>Designed to scale horizontally with your Flink cluster for high-throughput workloads</p>
+            <div class="feature">
+                <div class="feature-icon">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="12" y1="20" x2="12" y2="10"></line>
+                        <line x1="18" y1="20" x2="18" y2="4"></line>
+                        <line x1="6" y1="20" x2="6" y2="16"></line>
+                    </svg>
+                </div>
+                <h4>Scalable</h4>
+                <p>Designed to scale horizontally with your Flink cluster for high-throughput workloads</p>
+            </div>
         </div>
-      </div>
     </section>
-  </main>
+</main>
 
-  <!-- Footer -->
-  <footer class="footer">
+<footer class="footer">
     <div class="footer-content">
-      <div class="footer-grid">
-        <div class="footer-section">
-          <h4>About Otter Streams</h4>
-          <p>Otter Streams is a production-grade ML inference library designed specifically for Apache Flink streaming applications. Built with performance and reliability in mind for enterprise deployments.</p>
+        <div class="footer-grid">
+            <div class="footer-section">
+                <h4>About Otter Streams</h4>
+                <p>Otter Streams is a production-grade ML inference library designed specifically for Apache Flink streaming applications. Built with performance and reliability in mind for enterprise deployments.</p>
+            </div>
+
+            <div class="footer-section">
+                <h4>Resources</h4>
+                <div class="footer-links">
+                    <a href="https://github.com/martourez21/otter-streams" class="footer-link">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4"></path>
+                            <path d="M9 18c-4.51 2-5-2-7-2"></path>
+                        </svg>
+                        Repository
+                    </a>
+                    <a href="https://github.com/martourez21/otter-streams/releases" class="footer-link">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21.21 15.89A10 10 0 1 1 8 2.83"></path>
+                            <path d="M22 12A10 10 0 0 0 12 2v10z"></path>
+                        </svg>
+                        Releases
+                    </a>
+                    <a href="https://github.com/martourez21/otter-streams/issues" class="footer-link">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <line x1="12" y1="8" x2="12" y2="12"></line>
+                            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                        </svg>
+                        Issues
+                    </a>
+                    <a href="javadoc/1.0.11-SNAPSHOT/index.html" class="footer-link">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
+                            <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
+                        </svg>
+                        API Docs
+                    </a>
+                </div>
+            </div>
+
+            <div class="footer-section">
+                <h4>Contact</h4>
+                <div class="footer-links">
+                    <a href="mailto:nestorabiawuh@gmail.com" class="footer-link">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                            <polyline points="22,6 12,13 2,6"></polyline>
+                        </svg>
+                        Email
+                    </a>
+                    <a href="https://www.linkedin.com/in/nestor-abiangang/" class="footer-link" target="_blank">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path>
+                            <rect x="2" y="9" width="4" height="12"></rect>
+                            <circle cx="4" cy="4" r="2"></circle>
+                        </svg>
+                        LinkedIn
+                    </a>
+                    <a href="https://github.com/martourez21" class="footer-link" target="_blank">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path>
+                        </svg>
+                        GitHub
+                    </a>
+                </div>
+            </div>
         </div>
 
-        <div class="footer-section">
-          <h4>Resources</h4>
-          <div class="footer-links">
-            <a href="https://github.com/martourez21/otter-streams" class="footer-link">📦 Repository</a>
-            <a href="https://github.com/martourez21/otter-streams/releases" class="footer-link">📋 Releases</a>
-            <a href="https://github.com/martourez21/otter-streams/issues" class="footer-link">🐛 Issues</a>
-            <a href="javadoc/1.0.9-SNAPSHOT/index.html" class="footer-link">📚 API Docs</a>
-          </div>
+        <div class="footer-bottom">
+            <p class="org-info">Built by <span class="org-name">CodedStreams</span> © 2025</p>
+            <div class="social-links">
+                <span class="social-link">Apache License 2.0</span>
+            </div>
         </div>
-
-        <div class="footer-section">
-          <h4>Contact</h4>
-          <div class="footer-links">
-            <a href="mailto:nestorabiawuh@gmail.com" class="footer-link">✉️ Email</a>
-            <a href="https://www.linkedin.com/in/nestor-abiangang-a" class="footer-link" target="_blank">💼 LinkedIn</a>
-            <a href="https://github.com/martourez21" class="footer-link" target="_blank">👨‍💻 GitHub</a>
-          </div>
-        </div>
-      </div>
-
-      <div class="footer-bottom">
-        <p class="org-info">Built by <span class="org-name">CodedStreams</span> © 2024</p>
-        <div class="social-links">
-          <span class="social-link">Apache License 2.0</span>
-        </div>
-      </div>
     </div>
-  </footer>
-</body>
-</html>
-EOF</a>
-        </div>
-      </div>
-
-      <div class="contact">
-        <h4>Developer Contact</h4>
-        <div class="contact-links">
-          <a href="mailto:nestorabiawuh@gmail.com" class="contact-link">
-            ✉️ nestorabiawuh@gmail.com
-          </a>
-          <a href="https://www.linkedin.com/in/nestor-abiangang-a" class="contact-link" target="_blank" rel="noopener noreferrer">
-            💼 LinkedIn Profile
-          </a>
-        </div>
-        <div class="org-badge">Built by CodedStreams</div>
-      </div>
-    </div>
-  </div>
+</footer>
 </body>
 </html>
