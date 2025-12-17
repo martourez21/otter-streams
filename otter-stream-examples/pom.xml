@@ -4,7 +4,7 @@
     <parent>
         <groupId>com.codedstreams</groupId>
         <artifactId>otter-streams</artifactId>
-        <version>1.0.5</version>
+        <version>1.0.6</version>
     </parent>
     <artifactId>otter-stream-examples</artifactId>
     <packaging>jar</packaging>
@@ -16,13 +16,13 @@
         <dependency>
             <groupId>com.codedstreams</groupId>
             <artifactId>ml-inference-core</artifactId>
-            <version>1.0.5</version>
+            <version>1.0.6</version>
         </dependency>
 
         <dependency>
             <groupId>com.codedstreams</groupId>
             <artifactId>otter-stream-onnx</artifactId>
-            <version>1.0.5</version>
+            <version>1.0.6</version>
         </dependency>
 
         <dependency>

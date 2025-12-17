@@ -1,4 +1,4 @@
-name: otter-streams CI Pipeline
+name: Otter-Streams CI Pipeline with Maven
 
 on:
   push:
@@ -112,8 +112,10 @@ jobs:
     runs-on: ubuntu-latest
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     permissions:
-      contents: read
+      contents: write
       packages: write
+      pages: write
+      id-token: write
 
     steps:
       - name: Checkout code
@@ -141,6 +143,13 @@ jobs:
           </settings>
           EOF
 
+      - name: Set version to SNAPSHOT for main branch
+        run: |
+          CURRENT_VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
+          if [[ ! "$CURRENT_VERSION" == *-SNAPSHOT ]]; then
+            mvn versions:set -DnewVersion="${CURRENT_VERSION}-SNAPSHOT" -DgenerateBackupPoms=false
+          fi
+
       - name: Build and generate documentation
         run: mvn -B clean install javadoc:jar source:jar -DskipTests -Dmaven.javadoc.failOnError=false -Dmaven.javadoc.failOnWarnings=false
 
@@ -161,18 +170,105 @@ jobs:
             **/target/apidocs/
           retention-days: 7
 
+      - name: Check if version exists in GitHub Packages
+        id: check_version
+        run: |
+          VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
+          if curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+             "https://maven.pkg.github.com/martourez21/otter-streams/com/codedstreams/otter-streams/$VERSION/otter-streams-$VERSION.pom" \
+             | grep -q "404"; then
+            echo "exists=false" >> $GITHUB_OUTPUT
+          else
+            echo "exists=true" >> $GITHUB_OUTPUT
+          fi
+
       - name: Publish to GitHub Packages
+        if: steps.check_version.outputs.exists == 'false'
         run: mvn -B deploy -DskipTests
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Skip deployment - version exists
+        if: steps.check_version.outputs.exists == 'true'
+        run: echo "Version already exists in GitHub Packages, skipping deployment"
+
+      - name: Generate aggregated Javadoc for GitHub Pages
+        run: mvn -B javadoc:aggregate -Dmaven.javadoc.failOnError=false -Dmaven.javadoc.failOnWarnings=false
+        continue-on-error: true
+
+      - name: Get current version for Javadoc path
+        id: get_version
+        run: echo "VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)" >> $GITHUB_OUTPUT
+
+      - name: Check if Javadoc was generated
+        id: check_javadoc
+        run: |
+          if [ -d "target/site/apidocs" ]; then
+            echo "exists=true" >> $GITHUB_OUTPUT
+            echo "✅ Javadoc generated successfully"
+            ls -la target/site/apidocs/
+          else
+            echo "exists=false" >> $GITHUB_OUTPUT
+            echo "⚠️ Javadoc directory not found"
+          fi
+
+      - name: Deploy Javadoc to GitHub Pages
+        if: always() && steps.check_javadoc.outputs.exists == 'true'
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./target/site/apidocs
+          destination_dir: javadoc/${{ steps.get_version.outputs.VERSION }}
+          keep_files: true
+        continue-on-error: true
+
+      - name: Create Javadoc index page
+        if: always()
+        run: |
+          mkdir -p gh-pages-root
+          cat > gh-pages-root/index.html << 'EOF'
+          <!DOCTYPE html>
+          <html>
+          <head>
+            <title>Otter Streams - API Documentation</title>
+            <style>
+              body { font-family: Arial, sans-serif; max-width: 800px; margin: 50px auto; padding: 20px; }
+              h1 { color: #333; }
+              .version { padding: 10px; margin: 10px 0; background: #f5f5f5; border-left: 4px solid #0066cc; }
+              a { color: #0066cc; text-decoration: none; }
+              a:hover { text-decoration: underline; }
+            </style>
+          </head>
+          <body>
+            <h1>Otter Streams API Documentation</h1>
+            <p>Production-grade ML inference library for Apache Flink streaming applications</p>
+            <div class="version">
+              <h3>Latest Version</h3>
+              <a href="javadoc/${{ steps.get_version.outputs.VERSION }}/index.html">Version ${{ steps.get_version.outputs.VERSION }}</a>
+            </div>
+            <p><a href="https://github.com/martourez21/otter-streams">← Back to Repository</a></p>
+          </body>
+          </html>
+          EOF
+
+      - name: Deploy index to GitHub Pages
+        if: always()
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./gh-pages-root
+          keep_files: true
+        continue-on-error: true
+
   publish-release:
     needs: [build, code-quality]
     runs-on: ubuntu-latest
-    if: github.event_name == 'release'
+    if: github.event_name == 'release' && github.event.action == 'published'
     permissions:
       contents: write
       packages: write
+      pages: write
+      id-token: write
 
     steps:
       - name: Checkout code
@@ -263,16 +359,43 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./target/site/apidocs
           destination_dir: javadoc/${{ steps.version.outputs.VERSION }}
-        continue-on-error: true
+          keep_files: true
 
-      - name: Deploy individual module Javadocs to GitHub Pages
+      - name: Update Javadoc index with release version
         run: |
-          for module in ml-inference-core otter-stream-onnx otter-stream-tensorflow otter-stream-pytorch otter-streams-xgboost otter-stream-pmml otter-stream-remote otter-stream-examples; do
-            if [ -d "$module/target/apidocs" ]; then
-              echo "Deploying Javadoc for $module"
-            fi
-          done
-        continue-on-error: true
+          mkdir -p gh-pages-root
+          cat > gh-pages-root/index.html << 'EOF'
+          <!DOCTYPE html>
+          <html>
+          <head>
+            <title>Otter Streams - API Documentation</title>
+            <style>
+              body { font-family: Arial, sans-serif; max-width: 800px; margin: 50px auto; padding: 20px; }
+              h1 { color: #333; }
+              .version { padding: 10px; margin: 10px 0; background: #f5f5f5; border-left: 4px solid #0066cc; }
+              .latest { border-left-color: #00cc66; background: #f0fff0; }
+              a { color: #0066cc; text-decoration: none; }
+              a:hover { text-decoration: underline; }
+            </style>
+          </head>
+          <body>
+            <h1>Otter Streams API Documentation</h1>
+            <p>Production-grade ML inference library for Apache Flink streaming applications</p>
+            <div class="version latest">
+              <h3>Latest Release</h3>
+              <a href="javadoc/${{ steps.version.outputs.VERSION }}/index.html">Version ${{ steps.version.outputs.VERSION }}</a>
+            </div>
+            <p><a href="https://github.com/martourez21/otter-streams">← Back to Repository</a></p>
+          </body>
+          </html>
+          EOF
+
+      - name: Deploy updated index to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./gh-pages-root
+          keep_files: true
 
       - name: Publish to GitHub Packages
         run: mvn -B deploy -DskipTests
