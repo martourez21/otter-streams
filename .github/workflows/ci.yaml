@@ -1,4 +1,4 @@
-name: Java CI with Maven
+name: Otter Streams CI Pipeline with Maven
 
 on:
   push:
@@ -266,7 +266,6 @@ jobs:
                 min-height: 100vh;
               }
           
-              /* Header */
               .header {
                 background: linear-gradient(135deg, #0091d5 0%, #006ba1 100%);
                 padding: 0;
@@ -343,7 +342,6 @@ jobs:
                 color: white;
               }
           
-              /* Hero Section */
               .hero {
                 max-width: 1400px;
                 margin: 0 auto;
@@ -381,7 +379,6 @@ jobs:
                 margin-bottom: 20px;
               }
           
-              /* Main Content */
               .container {
                 max-width: 1400px;
                 margin: -60px auto 0;
@@ -390,7 +387,6 @@ jobs:
                 z-index: 2;
               }
           
-              /* Cards Grid */
               .cards-grid {
                 display: grid;
                 grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
@@ -422,7 +418,7 @@ jobs:
           
               .card:hover {
                 transform: translateY(-5px);
-                box-shadow: 0 20px 40px rgba(102, 126, 234, 0.15);
+                box-shadow: 0 20px 40px rgba(0, 145, 213, 0.15);
                 border-color: var(--primary);
               }
           
@@ -471,12 +467,10 @@ jobs:
                 color: #4db8e8;
               }
           
-              .card-link::after {
-                content: '→';
-                font-size: 1.2em;
+              .card-link svg {
+                flex-shrink: 0;
               }
           
-              /* Features Section */
               .features-section {
                 margin: 80px 0;
               }
@@ -510,7 +504,7 @@ jobs:
                 display: flex;
                 align-items: center;
                 justify-content: center;
-                font-size: 2em;
+                color: #0091d5;
               }
           
               .feature h4 {
@@ -525,7 +519,6 @@ jobs:
                 line-height: 1.6;
               }
           
-              /* Footer */
               .footer {
                 background: var(--card-bg);
                 border-top: 1px solid var(--border);
@@ -575,6 +568,10 @@ jobs:
           
               .footer-link:hover {
                 color: var(--primary);
+              }
+          
+              .footer-link svg {
+                flex-shrink: 0;
               }
           
               .footer-bottom {
@@ -651,7 +648,6 @@ jobs:
             </style>
           </head>
           <body>
-            <!-- Header -->
             <header class="header">
               <nav class="nav">
                 <div class="logo-section">
@@ -674,9 +670,7 @@ jobs:
               </div>
             </header>
           
-            <!-- Main Content -->
             <main class="container">
-              <!-- Primary Cards -->
               <div class="cards-grid">
                 <div class="card">
                   <div class="card-icon">
@@ -733,7 +727,6 @@ jobs:
                 </div>
               </div>
           
-              <!-- Features Section -->
               <section class="features-section">
                 <h2 class="section-title">Why Otter Streams?</h2>
                 <div class="features-grid">
@@ -804,7 +797,6 @@ jobs:
               </section>
             </main>
           
-            <!-- Footer -->
             <footer class="footer">
               <div class="footer-content">
                 <div class="footer-grid">
@@ -877,33 +869,13 @@ jobs:
                 </div>
           
                 <div class="footer-bottom">
-                  <p class="org-info">Built by <span class="org-name">CodedStreams</span> © 2024</p>
+                  <p class="org-info">Built by <span class="org-name">CodedStreams</span> © 2025</p>
                   <div class="social-links">
                     <span class="social-link">Apache License 2.0</span>
                   </div>
                 </div>
               </div>
             </footer>
-          </body>
-          </html>
-          EOF</a>
-                  </div>
-                </div>
-          
-                <div class="contact">
-                  <h4>Developer Contact</h4>
-                  <div class="contact-links">
-                    <a href="mailto:nestorabiawuh@gmail.com" class="contact-link">
-                      ✉️ nestorabiawuh@gmail.com
-                    </a>
-                    <a href="https://www.linkedin.com/in/nestor-abiangang-a" class="contact-link" target="_blank" rel="noopener noreferrer">
-                      💼 LinkedIn Profile
-                    </a>
-                  </div>
-                  <div class="org-badge">Built by CodedStreams</div>
-                </div>
-              </div>
-            </div>
           </body>
           </html>
           EOF
@@ -1361,7 +1333,7 @@ jobs:
                       💼 LinkedIn Profile
                     </a>
                   </div>
-                  <div class="org-badge">Built by CodedStreams</div>
+                  <div class="org-badge">Developed by Nestor Martourez at CodedStreams. © 2025 CodedStreams.</div>
                 </div>
               </div>
             </div>
