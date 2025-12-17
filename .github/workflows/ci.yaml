@@ -1,4 +1,4 @@
-name: Otter-Streams CI Pipeline with Maven
+name: Java CI with Maven
 
 on:
   push:
@@ -678,21 +678,21 @@ jobs:
               <!-- Primary Cards -->
               <div class="cards-grid">
                 <div class="card">
-                  <div class="card-icon"></div>
-                  <h3>API & SDK Documentation</h3>
-                  <p>Complete SDK  and API reference with detailed documentation for all modules, classes, and methods in the Otter Streams library.</p>
+                  <div class="card-icon">📚</div>
+                  <h3>API Documentation</h3>
+                  <p>Complete API reference with detailed documentation for all modules, classes, and methods in the Otter Streams library.</p>
                   <a href="javadoc/${{ steps.get_version.outputs.VERSION }}/index.html" class="card-link">View Documentation</a>
                 </div>
           
                 <div class="card">
-                  <div class="card-icon"></div>
+                  <div class="card-icon">🚀</div>
                   <h3>Getting Started</h3>
                   <p>Quick start guides and examples to help you integrate ML inference into your Flink applications in minutes.</p>
                   <a href="https://github.com/martourez21/otter-streams#getting-started" class="card-link">Get Started</a>
                 </div>
           
                 <div class="card">
-                  <div class="card-icon"></div>
+                  <div class="card-icon">💡</div>
                   <h3>Examples</h3>
                   <p>Real-world examples demonstrating best practices for ML inference in production streaming environments.</p>
                   <a href="https://github.com/martourez21/otter-streams/tree/main/otter-stream-examples" class="card-link">View Examples</a>
@@ -704,7 +704,7 @@ jobs:
                 <h2 class="section-title">Why Otter Streams?</h2>
                 <div class="features-grid">
                   <div class="feature">
-                    <div class="feature-icon"></div>
+                    <div class="feature-icon">⚡</div>
                     <h4>High Performance</h4>
                     <p>Optimized for low-latency inference with efficient resource management and parallel processing</p>
                   </div>
@@ -716,25 +716,25 @@ jobs:
                   </div>
           
                   <div class="feature">
-                    <div class="feature-icon"></div>
+                    <div class="feature-icon">📊</div>
                     <h4>Production Ready</h4>
                     <p>Built-in monitoring, caching, error handling, and fault tolerance for enterprise deployments</p>
                   </div>
           
                   <div class="feature">
-                    <div class="feature-icon"></div>
+                    <div class="feature-icon">🔌</div>
                     <h4>Easy Integration</h4>
-                    <p>Simple SDK  and API that integrates seamlessly with existing Flink applications and workflows</p>
+                    <p>Simple API that integrates seamlessly with existing Flink applications and workflows</p>
                   </div>
           
                   <div class="feature">
-                    <div class="feature-icon">☁</div>
+                    <div class="feature-icon">☁️</div>
                     <h4>Cloud Native</h4>
                     <p>Support for remote inference endpoints including AWS SageMaker, GCP Vertex AI, and Azure ML</p>
                   </div>
           
                   <div class="feature">
-                    <div class="feature-icon"></div>
+                    <div class="feature-icon">📈</div>
                     <h4>Scalable</h4>
                     <p>Designed to scale horizontally with your Flink cluster for high-throughput workloads</p>
                   </div>
@@ -754,10 +754,10 @@ jobs:
                   <div class="footer-section">
                     <h4>Resources</h4>
                     <div class="footer-links">
-                      <a href="https://github.com/martourez21/otter-streams" class="footer-link"> Repository</a>
-                      <a href="https://github.com/martourez21/otter-streams/releases" class="footer-link"> Releases</a>
-                      <a href="https://github.com/martourez21/otter-streams/issues" class="footer-link"> Issues</a>
-                      <a href="javadoc/${{ steps.get_version.outputs.VERSION }}/index.html" class="footer-link"> SDK  and API Docs</a>
+                      <a href="https://github.com/martourez21/otter-streams" class="footer-link">📦 Repository</a>
+                      <a href="https://github.com/martourez21/otter-streams/releases" class="footer-link">📋 Releases</a>
+                      <a href="https://github.com/martourez21/otter-streams/issues" class="footer-link">🐛 Issues</a>
+                      <a href="javadoc/${{ steps.get_version.outputs.VERSION }}/index.html" class="footer-link">📚 API Docs</a>
                     </div>
                   </div>
           
@@ -765,14 +765,14 @@ jobs:
                     <h4>Contact</h4>
                     <div class="footer-links">
                       <a href="mailto:nestorabiawuh@gmail.com" class="footer-link">✉️ Email</a>
-                      <a href="https://www.linkedin.com/in/nestor-abiangang/" class="footer-link" target="_blank">💼 LinkedIn</a>
+                      <a href="https://www.linkedin.com/in/nestor-abiangang-a" class="footer-link" target="_blank">💼 LinkedIn</a>
                       <a href="https://github.com/martourez21" class="footer-link" target="_blank">👨‍💻 GitHub</a>
                     </div>
                   </div>
                 </div>
           
                 <div class="footer-bottom">
-                  <p class="org-info">Developed by <span class="org-name">Nestor Martourez @ CodedStreams</span> © 2025</p>
+                  <p class="org-info">Built by <span class="org-name">CodedStreams</span> © 2024</p>
                   <div class="social-links">
                     <span class="social-link">Apache License 2.0</span>
                   </div>
@@ -791,11 +791,11 @@ jobs:
                     <a href="mailto:nestorabiawuh@gmail.com" class="contact-link">
                       ✉️ nestorabiawuh@gmail.com
                     </a>
-                    <a href="https://www.linkedin.com/in/nestor-abiangang/" class="contact-link" target="_blank" rel="noopener noreferrer">
+                    <a href="https://www.linkedin.com/in/nestor-abiangang-a" class="contact-link" target="_blank" rel="noopener noreferrer">
                       💼 LinkedIn Profile
                     </a>
                   </div>
-                  <div class="org-badge">Developed by Nestor Martourez @ CodedStreams</div>
+                  <div class="org-badge">Built by CodedStreams</div>
                 </div>
               </div>
             </div>
@@ -922,7 +922,7 @@ jobs:
           <head>
             <meta charset="UTF-8">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>Otter Streams - ML Inference for Apache Flink | SDK  and API Documentation</title>
+            <title>Otter Streams - ML Inference for Apache Flink | API Documentation</title>
             <meta name="description" content="Production-grade ML inference library for Apache Flink streaming applications">
             <link rel="icon" href="https://raw.githubusercontent.com/martourez21/otter-streams/main/docs/assets/otterstream-sdk-icon.ico" type="image/x-icon">
             <style>
@@ -1214,7 +1214,7 @@ jobs:
                     <span class="release-badge">STABLE</span>
                   </h3>
                   <a href="javadoc/${{ steps.version.outputs.VERSION }}/index.html">
-                    View SDK  and API Documentation
+                    View API Documentation
                   </a>
                 </div>
           
@@ -1252,11 +1252,11 @@ jobs:
                     <a href="mailto:nestorabiawuh@gmail.com" class="contact-link">
                       ✉️ nestorabiawuh@gmail.com
                     </a>
-                    <a href="https://www.linkedin.com/in/nestor-abiangang-a" class="contact-link" target="_blank" rel="noopener noreferrer">
+                    <a href="https://www.linkedin.com/in/nestor-abiangang/" class="contact-link" target="_blank" rel="noopener noreferrer">
                       💼 LinkedIn Profile
                     </a>
                   </div>
-                  <div class="org-badge">Built by CodedStreams</div>
+                  <div class="org-badge">Developed by Nestor Martourez at CodedStreams. © 2025 CodedStreams.</div>
                 </div>
               </div>
             </div>
