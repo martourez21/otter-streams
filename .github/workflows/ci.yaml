@@ -120,6 +120,8 @@ jobs:
     steps:
       - name: Checkout code with templates
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Set up JDK 11
         uses: actions/setup-java@v4
@@ -157,17 +159,58 @@ jobs:
         id: get_version
         run: echo "VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)" >> $GITHUB_OUTPUT
 
-      - name: Generate HTML index from template
+      - name: Generate HTML pages from templates
         run: |
           mkdir -p gh-pages-root
-          sed "s/\${VERSION}/${{ steps.get_version.outputs.VERSION }}/g" .github/workflows/templates/javadoc-index.html > gh-pages-root/index.html
+          
+          # Copy getting started page
+          cp .github/workflows/templates/getting-started.html gh-pages-root/getting-started.html
+          
+          # Generate main index with current version
+          sed "s/\${VERSION}/${{ steps.get_version.outputs.VERSION }}/g" \
+            .github/workflows/templates/javadoc-index.html > gh-pages-root/index.html
+          
+          # Generate release index
+          sed "s/\${VERSION}/${{ steps.get_version.outputs.VERSION }}/g" \
+            .github/workflows/templates/release-index.html > gh-pages-root/release-index.html
+          
+          # Create README redirect
+          echo '<!DOCTYPE html><html><head><meta http-equiv="refresh" content="0; url=./getting-started.html"></head><body>Redirecting...</body></html>' > gh-pages-root/README.html
+          
+          echo "✅ Generated HTML pages for version: ${{ steps.get_version.outputs.VERSION }}"
 
-      - name: Deploy index to GitHub Pages
+      - name: Deploy HTML pages to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./gh-pages-root
           keep_files: true
+
+      - name: Generate aggregated Javadoc for GitHub Pages
+        run: mvn -B javadoc:aggregate -Dmaven.javadoc.failOnError=false -Dmaven.javadoc.failOnWarnings=false
+        continue-on-error: true
+
+      - name: Check if Javadoc was generated
+        id: check_javadoc
+        run: |
+          if [ -d "target/site/apidocs" ]; then
+            echo "exists=true" >> $GITHUB_OUTPUT
+            echo "✅ Javadoc generated successfully"
+            ls -la target/site/apidocs/
+          else
+            echo "exists=false" >> $GITHUB_OUTPUT
+            echo "⚠️ Javadoc directory not found"
+          fi
+
+      - name: Deploy Javadoc to GitHub Pages
+        if: always() && steps.check_javadoc.outputs.exists == 'true'
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./target/site/apidocs
+          destination_dir: javadoc/${{ steps.get_version.outputs.VERSION }}
+          keep_files: true
+        continue-on-error: true
 
       - name: Check if version exists in GitHub Packages
         id: check_version
@@ -204,6 +247,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Set up JDK 11
         uses: actions/setup-java@v4
@@ -212,6 +257,21 @@ jobs:
           distribution: 'temurin'
           cache: 'maven'
 
+      - name: Configure Maven settings for GitHub Packages
+        run: |
+          mkdir -p ~/.m2
+          cat > ~/.m2/settings.xml << EOF
+          <settings>
+            <servers>
+              <server>
+                <id>github</id>
+                <username>\${env.GITHUB_ACTOR}</username>
+                <password>\${env.GITHUB_TOKEN}</password>
+              </server>
+            </servers>
+          </settings>
+          EOF
+
       - name: Extract version from tag
         id: version
         run: echo "VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
@@ -219,19 +279,86 @@ jobs:
       - name: Update Maven version
         run: mvn versions:set -DnewVersion=${{ steps.version.outputs.VERSION }} -DgenerateBackupPoms=false
 
-      - name: Build release artifacts
-        run: mvn -B clean install javadoc:jar source:jar -DskipTests
+      - name: Build release artifacts with documentation
+        run: mvn -B clean install javadoc:jar source:jar -DskipTests -Dmaven.javadoc.failOnError=false -Dmaven.javadoc.failOnWarnings=false
 
-      - name: Generate HTML index from release template
+      - name: Generate release HTML pages
         run: |
           mkdir -p gh-pages-root
-          sed "s/\${VERSION}/${{ steps.version.outputs.VERSION }}/g" .github/workflows/templates/release-index.html > gh-pages-root/index.html
+          
+          # Copy getting started page
+          cp .github/workflows/templates/getting-started.html gh-pages-root/getting-started.html
+          
+          # Generate release index with release version
+          sed "s/\${VERSION}/${{ steps.version.outputs.VERSION }}/g" \
+            .github/workflows/templates/release-index.html > gh-pages-root/index.html
+          
+          # Also generate the main javadoc index
+          sed "s/\${VERSION}/${{ steps.version.outputs.VERSION }}/g" \
+            .github/workflows/templates/javadoc-index.html > gh-pages-root/index-v${{ steps.version.outputs.VERSION }}.html
+          
+          echo "✅ Generated release pages for version: ${{ steps.version.outputs.VERSION }}"
 
-      - name: Deploy updated index to GitHub Pages
+      - name: Deploy updated HTML pages to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./gh-pages-root
+          keep_files: true
+
+      - name: Generate aggregated Javadoc
+        run: mvn -B javadoc:aggregate -Dmaven.javadoc.failOnError=false -Dmaven.javadoc.failOnWarnings=false
+        continue-on-error: true
+
+      - name: Create release package
+        run: |
+          mkdir -p release-artifacts
+          # Copy all JAR files (main, sources, javadoc)
+          find . -name "*.jar" \
+            -not -path "*/target/original-*" \
+            -not -path "*/target/*-tests.jar" \
+            -exec cp {} release-artifacts/ \;
+          
+          echo "Release artifacts:"
+          ls -lh release-artifacts/
+
+      - name: Generate individual module Javadoc archives
+        run: |
+          for module in ml-inference-core otter-stream-onnx otter-stream-tensorflow otter-stream-pytorch otter-streams-xgboost otter-stream-pmml otter-stream-remote otter-stream-examples; do
+            if [ -d "$module/target/apidocs" ]; then
+              echo "Creating Javadoc archive for $module"
+              cd $module/target
+              tar -czf ../../release-artifacts/${module}-javadoc-${{ steps.version.outputs.VERSION }}.tar.gz apidocs/
+              cd ../..
+            else
+              echo "Warning: No apidocs found for $module"
+            fi
+          done
+
+      - name: Generate aggregated Javadoc archive
+        run: |
+          if [ -d "target/site/apidocs" ]; then
+            cd target/site
+            tar -czf ../../release-artifacts/otter-streams-javadoc-aggregated-${{ steps.version.outputs.VERSION }}.tar.gz apidocs/
+          else
+            echo "Warning: No aggregated apidocs found"
+          fi
+
+      - name: Upload Release Assets
+        uses: softprops/action-gh-release@v1
+        with:
+          files: release-artifacts/*
+          fail_on_unmatched_files: false
+          generate_release_notes: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Deploy aggregated Javadoc to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./target/site/apidocs
+          destination_dir: javadoc/${{ steps.version.outputs.VERSION }}
           keep_files: true
 
       - name: Publish to GitHub Packages

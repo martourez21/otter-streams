@@ -1,0 +1,895 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Getting Started with Otter Streams | Apache Flink ML Inference</title>
+    <meta name="description" content="Quick start guide for Otter Streams - Real-time ML inference library for Apache Flink streaming applications">
+    <link rel="icon" href="https://raw.githubusercontent.com/martourez21/otter-streams/main/docs/assets/otterstream-sdk-icon.ico" type="image/x-icon">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #0091d5;
+            --primary-dark: #006ba1;
+            --secondary: #4db8e8;
+            --dark-bg: #0f1419;
+            --card-bg: #1a1f2e;
+            --text-primary: #e4e6eb;
+            --text-secondary: #8b92a8;
+            --border: #2d3748;
+            --code-bg: #161b22;
+            --success: #2ea043;
+            --warning: #d29922;
+            --danger: #f85149;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            line-height: 1.6;
+            color: var(--text-primary);
+            background: var(--dark-bg);
+            min-height: 100vh;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, #0091d5 0%, #006ba1 100%);
+            padding: 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg"><defs><pattern id="grid" width="50" height="50" patternUnits="userSpaceOnUse"><path d="M 50 0 L 0 0 0 50" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="1"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
+            opacity: 0.3;
+        }
+
+        .nav {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+            z-index: 1;
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo {
+            width: 45px;
+            height: 45px;
+            background: white;
+            border-radius: 8px;
+            padding: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .brand {
+            color: white;
+            font-size: 1.4em;
+            font-weight: 700;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 30px;
+            align-items: center;
+        }
+
+        .nav-link {
+            color: rgba(255,255,255,0.9);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.95em;
+            transition: color 0.3s;
+        }
+
+        .nav-link:hover {
+            color: white;
+        }
+
+        .hero {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 80px 40px 100px;
+            text-align: center;
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero h1 {
+            font-size: 3em;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: white;
+            line-height: 1.2;
+        }
+
+        .hero-subtitle {
+            font-size: 1.3em;
+            color: rgba(255,255,255,0.9);
+            max-width: 800px;
+            margin: 0 auto 40px;
+            font-weight: 300;
+        }
+
+        .badges {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-bottom: 30px;
+        }
+
+        .badge {
+            background: rgba(255,255,255,0.15);
+            backdrop-filter: blur(10px);
+            padding: 8px 20px;
+            border-radius: 20px;
+            color: white;
+            font-weight: 600;
+            font-size: 0.9em;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* Main Content */
+        .container {
+            max-width: 1200px;
+            margin: -40px auto 0;
+            padding: 0 40px 80px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 40px;
+        }
+
+        /* Sidebar Navigation */
+        .sidebar {
+            position: sticky;
+            top: 40px;
+            height: fit-content;
+        }
+
+        .sidebar-nav {
+            background: var(--card-bg);
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            padding: 20px 0;
+        }
+
+        .sidebar-section {
+            padding: 0 20px 20px;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 20px;
+        }
+
+        .sidebar-section:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+        }
+
+        .sidebar-section h3 {
+            color: var(--text-primary);
+            font-size: 1em;
+            font-weight: 600;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .sidebar-links {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .sidebar-link {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.95em;
+            padding: 8px 15px;
+            border-radius: 8px;
+            transition: all 0.3s;
+        }
+
+        .sidebar-link:hover {
+            color: var(--primary);
+            background: rgba(0, 145, 213, 0.1);
+        }
+
+        .sidebar-link.active {
+            color: var(--primary);
+            background: rgba(0, 145, 213, 0.15);
+            font-weight: 500;
+        }
+
+        /* Content */
+        .content {
+            background: var(--card-bg);
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            padding: 40px;
+        }
+
+        .section {
+            margin-bottom: 50px;
+            scroll-margin-top: 20px;
+        }
+
+        .section:last-child {
+            margin-bottom: 0;
+        }
+
+        .section-title {
+            font-size: 1.8em;
+            margin-bottom: 25px;
+            color: var(--text-primary);
+            font-weight: 600;
+            padding-bottom: 15px;
+            border-bottom: 2px solid var(--primary);
+        }
+
+        .section-subtitle {
+            font-size: 1.3em;
+            margin: 30px 0 15px;
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        .section p {
+            color: var(--text-secondary);
+            margin-bottom: 20px;
+            line-height: 1.7;
+        }
+
+        .section ul, .section ol {
+            color: var(--text-secondary);
+            margin-left: 20px;
+            margin-bottom: 20px;
+        }
+
+        .section li {
+            margin-bottom: 10px;
+            line-height: 1.7;
+        }
+
+        /* Code Blocks */
+        .code-block {
+            background: var(--code-bg);
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            margin: 25px 0;
+            overflow: hidden;
+        }
+
+        .code-header {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 12px 20px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .code-language {
+            color: var(--text-secondary);
+            font-size: 0.9em;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .copy-button {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-secondary);
+            padding: 6px 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.85em;
+            transition: all 0.3s;
+        }
+
+        .copy-button:hover {
+            color: var(--primary);
+            border-color: var(--primary);
+        }
+
+        .copy-button.copied {
+            color: var(--success);
+            border-color: var(--success);
+        }
+
+        pre {
+            padding: 25px;
+            margin: 0;
+            overflow-x: auto;
+            font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Source Code Pro', monospace;
+            font-size: 0.95em;
+            line-height: 1.5;
+        }
+
+        code {
+            font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Source Code Pro', monospace;
+            background: rgba(0, 145, 213, 0.1);
+            color: var(--primary);
+            padding: 3px 6px;
+            border-radius: 4px;
+            font-size: 0.9em;
+        }
+
+        /* Cards */
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin: 30px 0;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            padding: 25px;
+            border: 1px solid var(--border);
+            transition: transform 0.3s, border-color 0.3s;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            border-color: var(--primary);
+        }
+
+        .card h4 {
+            color: var(--text-primary);
+            font-size: 1.1em;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card-icon {
+            color: var(--primary);
+            font-size: 1.3em;
+        }
+
+        .card p {
+            color: var(--text-secondary);
+            font-size: 0.95em;
+            line-height: 1.6;
+        }
+
+        /* Status Badges */
+        .status-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.8em;
+            font-weight: 600;
+            margin-right: 8px;
+        }
+
+        .status-ready {
+            background: rgba(46, 160, 67, 0.15);
+            color: var(--success);
+        }
+
+        .status-development {
+            background: rgba(210, 153, 34, 0.15);
+            color: var(--warning);
+        }
+
+        .status-experimental {
+            background: rgba(248, 81, 73, 0.15);
+            color: var(--danger);
+        }
+
+        /* Footer */
+        .footer {
+            background: var(--card-bg);
+            border-top: 1px solid var(--border);
+            padding: 40px;
+            margin-top: 80px;
+        }
+
+        .footer-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .footer-link {
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .footer-link:hover {
+            color: var(--primary);
+        }
+
+        .org-info {
+            color: var(--text-secondary);
+            font-size: 0.95em;
+            margin-top: 20px;
+        }
+
+        .org-name {
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .content-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar {
+                position: static;
+                order: 2;
+            }
+
+            .content {
+                order: 1;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .nav {
+                flex-direction: column;
+                gap: 20px;
+                padding: 20px;
+            }
+
+            .hero {
+                padding: 60px 20px 80px;
+            }
+
+            .hero h1 {
+                font-size: 2.2em;
+            }
+
+            .hero-subtitle {
+                font-size: 1.1em;
+            }
+
+            .container {
+                padding: 0 20px 60px;
+            }
+
+            .content {
+                padding: 30px 20px;
+            }
+
+            .cards-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+<!-- Header -->
+<header class="header">
+    <nav class="nav">
+        <div class="logo-section">
+            <div class="logo">
+                <img src="https://raw.githubusercontent.com/martourez21/otter-streams/main/docs/assets/otterstream-sdk-icon.ico" alt="Otter Streams">
+            </div>
+            <span class="brand">Otter Streams</span>
+        </div>
+        <div class="nav-links">
+            <a href="../index.html" class="nav-link">🏠 Home</a>
+            <a href="javadoc/index.html" class="nav-link">📚 API Docs</a>
+            <a href="https://github.com/martourez21/otter-streams" class="nav-link">📦 GitHub</a>
+            <a href="mailto:nestorabiawuh@gmail.com" class="nav-link">✉️ Contact</a>
+        </div>
+    </nav>
+
+    <div class="hero">
+        <div class="badges">
+            <span class="badge"> Quick Start</span>
+            <span class="badge"> Apache Flink</span>
+            <span class="badge"> Real-time ML</span>
+        </div>
+        <h1>Getting Started with Otter Streams</h1>
+        <p class="hero-subtitle">Learn how to integrate real-time machine learning inference into your Apache Flink streaming applications in just 5 minutes</p>
+    </div>
+</header>
+
+<!-- Main Content -->
+<main class="container">
+    <div class="content-grid">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="sidebar-nav">
+                <div class="sidebar-section">
+                    <h3>Quick Start</h3>
+                    <div class="sidebar-links">
+                        <a href="#overview" class="sidebar-link active">📋 Overview</a>
+                        <a href="#installation" class="sidebar-link">📦 Installation</a>
+                        <a href="#model-preparation" class="sidebar-link">🤖 Model Preparation</a>
+                        <a href="#integration" class="sidebar-link">🔧 Flink Integration</a>
+                        <a href="#examples" class="sidebar-link"> Examples</a>
+                    </div>
+                </div>
+
+                <div class="sidebar-section">
+                    <h3>Advanced Topics</h3>
+                    <div class="sidebar-links">
+                        <a href="#configuration" class="sidebar-link">⚙️ Configuration</a>
+                        <a href="#performance" class="sidebar-link">⚡ Performance</a>
+                        <a href="#monitoring" class="sidebar-link">📊 Monitoring</a>
+                        <a href="#troubleshooting" class="sidebar-link">🔍 Troubleshooting</a>
+                    </div>
+                </div>
+
+                <div class="sidebar-section">
+                    <h3>Resources</h3>
+                    <div class="sidebar-links">
+                        <a href="https://github.com/martourez21/otter-streams" class="sidebar-link">📦 Repository</a>
+                        <a href="javadoc/index.html" class="sidebar-link">📚 API Documentation</a>
+                        <a href="https://github.com/martourez21/otter-streams/issues" class="sidebar-link">🐛 Issue Tracker</a>
+                        <a href="mailto:nestorabiawuh@gmail.com" class="sidebar-link">💌 Contact Developer</a>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Content -->
+        <div class="content">
+            <!-- Overview -->
+            <section id="overview" class="section">
+                <h2 class="section-title">🎯 What's Implemented</h2>
+
+                <div class="cards-grid">
+                    <div class="card">
+                        <h4><span class="card-icon">✅</span> Complete Core Framework</h4>
+                        <p>Async inference, caching, metrics, and configuration system with multi-source model loading support.</p>
+                    </div>
+
+                    <div class="card">
+                        <h4><span class="card-icon">🧠</span> Multi-Framework Support</h4>
+                        <p>ONNX, TensorFlow, PyTorch, XGBoost, and PMML with native execution engines.</p>
+                    </div>
+
+                    <div class="card">
+                        <h4><span class="card-icon">🌐</span> Flexible Deployment</h4>
+                        <p>Local, HTTP, AWS SageMaker, and custom remote inference endpoints.</p>
+                    </div>
+
+                    <div class="card">
+                        <h4><span class="card-icon">⚡</span> Performance Features</h4>
+                        <p>Batch processing, async operations, intelligent caching, and GPU acceleration.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Installation -->
+            <section id="installation" class="section">
+                <h2 class="section-title">📦 Installation</h2>
+
+                <h3 class="section-subtitle">Clone and Build</h3>
+                <div class="code-block">
+                    <div class="code-header">
+                        <span class="code-language">bash</span>
+                        <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                    </div>
+                    <pre><code># Clone the repository
+git clone https://github.com/martourez21/otter-streams.git
+cd otter-streams
+
+# Build the project
+mvn clean install -DskipTests
+
+# Or use the setup script
+chmod +x setup.sh
+./setup.sh</code></pre>
+                </div>
+
+                <h3 class="section-subtitle">Maven Dependencies</h3>
+                <div class="code-block">
+                    <div class="code-header">
+                        <span class="code-language">xml</span>
+                        <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                    </div>
+                    <pre><code>&lt;!-- Core framework (required) --&gt;
+&lt;dependency&gt;
+    &lt;groupId&gt;com.codedstreams&lt;/groupId&gt;
+    &lt;artifactId&gt;ml-inference-core&lt;/artifactId&gt;
+    &lt;version&gt;1.0.0&lt;/version&gt;
+&lt;/dependency&gt;
+
+&lt;!-- Add framework-specific modules as needed --&gt;
+&lt;dependency&gt;
+    &lt;groupId&gt;com.codedstreams&lt;/groupId&gt;
+    &lt;artifactId&gt;otter-stream-onnx&lt;/artifactId&gt;
+    &lt;version&gt;1.0.0&lt;/version&gt;
+&lt;/dependency&gt;</code></pre>
+                </div>
+            </section>
+
+            <!-- Model Preparation -->
+            <section id="model-preparation" class="section">
+                <h2 class="section-title">🤖 Model Preparation</h2>
+
+                <h3 class="section-subtitle">Export Your Model to ONNX (Recommended)</h3>
+                <div class="code-block">
+                    <div class="code-header">
+                        <span class="code-language">python</span>
+                        <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                    </div>
+                    <pre><code># PyTorch to ONNX
+import torch
+torch.onnx.export(
+    model,
+    dummy_input,
+    "model.onnx",
+    input_names=['input'],
+    output_names=['output']
+)
+
+# TensorFlow to ONNX
+import tf2onnx
+model_proto, _ = tf2onnx.convert.from_keras(model, input_signature=spec)
+with open("model.onnx", "wb") as f:
+    f.write(model_proto.SerializeToString())
+
+# Scikit-learn to ONNX
+from skl2onnx import to_onnx
+onnx_model = to_onnx(model, X[:1].astype(np.float32))
+with open("model.onnx", "wb") as f:
+    f.write(onnx_model.SerializeToString())</code></pre>
+                </div>
+
+                <h3 class="section-subtitle">Supported Formats</h3>
+                <div class="cards-grid">
+                    <div class="card">
+                        <h4><span class="status-badge status-ready">Ready</span> ONNX</h4>
+                        <p><code>.onnx</code> files - Most compatible format</p>
+                    </div>
+
+                    <div class="card">
+                        <h4><span class="status-badge status-ready">Ready</span> TensorFlow</h4>
+                        <p><code>saved_model.pb</code> files in saved_model directory</p>
+                    </div>
+
+                    <div class="card">
+                        <h4><span class="status-badge status-ready">Ready</span> PyTorch</h4>
+                        <p><code>.pt</code>, <code>.pth</code> files (TorchScript)</p>
+                    </div>
+
+                    <div class="card">
+                        <h4><span class="status-badge status-ready">Ready</span> XGBoost</h4>
+                        <p><code>.model</code>, <code>.bin</code>, <code>.json</code> files</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Flink Integration -->
+            <section id="integration" class="section">
+                <h2 class="section-title">🔧 Flink Integration</h2>
+
+                <h3 class="section-subtitle">Basic Usage Example</h3>
+                <div class="code-block">
+                    <div class="code-header">
+                        <span class="code-language">java</span>
+                        <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                    </div>
+                    <pre><code>import com.flinkml.inference.config.*;
+import com.flinkml.inference.function.*;
+import com.flinkml.inference.onnx.*;
+
+// 1. Configure your model
+InferenceConfig config = InferenceConfig.builder()
+    .modelConfig(ModelConfig.builder()
+        .modelId("fraud-detection")
+        .modelPath("models/fraud_model.onnx")
+        .format(ModelFormat.ONNX)
+        .modelName("fraud_predictor")
+        .modelVersion("1.0")
+        .build())
+    .batchSize(32)
+    .timeout(5000)
+    .maxRetries(3)
+    .enableMetrics(true)
+    .build();
+
+// 2. Create inference function
+AsyncModelInferenceFunction&lt;Map&lt;String, Object&gt;, InferenceResult&gt; inferenceFunction =
+    new AsyncModelInferenceFunction&lt;&gt;(
+        config,
+        cfg -&gt; new OnnxInferenceEngine()
+    );
+
+// 3. Apply to Flink stream
+DataStream&lt;InferenceResult&gt; predictions = AsyncDataStream.unorderedWait(
+    transactionStream,
+    inferenceFunction,
+    5000,                    // Async timeout
+    TimeUnit.MILLISECONDS,
+    100                      // Max concurrent requests
+);</code></pre>
+                </div>
+            </section>
+
+            <!-- Examples -->
+            <section id="examples" class="section">
+                <h2 class="section-title">💡 Examples</h2>
+
+                <h3 class="section-subtitle">Run the Fraud Detection Example</h3>
+                <div class="code-block">
+                    <div class="code-header">
+                        <span class="code-language">bash</span>
+                        <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                    </div>
+                    <pre><code># Run the fraud detection example
+mvn exec:java -pl otter-stream-examples \
+  -Dexec.mainClass="com.flinkml.inference.examples.FraudDetectionExample"</code></pre>
+                </div>
+
+                <h3 class="section-subtitle">More Examples</h3>
+                <div class="cards-grid">
+                    <div class="card">
+                        <h4>🎭 Fraud Detection</h4>
+                        <p>Real-time transaction analysis with feature extraction and ML scoring.</p>
+                    </div>
+
+                    <div class="card">
+                        <h4>🤖 Sentiment Analysis</h4>
+                        <p>Streaming text classification with ONNX models.</p>
+                    </div>
+
+                    <div class="card">
+                        <h4>📈 Anomaly Detection</h4>
+                        <p>Time-series monitoring with automatic alerting.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Next Steps -->
+            <section class="section">
+                <h2 class="section-title"> Next Steps</h2>
+
+                <div class="cards-grid">
+                    <div class="card">
+                        <h4>1️⃣ Try the Example</h4>
+                        <p>Run the fraud detection example to see the framework in action.</p>
+                    </div>
+
+                    <div class="card">
+                        <h4>2️⃣ Load Your Model</h4>
+                        <p>Export your model to ONNX and test it with the framework.</p>
+                    </div>
+
+                    <div class="card">
+                        <h4>3️⃣ Integrate with Flink</h4>
+                        <p>Add ML inference to your existing Flink streaming job.</p>
+                    </div>
+
+                    <div class="card">
+                        <h4>4️⃣ Contribute!</h4>
+                        <p>We welcome contributions! Check out our GitHub repository.</p>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+</main>
+
+<!-- Footer -->
+<footer class="footer">
+    <div class="footer-content">
+        <div class="footer-links">
+            <a href="../index.html" class="footer-link">🏠 Home</a>
+            <a href="javadoc/index.html" class="footer-link">📚 API Docs</a>
+            <a href="https://github.com/martourez21/otter-streams" class="footer-link">📦 GitHub</a>
+            <a href="https://github.com/martourez21/otter-streams/issues" class="footer-link">🐛 Issues</a>
+        </div>
+        <p class="org-info">Built with Passion by <span class="org-name">Nestor Martourez</span> | © 2025 CodedStreams</p>
+        <p class="org-info">Apache Flink ML Inference Library | I welcome your contributions! </p>
+    </div>
+</footer>
+
+<script>
+    function copyCode(button) {
+        const codeBlock = button.closest('.code-block').querySelector('pre code');
+        const text = codeBlock.textContent;
+
+        navigator.clipboard.writeText(text).then(() => {
+            const originalText = button.textContent;
+            button.textContent = 'Copied!';
+            button.classList.add('copied');
+
+            setTimeout(() => {
+                button.textContent = originalText;
+                button.classList.remove('copied');
+            }, 2000);
+        });
+    }
+
+    // Smooth scrolling for anchor links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+
+            const targetId = this.getAttribute('href');
+            if (targetId === '#') return;
+
+            const targetElement = document.querySelector(targetId);
+            if (targetElement) {
+                window.scrollTo({
+                    top: targetElement.offsetTop - 100,
+                    behavior: 'smooth'
+                });
+            }
+        });
+    });
+
+    // Update active sidebar link on scroll
+    const sections = document.querySelectorAll('.section');
+    const sidebarLinks = document.querySelectorAll('.sidebar-link');
+
+    window.addEventListener('scroll', () => {
+        let current = '';
+
+        sections.forEach(section => {
+            const sectionTop = section.offsetTop;
+            const sectionHeight = section.clientHeight;
+
+            if (scrollY >= (sectionTop - 150)) {
+                current = '#' + section.getAttribute('id');
+            }
+        });
+
+        sidebarLinks.forEach(link => {
+            link.classList.remove('active');
+            if (link.getAttribute('href') === current) {
+                link.classList.add('active');
+            }
+        });
+    });
+</script>
+</body>
+</html>

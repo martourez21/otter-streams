@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Otter Streams - ML Inference for Apache Flink | API Documentation</title>
-    <meta name="description" content="Production-grade ML inference library for Apache Flink streaming applications">
+    <meta name="description" content="Real-time machine learning inference library for Apache Flink streaming applications">
     <link rel="icon" href="https://raw.githubusercontent.com/martourez21/otter-streams/main/docs/assets/otterstream-sdk-icon.ico" type="image/x-icon">
     <style>
         * {
@@ -17,7 +17,7 @@
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
             line-height: 1.6;
             color: #333;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #0091d5 0%, #006ba1 100%);
             min-height: 100vh;
             padding: 20px;
         }
@@ -32,7 +32,7 @@
         }
 
         .header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #0091d5 0%, #006ba1 100%);
             color: white;
             padding: 60px 40px;
             text-align: center;
@@ -132,7 +132,7 @@
         }
 
         .version-card a:hover {
-            color: #667eea;
+            color: #0091d5;
         }
 
         .version-card a::after {
@@ -165,7 +165,7 @@
         }
 
         .feature h4 {
-            color: #667eea;
+            color: #0091d5;
             margin-bottom: 10px;
         }
 
@@ -195,14 +195,14 @@
         }
 
         .footer-link {
-            color: #667eea;
+            color: #0091d5;
             text-decoration: none;
             font-weight: 500;
             transition: color 0.3s ease;
         }
 
         .footer-link:hover {
-            color: #764ba2;
+            color: #006ba1;
         }
 
         .contact {
@@ -228,24 +228,39 @@
             display: inline-flex;
             align-items: center;
             gap: 8px;
-            color: #667eea;
+            color: #0091d5;
             text-decoration: none;
             font-weight: 500;
             transition: color 0.3s ease;
         }
 
         .contact-link:hover {
-            color: #764ba2;
+            color: #006ba1;
         }
 
         .org-badge {
             display: inline-block;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #0091d5 0%, #006ba1 100%);
             color: white;
             padding: 8px 20px;
             border-radius: 20px;
             font-weight: 600;
             margin-top: 10px;
+        }
+
+        .contribute-notice {
+            background: linear-gradient(135deg, #ffd70015 0%, #ffb30015 100%);
+            border-radius: 10px;
+            padding: 15px;
+            margin: 20px 0;
+            text-align: center;
+            border: 1px solid #ffd700;
+        }
+
+        .contribute-notice p {
+            color: #b8860b;
+            margin: 0;
+            font-weight: 500;
         }
 
         @media (max-width: 768px) {
@@ -279,24 +294,31 @@
             <img src="https://raw.githubusercontent.com/martourez21/otter-streams/main/docs/assets/otterstream-sdk-icon.ico" alt="Otter Streams Logo">
         </div>
         <h1>Otter Streams</h1>
-        <p class="subtitle">ML Inference for Apache Flink</p>
+        <p class="subtitle">Real-time ML Inference for Apache Flink</p>
     </div>
 
     <div class="content">
         <p class="description">
-            Production-grade ML inference library for Apache Flink streaming applications.
+            Open-source machine learning inference library for Apache Flink streaming applications.
             Seamlessly integrate machine learning models into your real-time data pipelines.
         </p>
 
+        <div class="contribute-notice">
+            <p>🌟 We welcome contributions! This is an active open-source project. Join us on GitHub! 🚀</p>
+        </div>
+
         <div class="version-card">
             <h3>
-                Latest Stable Release
+                Latest Release
                 <span class="version-badge">${VERSION}</span>
-                <span class="release-badge">STABLE</span>
+                <span class="release-badge">OPEN SOURCE</span>
             </h3>
             <a href="javadoc/${VERSION}/index.html">
-                View API Documentation
+                View API Documentation →
             </a>
+            <p style="margin-top: 15px; color: #666; font-size: 0.95em;">
+                Check out the <a href="getting-started.html" style="color: #0091d5; text-decoration: none;">Getting Started Guide</a> to begin using Otter Streams.
+            </p>
         </div>
 
         <div class="features">
@@ -312,8 +334,13 @@
             </div>
             <div class="feature">
                 <div class="feature-icon">📊</div>
-                <h4>Production Ready</h4>
+                <h4>Enterprise Ready</h4>
                 <p>Built-in monitoring, caching, and error handling</p>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">🤝</div>
+                <h4>Open Source</h4>
+                <p>Community-driven development, welcoming contributions</p>
             </div>
         </div>
     </div>
@@ -321,14 +348,16 @@
     <div class="footer">
         <div class="footer-content">
             <div class="footer-links">
-                <a href="https://github.com/martourez21/otter-streams" class="footer-link">📦 GitHub Repository</a>
-                <a href="https://github.com/martourez21/otter-streams/releases" class="footer-link">📋 Releases</a>
-                <a href="https://github.com/martourez21/otter-streams/issues" class="footer-link">🐛 Issues</a>
+                <a href="https://github.com/martourez21/otter-streams" class="footer-link" target="_blank">📦 GitHub Repository</a>
+                <a href="https://github.com/martourez21/otter-streams/releases" class="footer-link" target="_blank">📋 Releases</a>
+                <a href="https://github.com/martourez21/otter-streams/issues" class="footer-link" target="_blank">🐛 Issues</a>
+                <a href="javadoc/${VERSION}/index.html" class="footer-link">📚 API Docs</a>
+                <a href="getting-started.html" class="footer-link">🚀 Getting Started</a>
             </div>
         </div>
 
         <div class="contact">
-            <h4>Developer Contact</h4>
+            <h4>Developer Contact & Contributions</h4>
             <div class="contact-links">
                 <a href="mailto:nestorabiawuh@gmail.com" class="contact-link">
                     ✉️ nestorabiawuh@gmail.com
@@ -336,10 +365,41 @@
                 <a href="https://www.linkedin.com/in/nestor-abiangang-a" class="contact-link" target="_blank" rel="noopener noreferrer">
                     💼 LinkedIn Profile
                 </a>
+                <a href="https://github.com/martourez21/otter-streams/issues/new/choose" class="contact-link" target="_blank" rel="noopener noreferrer">
+                    🎯 Contribute
+                </a>
             </div>
             <div class="org-badge">Developed by Nestor Martourez at CodedStreams. © 2025 CodedStreams.</div>
+            <p style="margin-top: 10px; color: #666; font-size: 0.9em;">
+                This is an open-source project. Contributions are welcome! ✨ Join us on <a href="https://github.com/martourez21/otter-streams" style="color: #0091d5;" target="_blank">GitHub</a>
+            </p>
         </div>
     </div>
 </div>
+
+<script>
+    // Smooth scrolling for anchor links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+            const targetId = this.getAttribute('href');
+            if (targetId === '#') return;
+            const targetElement = document.querySelector(targetId);
+            if (targetElement) {
+                targetElement.scrollIntoView({ behavior: 'smooth' });
+            }
+        });
+    });
+
+    // Add target="_blank" to external links
+    document.addEventListener('DOMContentLoaded', function() {
+        document.querySelectorAll('a[href^="http"]').forEach(link => {
+            if (!link.href.includes(window.location.hostname)) {
+                link.setAttribute('target', '_blank');
+                link.setAttribute('rel', 'noopener noreferrer');
+            }
+        });
+    });
+</script>
 </body>
 </html>
