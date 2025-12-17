@@ -152,11 +152,6 @@
         <artifactId>xgboost4j_2.13</artifactId>
         <version>${xgboost.version}</version>
       </dependency>
-<!--      <dependency>-->
-<!--        <groupId>ml.dmlc</groupId>-->
-<!--        <artifactId>xgboost4j</artifactId>-->
-<!--        <version>${xgboost.version}</version>-->
-<!--      </dependency>-->
       <dependency>
         <groupId>ml.dmlc</groupId>
         <artifactId>xgboost4j-spark</artifactId>
@@ -330,40 +325,28 @@
           </configuration>
         </plugin>
 
-        <!-- Source -->
+        <!-- Source Plugin - No executions, invoked via command line -->
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-source-plugin</artifactId>
           <version>${maven-source-plugin.version}</version>
-          <executions>
-            <execution>
-              <id>attach-sources</id>
-              <goals>
-                <goal>jar</goal>
-              </goals>
-            </execution>
-          </executions>
+          <configuration>
+            <attach>true</attach>
+          </configuration>
         </plugin>
 
-        <!-- Javadoc -->
+        <!-- Javadoc Plugin - No executions, invoked via command line -->
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-javadoc-plugin</artifactId>
           <version>${maven-javadoc-plugin.version}</version>
-          <executions>
-            <execution>
-              <id>attach-javadocs</id>
-              <goals>
-                <goal>jar</goal>
-              </goals>
-            </execution>
-          </executions>
           <configuration>
             <doclint>none</doclint>
             <source>${maven.compiler.source}</source>
             <quiet>true</quiet>
             <failOnError>false</failOnError>
             <failOnWarnings>false</failOnWarnings>
+            <attach>true</attach>
             <additionalOptions>-Xdoclint:none</additionalOptions>
             <additionalJOptions>
               <additionalJOption>-Xmaxwarns</additionalJOption>
