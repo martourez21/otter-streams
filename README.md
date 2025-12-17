@@ -1,13 +1,16 @@
 # Otter Streams - Real-time ML Inference for Apache Flink
 <p align="center">
-  <img src="docs/assets/otterstreams-ico.ico" alt="Otter Streams Logo" width="200"/>
+  <img src="docs/assets/otterstream-sdk-icon.ico" alt="Otter Streams Logo" width="200"/>
 </p>
 
-![Java ](https://github.com/YOUR_USERNAME/otter-streams/workflows/Java/badge.svg)
-![GitHub release](https://img.shields.io/github/v/release/YOUR_USERNAME/otter-streams)
-![Maven Central](https://img.shields.io/maven-central/v/com.codedstreams/otter-streams)
-![License](https://img.shields.io/github/license/YOUR_USERNAME/otter-streams)
-![Java Version](https://img.shields.io/badge/Java-11%2B-blue)
+![Build](https://github.com/CodedStreams/otter-streams/actions/workflows/java.yml/badge.svg)
+![Release](https://img.shields.io/github/v/release/CodedStreams/otter-streams?include_prereleases)
+![Maven Central](https://img.shields.io/maven-central/v/com.codedstreams/ml-inference-core)
+![Apache Flink](https://img.shields.io/badge/Apache%20Flink-1.17%2B-orange)
+![Java](https://img.shields.io/badge/Java-11%2B-blue)
+![License](https://img.shields.io/github/license/CodedStreams/otter-streams)
+![Status](https://img.shields.io/badge/Status-Production--Ready-brightgreen)
+
 
 **Production-grade machine learning inference library for Apache Flink** with support for multiple ML frameworks and deployment modes. Perform real-time model inference on streaming data with enterprise-grade features.
 

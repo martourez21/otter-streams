@@ -246,16 +246,16 @@ jobs:
               }
           
               :root {
-                --primary: #667eea;
-                --primary-dark: #5568d3;
-                --secondary: #764ba2;
-                --accent: #4facfe;
+                --primary: #0091d5;
+                --primary-dark: #006ba1;
+                --secondary: #4db8e8;
+                --accent: #5c4033;
                 --dark-bg: #0f1419;
                 --card-bg: #1a1f2e;
                 --text-primary: #e4e6eb;
                 --text-secondary: #8b92a8;
                 --border: #2d3748;
-                --success: #00d9a5;
+                --success: #0091d5;
               }
           
               body {
@@ -268,7 +268,7 @@ jobs:
           
               /* Header */
               .header {
-                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                background: linear-gradient(135deg, #0091d5 0%, #006ba1 100%);
                 padding: 0;
                 position: relative;
                 overflow: hidden;
@@ -433,7 +433,7 @@ jobs:
               .card-icon {
                 width: 60px;
                 height: 60px;
-                background: linear-gradient(135deg, var(--primary), var(--secondary));
+                background: linear-gradient(135deg, #0091d5, #006ba1);
                 border-radius: 12px;
                 display: flex;
                 align-items: center;
@@ -457,7 +457,7 @@ jobs:
               }
           
               .card-link {
-                color: var(--primary);
+                color: #0091d5;
                 text-decoration: none;
                 font-weight: 600;
                 display: inline-flex;
@@ -468,6 +468,7 @@ jobs:
           
               .card-link:hover {
                 gap: 12px;
+                color: #4db8e8;
               }
           
               .card-link::after {
@@ -678,24 +679,57 @@ jobs:
               <!-- Primary Cards -->
               <div class="cards-grid">
                 <div class="card">
-                  <div class="card-icon">📚</div>
+                  <div class="card-icon">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
+                      <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
+                    </svg>
+                  </div>
                   <h3>API Documentation</h3>
                   <p>Complete API reference with detailed documentation for all modules, classes, and methods in the Otter Streams library.</p>
-                  <a href="javadoc/${{ steps.get_version.outputs.VERSION }}/index.html" class="card-link">View Documentation</a>
+                  <a href="javadoc/${{ steps.get_version.outputs.VERSION }}/index.html" class="card-link">
+                    View Documentation
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <line x1="5" y1="12" x2="19" y2="12"></line>
+                      <polyline points="12 5 19 12 12 19"></polyline>
+                    </svg>
+                  </a>
                 </div>
           
                 <div class="card">
-                  <div class="card-icon">🚀</div>
+                  <div class="card-icon">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <circle cx="12" cy="12" r="10"></circle>
+                      <polyline points="12 6 12 12 16 14"></polyline>
+                    </svg>
+                  </div>
                   <h3>Getting Started</h3>
                   <p>Quick start guides and examples to help you integrate ML inference into your Flink applications in minutes.</p>
-                  <a href="https://github.com/martourez21/otter-streams#getting-started" class="card-link">Get Started</a>
+                  <a href="https://github.com/martourez21/otter-streams#getting-started" class="card-link">
+                    Get Started
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <line x1="5" y1="12" x2="19" y2="12"></line>
+                      <polyline points="12 5 19 12 12 19"></polyline>
+                    </svg>
+                  </a>
                 </div>
           
                 <div class="card">
-                  <div class="card-icon">💡</div>
+                  <div class="card-icon">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <polyline points="16 18 22 12 16 6"></polyline>
+                      <polyline points="8 6 2 12 8 18"></polyline>
+                    </svg>
+                  </div>
                   <h3>Examples</h3>
                   <p>Real-world examples demonstrating best practices for ML inference in production streaming environments.</p>
-                  <a href="https://github.com/martourez21/otter-streams/tree/main/otter-stream-examples" class="card-link">View Examples</a>
+                  <a href="https://github.com/martourez21/otter-streams/tree/main/otter-stream-examples" class="card-link">
+                    View Examples
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <line x1="5" y1="12" x2="19" y2="12"></line>
+                      <polyline points="12 5 19 12 12 19"></polyline>
+                    </svg>
+                  </a>
                 </div>
               </div>
           
@@ -704,37 +738,65 @@ jobs:
                 <h2 class="section-title">Why Otter Streams?</h2>
                 <div class="features-grid">
                   <div class="feature">
-                    <div class="feature-icon">⚡</div>
+                    <div class="feature-icon">
+                      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+                      </svg>
+                    </div>
                     <h4>High Performance</h4>
                     <p>Optimized for low-latency inference with efficient resource management and parallel processing</p>
                   </div>
           
                   <div class="feature">
-                    <div class="feature-icon">🔧</div>
+                    <div class="feature-icon">
+                      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path>
+                      </svg>
+                    </div>
                     <h4>Multi-Framework</h4>
                     <p>Native support for ONNX, TensorFlow, PyTorch, XGBoost, and PMML model formats</p>
                   </div>
           
                   <div class="feature">
-                    <div class="feature-icon">📊</div>
+                    <div class="feature-icon">
+                      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+                      </svg>
+                    </div>
                     <h4>Production Ready</h4>
                     <p>Built-in monitoring, caching, error handling, and fault tolerance for enterprise deployments</p>
                   </div>
           
                   <div class="feature">
-                    <div class="feature-icon">🔌</div>
+                    <div class="feature-icon">
+                      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+                        <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+                        <line x1="12" y1="22.08" x2="12" y2="12"></line>
+                      </svg>
+                    </div>
                     <h4>Easy Integration</h4>
                     <p>Simple API that integrates seamlessly with existing Flink applications and workflows</p>
                   </div>
           
                   <div class="feature">
-                    <div class="feature-icon">☁️</div>
+                    <div class="feature-icon">
+                      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"></path>
+                      </svg>
+                    </div>
                     <h4>Cloud Native</h4>
                     <p>Support for remote inference endpoints including AWS SageMaker, GCP Vertex AI, and Azure ML</p>
                   </div>
           
                   <div class="feature">
-                    <div class="feature-icon">📈</div>
+                    <div class="feature-icon">
+                      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="12" y1="20" x2="12" y2="10"></line>
+                        <line x1="18" y1="20" x2="18" y2="4"></line>
+                        <line x1="6" y1="20" x2="6" y2="16"></line>
+                      </svg>
+                    </div>
                     <h4>Scalable</h4>
                     <p>Designed to scale horizontally with your Flink cluster for high-throughput workloads</p>
                   </div>
@@ -754,19 +816,62 @@ jobs:
                   <div class="footer-section">
                     <h4>Resources</h4>
                     <div class="footer-links">
-                      <a href="https://github.com/martourez21/otter-streams" class="footer-link">📦 Repository</a>
-                      <a href="https://github.com/martourez21/otter-streams/releases" class="footer-link">📋 Releases</a>
-                      <a href="https://github.com/martourez21/otter-streams/issues" class="footer-link">🐛 Issues</a>
-                      <a href="javadoc/${{ steps.get_version.outputs.VERSION }}/index.html" class="footer-link">📚 API Docs</a>
+                      <a href="https://github.com/martourez21/otter-streams" class="footer-link">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                          <path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4"></path>
+                          <path d="M9 18c-4.51 2-5-2-7-2"></path>
+                        </svg>
+                        Repository
+                      </a>
+                      <a href="https://github.com/martourez21/otter-streams/releases" class="footer-link">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                          <path d="M21.21 15.89A10 10 0 1 1 8 2.83"></path>
+                          <path d="M22 12A10 10 0 0 0 12 2v10z"></path>
+                        </svg>
+                        Releases
+                      </a>
+                      <a href="https://github.com/martourez21/otter-streams/issues" class="footer-link">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                          <circle cx="12" cy="12" r="10"></circle>
+                          <line x1="12" y1="8" x2="12" y2="12"></line>
+                          <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                        </svg>
+                        Issues
+                      </a>
+                      <a href="javadoc/${{ steps.get_version.outputs.VERSION }}/index.html" class="footer-link">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                          <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
+                          <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
+                        </svg>
+                        API Docs
+                      </a>
                     </div>
                   </div>
           
                   <div class="footer-section">
                     <h4>Contact</h4>
                     <div class="footer-links">
-                      <a href="mailto:nestorabiawuh@gmail.com" class="footer-link">✉️ Email</a>
-                      <a href="https://www.linkedin.com/in/nestor-abiangang-a" class="footer-link" target="_blank">💼 LinkedIn</a>
-                      <a href="https://github.com/martourez21" class="footer-link" target="_blank">👨‍💻 GitHub</a>
+                      <a href="mailto:nestorabiawuh@gmail.com" class="footer-link">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                          <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                          <polyline points="22,6 12,13 2,6"></polyline>
+                        </svg>
+                        Email
+                      </a>
+                      <a href="https://www.linkedin.com/in/nestor-abiangang/" class="footer-link" target="_blank">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                          <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path>
+                          <rect x="2" y="9" width="4" height="12"></rect>
+                          <circle cx="4" cy="4" r="2"></circle>
+                        </svg>
+                        LinkedIn
+                      </a>
+                      <a href="https://github.com/martourez21" class="footer-link" target="_blank">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                          <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path>
+                        </svg>
+                        GitHub
+                      </a>
                     </div>
                   </div>
                 </div>
@@ -1252,11 +1357,11 @@ jobs:
                     <a href="mailto:nestorabiawuh@gmail.com" class="contact-link">
                       ✉️ nestorabiawuh@gmail.com
                     </a>
-                    <a href="https://www.linkedin.com/in/nestor-abiangang/" class="contact-link" target="_blank" rel="noopener noreferrer">
+                    <a href="https://www.linkedin.com/in/nestor-abiangang-a" class="contact-link" target="_blank" rel="noopener noreferrer">
                       💼 LinkedIn Profile
                     </a>
                   </div>
-                  <div class="org-badge">Developed by Nestor Martourez at CodedStreams. © 2025 CodedStreams.</div>
+                  <div class="org-badge">Built by CodedStreams</div>
                 </div>
               </div>
             </div>
