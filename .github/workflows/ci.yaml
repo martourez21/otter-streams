@@ -177,7 +177,7 @@ jobs:
           # Create README redirect
           echo '<!DOCTYPE html><html><head><meta http-equiv="refresh" content="0; url=./getting-started.html"></head><body>Redirecting...</body></html>' > gh-pages-root/README.html
           
-          echo "✅ Generated HTML pages for version: ${{ steps.get_version.outputs.VERSION }}"
+          echo "Generated HTML pages for version: ${{ steps.get_version.outputs.VERSION }}"
 
       - name: Deploy HTML pages to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
@@ -195,7 +195,7 @@ jobs:
         run: |
           if [ -d "target/site/apidocs" ]; then
             echo "exists=true" >> $GITHUB_OUTPUT
-            echo "✅ Javadoc generated successfully"
+            echo "Javadoc generated successfully"
             ls -la target/site/apidocs/
           else
             echo "exists=false" >> $GITHUB_OUTPUT
@@ -297,7 +297,7 @@ jobs:
           sed "s/\${VERSION}/${{ steps.version.outputs.VERSION }}/g" \
             .github/workflows/templates/javadoc-index.html > gh-pages-root/index-v${{ steps.version.outputs.VERSION }}.html
           
-          echo "✅ Generated release pages for version: ${{ steps.version.outputs.VERSION }}"
+          echo "Generated release pages for version: ${{ steps.version.outputs.VERSION }}"
 
       - name: Deploy updated HTML pages to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3

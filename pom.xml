@@ -7,7 +7,7 @@
 
   <groupId>com.codedstreams</groupId>
   <artifactId>otter-streams</artifactId>
-  <version>1.0.12</version>
+  <version>1.0.13</version>
   <packaging>pom</packaging>
 
   <name>Otter Streams - ML Inference for Apache Flink</name>
