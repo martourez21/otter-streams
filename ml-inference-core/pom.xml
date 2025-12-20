@@ -4,7 +4,7 @@
     <parent>
         <groupId>com.codedstreams</groupId>
         <artifactId>otter-streams</artifactId>
-        <version>1.0.13</version>
+        <version>1.0.14</version>
     </parent>
     <artifactId>ml-inference-core</artifactId>
     <packaging>jar</packaging>

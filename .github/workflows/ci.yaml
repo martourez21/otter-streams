@@ -164,7 +164,7 @@ jobs:
           mkdir -p gh-pages-root
           
           # Copy getting started page
-          cp .github/workflows/templates/modules/examples.html gh-pages-root/modules/examples.html
+          cp .github/workflows/templates/modules/examples.html gh-pages-root/examples.html
           
           # Generate main index with current version
           sed "s/\${VERSION}/${{ steps.get_version.outputs.VERSION }}/g" \
