@@ -164,18 +164,18 @@ jobs:
           mkdir -p gh-pages-root
           
           # Copy getting started page
-          cp .github/workflows/templates/getting-started.html gh-pages-root/getting-started.html
+          cp .github/workflows/templates/modules/examples.html gh-pages-root/modules/examples.html
           
           # Generate main index with current version
           sed "s/\${VERSION}/${{ steps.get_version.outputs.VERSION }}/g" \
-            .github/workflows/templates/javadoc-index.html > gh-pages-root/index.html
+            .github/workflows/templates/index.html > gh-pages-root/index.html
           
           # Generate release index
           sed "s/\${VERSION}/${{ steps.get_version.outputs.VERSION }}/g" \
-            .github/workflows/templates/release-index.html > gh-pages-root/release-index.html
+            .github/workflows/templates/index.html > gh-pages-root/index.html
           
           # Create README redirect
-          echo '<!DOCTYPE html><html><head><meta http-equiv="refresh" content="0; url=./getting-started.html"></head><body>Redirecting...</body></html>' > gh-pages-root/README.html
+          echo '<!DOCTYPE html><html><head><meta http-equiv="refresh" content="0; url=./index.html"></head><body>Redirecting...</body></html>' > gh-pages-root/README.html
           
           echo "Generated HTML pages for version: ${{ steps.get_version.outputs.VERSION }}"
 
