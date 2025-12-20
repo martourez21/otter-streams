@@ -1,0 +1,787 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Architecture Overview - Otter Streams SDK</title>
+    <meta name="description" content="Architecture overview of Otter Streams - Real-time ML inference library for Apache Flink">
+    <link rel="icon" href="https://raw.githubusercontent.com/martourez21/otter-streams/main/docs/assets/otterstream-sdk-icon.ico" type="image/x-icon">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #0091d5;
+            --primary-dark: #006ba1;
+            --secondary: #4db8e8;
+            --accent: #5c4033;
+            --dark-bg: #0f1419;
+            --card-bg: #1a1f2e;
+            --text-primary: #e4e6eb;
+            --text-secondary: #8b92a8;
+            --border: #2d3748;
+            --success: #0091d5;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            line-height: 1.6;
+            color: var(--text-primary);
+            background: var(--dark-bg);
+            min-height: 100vh;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #0091d5 0%, #006ba1 100%);
+            padding: 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg"><defs><pattern id="grid" width="50" height="50" patternUnits="userSpaceOnUse"><path d="M 50 0 L 0 0 0 50" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="1"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
+            opacity: 0.3;
+        }
+
+        .nav {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+            z-index: 1;
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo {
+            width: 45px;
+            height: 45px;
+            background: white;
+            border-radius: 8px;
+            padding: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .brand {
+            color: white;
+            font-size: 1.4em;
+            font-weight: 700;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 30px;
+            align-items: center;
+        }
+
+        .nav-link {
+            color: rgba(255,255,255,0.9);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.95em;
+            transition: color 0.3s;
+        }
+
+        .nav-link:hover {
+            color: white;
+        }
+
+        .hero {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 100px 40px 120px;
+            text-align: center;
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero h1 {
+            font-size: 3.5em;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: white;
+            line-height: 1.2;
+        }
+
+        .hero p {
+            font-size: 1.3em;
+            color: rgba(255,255,255,0.9);
+            max-width: 700px;
+            margin: 0 auto 40px;
+            font-weight: 300;
+        }
+
+        .version-tag {
+            display: inline-block;
+            background: rgba(255,255,255,0.2);
+            backdrop-filter: blur(10px);
+            padding: 8px 20px;
+            border-radius: 20px;
+            color: white;
+            font-weight: 600;
+            font-size: 0.9em;
+            margin-bottom: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: -60px auto 0;
+            padding: 0 40px 80px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .section {
+            margin: 80px 0;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 2.2em;
+            margin-bottom: 50px;
+            color: var(--text-primary);
+            font-weight: 700;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 40px;
+            border: 1px solid var(--border);
+            margin: 30px 0;
+            transition: transform 0.3s, box-shadow 0.3s, border-color 0.3s;
+        }
+
+        .card:hover {
+            border-color: var(--primary);
+        }
+
+        .card h3 {
+            font-size: 1.8em;
+            margin-bottom: 20px;
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        .card p {
+            color: var(--text-secondary);
+            line-height: 1.7;
+            margin-bottom: 20px;
+            font-size: 1em;
+        }
+
+        .architecture-diagram {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 30px;
+            border: 1px solid var(--border);
+            margin: 30px 0;
+            text-align: center;
+        }
+
+        .architecture-diagram img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+        }
+
+        .diagram-caption {
+            text-align: center;
+            color: var(--text-secondary);
+            font-size: 0.95em;
+            margin-top: 15px;
+            font-style: italic;
+        }
+
+        .modules-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+
+        .module-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 30px;
+            transition: all 0.3s;
+        }
+
+        .module-card:hover {
+            border-color: var(--primary);
+            transform: translateY(-5px);
+        }
+
+        .module-card h4 {
+            font-size: 1.2em;
+            margin-bottom: 10px;
+            color: var(--text-primary);
+        }
+
+        .module-card p {
+            color: var(--text-secondary);
+            font-size: 0.9em;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        .module-badge {
+            display: inline-block;
+            background: rgba(0, 145, 213, 0.2);
+            color: var(--primary);
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.75em;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .code-example {
+            background: #1a1f2e;
+            border-radius: 8px;
+            padding: 25px;
+            border: 1px solid var(--border);
+            margin: 25px 0;
+            overflow-x: auto;
+        }
+
+        .code-example pre {
+            color: #e4e6eb;
+            font-family: 'SF Mono', Monaco, 'Cascadia Code', monospace;
+            font-size: 0.95em;
+            line-height: 1.5;
+            margin: 0;
+        }
+
+        .code-example code {
+            font-family: 'SF Mono', Monaco, 'Cascadia Code', monospace;
+            background: rgba(0, 145, 213, 0.1);
+            color: var(--primary);
+            padding: 3px 6px;
+            border-radius: 4px;
+            font-size: 0.9em;
+        }
+
+        .use-case-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+            margin-top: 30px;
+        }
+
+        .use-case {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 30px;
+            border: 1px solid var(--border);
+        }
+
+        .use-case h4 {
+            font-size: 1.3em;
+            margin-bottom: 15px;
+            color: var(--text-primary);
+        }
+
+        .use-case ul {
+            color: var(--text-secondary);
+            margin-left: 20px;
+            margin-top: 15px;
+        }
+
+        .use-case li {
+            margin-bottom: 8px;
+            line-height: 1.6;
+        }
+
+        .footer {
+            background: var(--card-bg);
+            border-top: 1px solid var(--border);
+            padding: 60px 40px 40px;
+            margin-top: 80px;
+        }
+
+        .footer-content {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr;
+            gap: 60px;
+            margin-bottom: 50px;
+        }
+
+        .footer-section h4 {
+            color: var(--text-primary);
+            font-size: 1.1em;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+
+        .footer-section p {
+            color: var(--text-secondary);
+            line-height: 1.7;
+            margin-bottom: 20px;
+        }
+
+        .footer-links {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .footer-link {
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: color 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .footer-link:hover {
+            color: var(--primary);
+        }
+
+        .footer-link svg {
+            flex-shrink: 0;
+        }
+
+        .footer-bottom {
+            padding-top: 30px;
+            border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .org-info {
+            color: var(--text-secondary);
+            font-size: 0.9em;
+        }
+
+        .org-name {
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        .social-links {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .social-link {
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: color 0.3s;
+            font-size: 0.95em;
+        }
+
+        .social-link:hover {
+            color: var(--primary);
+        }
+
+        @media (max-width: 1024px) {
+            .footer-grid {
+                grid-template-columns: 1fr;
+                gap: 40px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2.5em;
+            }
+
+            .hero p {
+                font-size: 1.1em;
+            }
+
+            .nav {
+                flex-direction: column;
+                gap: 20px;
+            }
+
+            .modules-grid,
+            .use-case-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .container {
+                padding: 0 20px 60px;
+            }
+
+            .footer-bottom {
+                flex-direction: column;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+<header class="header">
+    <nav class="nav">
+        <div class="logo-section">
+            <div class="logo">
+                <img src="https://raw.githubusercontent.com/martourez21/otter-streams/main/docs/assets/otterstream-sdk-icon.ico" alt="Otter Streams">
+            </div>
+            <span class="brand">Otter Streams</span>
+        </div>
+        <div class="nav-links">
+            <a href="../index.html" class="nav-link">Home</a>
+            <a href="architecture.html" class="nav-link">Architecture</a>
+            <a href="../documentation.html" class="nav-link">Documentation</a>
+            <a href="javadoc/${VERSION}/index.html" class="nav-link">API Docs</a>
+            <a href="https://github.com/martourez21/otter-streams" class="nav-link" target="_blank">GitHub</a>
+            <a href="mailto:nestorabiawuh@gmail.com" class="nav-link">Contact</a>
+        </div>
+    </nav>
+
+    <div class="hero">
+        <div class="version-tag">v${VERSION}</div>
+        <h1>System Architecture<br>Overview</h1>
+        <p>Explore the scalable, high-performance architecture powering Otter Streams - the real-time ML inference library for Apache Flink.</p>
+    </div>
+</header>
+
+<main class="container">
+    <!-- Main Architecture -->
+    <section class="section">
+        <h2 class="section-title">🏗️ System Architecture Overview</h2>
+
+        <div class="architecture-diagram">
+            <img src="docs/assets/architecture-main.png" alt="Otter Streams Main Architecture">
+            <p class="diagram-caption">Figure 1: High-level system architecture showing complete inference pipeline</p>
+        </div>
+
+        <div class="card">
+            <h3>Architecture Principles</h3>
+            <p>Otter Streams is built on these core architectural principles:</p>
+            <ul style="color: var(--text-secondary); margin-left: 20px; margin-top: 15px;">
+                <li><strong>Modular Design</strong>: Each component is independent and replaceable</li>
+                <li><strong>Async-First</strong>: Non-blocking operations for maximum throughput</li>
+                <li><strong>Extensible Framework</strong>: Easy to add new model formats and inference engines</li>
+                <li><strong>Production-Ready</strong>: Built-in monitoring, caching, and fault tolerance</li>
+                <li><strong>Resource Efficient</strong>: Intelligent batching and memory management</li>
+            </ul>
+        </div>
+    </section>
+
+    <!-- Module Architecture -->
+    <section class="section">
+        <h2 class="section-title">🧩 Module Architecture</h2>
+
+        <div class="architecture-diagram">
+            <img src="docs/assets/architecture-modules.png" alt="Module Dependencies Architecture">
+            <p class="diagram-caption">Figure 2: Module dependencies and relationships</p>
+        </div>
+
+        <div class="modules-grid">
+            <div class="module-card">
+                <span class="module-badge">Core</span>
+                <h4>ml-inference-core</h4>
+                <p>Foundation for all inference operations with async processing, caching, and configuration management.</p>
+            </div>
+
+            <div class="module-card">
+                <span class="module-badge">Neural Networks</span>
+                <h4>otter-stream-onnx</h4>
+                <p>Universal model format support with ONNX Runtime integration and GPU acceleration.</p>
+            </div>
+
+            <div class="module-card">
+                <span class="module-badge">SavedModel</span>
+                <h4>otter-stream-tensorflow</h4>
+                <p>Native TensorFlow SavedModel execution with automatic signature discovery.</p>
+            </div>
+
+            <div class="module-card">
+                <span class="module-badge">TorchScript</span>
+                <h4>otter-stream-pytorch</h4>
+                <p>PyTorch model inference via Deep Java Library with auto GPU detection.</p>
+            </div>
+
+            <div class="module-card">
+                <span class="module-badge">Tabular Data</span>
+                <h4>otter-stream-xgboost</h4>
+                <p>Gradient boosting inference for tabular data using XGBoost4J.</p>
+            </div>
+
+            <div class="module-card">
+                <span class="module-badge">XML Standard</span>
+                <h4>otter-stream-pmml</h4>
+                <p>PMML support via JPMML for portable model deployment across platforms.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Engine Architecture -->
+    <section class="section">
+        <h2 class="section-title">🎯 Engine Architecture</h2>
+
+        <div class="architecture-diagram">
+            <img src="docs/assets/architecture-onnx.png" alt="ONNX Engine Architecture">
+            <p class="diagram-caption">Figure 3: ONNX Runtime engine architecture and workflow</p>
+        </div>
+
+        <div class="card">
+            <h3>TensorFlow Engine Architecture</h3>
+            <div class="architecture-diagram" style="margin-top: 20px;">
+                <img src="docs/assets/architecture-tensorflow.png" alt="TensorFlow Engine Architecture">
+                <p class="diagram-caption">Figure 4: TensorFlow SavedModel execution architecture</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Data Flow Architecture -->
+    <section class="section">
+        <h2 class="section-title">📊 Data Flow Architecture</h2>
+
+        <div class="architecture-diagram">
+            <img src="docs/assets/dataflow-main.png" alt="Main Data Flow Architecture">
+            <p class="diagram-caption">Figure 5: End-to-end data flow from input to output</p>
+        </div>
+
+        <div class="card">
+            <h3>Fraud Detection Data Flow</h3>
+            <div class="architecture-diagram" style="margin-top: 20px;">
+                <img src="docs/assets/dataflow-fraud.png" alt="Fraud Detection Data Flow">
+                <p class="diagram-caption">Figure 6: Real-time fraud detection pipeline sequence</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Use Case Architecture -->
+    <section class="section">
+        <h2 class="section-title">🚀 Use Case Architecture</h2>
+
+        <div class="use-case-grid">
+            <div class="use-case">
+                <h4>Recommendation System</h4>
+                <div class="architecture-diagram" style="margin: 15px 0; padding: 20px;">
+                    <img src="docs/assets/usecase-recommendations.png" alt="Recommendation System Architecture">
+                </div>
+                <p><strong>Architecture Features:</strong></p>
+                <ul>
+                    <li>Real-time user behavior processing</li>
+                    <li>Personalization engine integration</li>
+                    <li>A/B testing framework</li>
+                    <li>Content ranking service</li>
+                </ul>
+            </div>
+
+            <div class="use-case">
+                <h4>Anomaly Detection</h4>
+                <div class="architecture-diagram" style="margin: 15px 0; padding: 20px;">
+                    <img src="docs/assets/usecase-anomaly.png" alt="Anomaly Detection Architecture">
+                </div>
+                <p><strong>Architecture Features:</strong></p>
+                <ul>
+                    <li>Time-series window processing</li>
+                    <li>Multiple detection algorithms</li>
+                    <li>Automatic threshold adjustment</li>
+                    <li>Real-time alerting system</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <!-- Monitoring Architecture -->
+    <section class="section">
+        <h2 class="section-title">📈 Monitoring Architecture</h2>
+
+        <div class="architecture-diagram">
+            <img src="docs/assets/monitoring-overview.png" alt="Monitoring Architecture Overview">
+            <p class="diagram-caption">Figure 7: Complete monitoring and observability architecture</p>
+        </div>
+
+        <div class="card">
+            <h3>Metrics Collection Architecture</h3>
+            <div class="architecture-diagram" style="margin-top: 20px;">
+                <img src="docs/assets/monitoring-metrics.png" alt="Metrics Collection Architecture">
+                <p class="diagram-caption">Figure 8: Metrics collection and dashboard architecture</p>
+            </div>
+        </div>
+
+        <div class="code-example" style="margin-top: 30px;">
+            <pre><code>// Monitoring Configuration Example
+InferenceConfig.builder()
+    .enableMetrics(true)
+    .metricsPrefix("myapp.ml.inference")
+    .collectLatencyMetrics(true)
+    .collectThroughputMetrics(true)
+    .collectErrorMetrics(true)
+    .collectCacheMetrics(true)
+    .metricsExportInterval(Duration.ofSeconds(30))
+    .build();</code></pre>
+        </div>
+    </section>
+
+    <!-- Performance Architecture -->
+    <section class="section">
+        <h2 class="section-title">⚡ Performance Architecture</h2>
+
+        <div class="card">
+            <h3>Optimization Features</h3>
+            <div class="modules-grid">
+                <div class="module-card">
+                    <h4>Async Processing</h4>
+                    <p>Non-blocking I/O operations with configurable parallelism and backpressure control.</p>
+                </div>
+
+                <div class="module-card">
+                    <h4>Intelligent Batching</h4>
+                    <p>Dynamic batching based on load with timeout and size-based triggers.</p>
+                </div>
+
+                <div class="module-card">
+                    <h4>Multi-Level Caching</h4>
+                    <p>Model, result, and feature caching with TTL and eviction policies.</p>
+                </div>
+
+                <div class="module-card">
+                    <h4>Resource Pooling</h4>
+                    <p>Efficient reuse of model sessions and connection pools for reduced overhead.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="code-example" style="margin-top: 30px;">
+            <pre><code>// Performance Configuration Example
+InferenceConfig.builder()
+    .modelConfig(modelConfig)
+    .batchSize(32)                     // Optimal batch size
+    .batchTimeout(Duration.ofMillis(100)) // Max wait time
+    .enableCaching(true)               // Enable result caching
+    .cacheSize(10000)                  // Cache entries
+    .cacheTtl(Duration.ofMinutes(10))  // Cache TTL
+    .parallelism(4)                    // Concurrent instances
+    .maxConcurrentRequests(100)        // Per instance limit
+    .queueSize(1000)                   // Request queue size
+    .build();</code></pre>
+        </div>
+    </section>
+</main>
+
+<footer class="footer">
+    <div class="footer-content">
+        <div class="footer-grid">
+            <div class="footer-section">
+                <h4>About Otter Streams</h4>
+                <p>Otter Streams is an open-source ML inference library designed specifically for Apache Flink streaming applications. Built with performance and reliability in mind. <strong>Contributions are welcome!</strong></p>
+            </div>
+
+            <div class="footer-section">
+                <h4>Architecture Resources</h4>
+                <div class="footer-links">
+                    <a href="../documentation.html" class="footer-link">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
+                            <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
+                        </svg>
+                        Technical Documentation
+                    </a>
+                    <a href="core.html" class="footer-link">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+                            <polyline points="2 17 12 22 22 17"></polyline>
+                            <polyline points="2 12 12 17 22 12"></polyline>
+                        </svg>
+                        Core Module Details
+                    </a>
+                    <a href="examples.html" class="footer-link">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polygon points="14 2 18 6 7 17 3 17 3 13 14 2"></polygon>
+                            <line x1="3" y1="22" x2="21" y2="22"></line>
+                        </svg>
+                        Architecture Examples
+                    </a>
+                    <a href="https://github.com/martourez21/otter-streams/issues" class="footer-link" target="_blank">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <line x1="12" y1="8" x2="12" y2="12"></line>
+                            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                        </svg>
+                        Architecture Issues
+                    </a>
+                </div>
+            </div>
+
+            <div class="footer-section">
+                <h4>Development</h4>
+                <div class="footer-links">
+                    <a href="https://github.com/martourez21/otter-streams" class="footer-link" target="_blank">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path>
+                        </svg>
+                        Source Code
+                    </a>
+                    <a href="mailto:nestorabiawuh@gmail.com" class="footer-link">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                            <polyline points="22,6 12,13 2,6"></polyline>
+                        </svg>
+                        Architecture Questions
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <p class="org-info">Built with Passion by <span class="org-name">Nestor Martourez</span> at <span class="org-name">CodedStreams</span> © 2025</p>
+            <p class="org-info" style="margin-top: 10px; font-style: italic;">Enterprise-grade architecture for real-time ML inference</p>
+            <div class="social-links">
+                <a href="https://github.com/martourez21/otter-streams" class="social-link" target="_blank">Star on GitHub</a>
+                <span class="social-link">Apache License 2.0</span>
+                <a href="../index.html" class="social-link">Back to Home</a>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<script>
+    // Add target="_blank" to external links
+    document.addEventListener('DOMContentLoaded', function() {
+        document.querySelectorAll('a[href^="http"]').forEach(link => {
+            if (!link.href.includes(window.location.hostname)) {
+                link.setAttribute('target', '_blank');
+                link.setAttribute('rel', 'noopener noreferrer');
+            }
+        });
+    });
+</script>
+</body>
+</html>
