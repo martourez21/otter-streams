@@ -242,7 +242,7 @@
             flex-shrink: 0;
         }
 
-        .features-section {
+        .modules-section {
             margin: 80px 0;
         }
 
@@ -252,6 +252,84 @@
             margin-bottom: 50px;
             color: var(--text-primary);
             font-weight: 700;
+        }
+
+        .modules-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+
+        .module-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 30px;
+            transition: all 0.3s;
+            display: flex;
+            align-items: flex-start;
+            gap: 20px;
+        }
+
+        .module-card:hover {
+            border-color: var(--primary);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 145, 213, 0.1);
+        }
+
+        .module-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #0091d5, #006ba1);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5em;
+            flex-shrink: 0;
+        }
+
+        .module-content h4 {
+            font-size: 1.2em;
+            margin-bottom: 10px;
+            color: var(--text-primary);
+        }
+
+        .module-content p {
+            color: var(--text-secondary);
+            font-size: 0.9em;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        .module-badge {
+            display: inline-block;
+            background: rgba(0, 145, 213, 0.2);
+            color: var(--primary);
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.75em;
+            font-weight: 600;
+            margin-top: 5px;
+        }
+
+        .module-link {
+            color: var(--primary);
+            text-decoration: none;
+            font-size: 0.9em;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .module-link:hover {
+            text-decoration: underline;
+        }
+
+        .features-section {
+            margin: 80px 0;
         }
 
         .features-grid {
@@ -404,7 +482,8 @@
             }
 
             .cards-grid,
-            .features-grid {
+            .features-grid,
+            .modules-grid {
                 grid-template-columns: 1fr;
             }
 
@@ -429,17 +508,18 @@
             <span class="brand">Otter Streams</span>
         </div>
         <div class="nav-links">
-            <a href="getting-started.html" class="nav-link"> Getting Started</a>
-            <a href="javadoc/1.0.13-SNAPSHOT/index.html" class="nav-link"> API Docs</a>
-            <a href="https://github.com/martourez21/otter-streams" class="nav-link" target="_blank"> GitHub</a>
-            <a href="mailto:nestorabiawuh@gmail.com" class="nav-link"> Contact</a>
+            <a href="getting-started.html" class="nav-link">SDK Architecture</a>
+            <a href="documentation.html" class="nav-link">Documentation</a>
+            <a href="javadoc/1.0.14-SNAPSHOT/index.html" class="nav-link">API Docs</a>
+            <a href="https://github.com/martourez21/otter-streams" class="nav-link" target="_blank">GitHub</a>
+            <a href="mailto:nestorabiawuh@gmail.com" class="nav-link">Contact</a>
         </div>
     </nav>
 
     <div class="hero">
-        <div class="version-tag">v1.0.13-SNAPSHOT</div>
+        <div class="version-tag">v1.0.14-SNAPSHOT</div>
         <h1>Real-time ML Inference<br>for Apache Flink</h1>
-        <p>Open-source machine learning inference SDK for streaming applications. Integrate ML models seamlessly into your data pipelines. <strong>   I will be grateful for your contributions!</strong> </p>
+        <p>Open-source machine learning inference SDK for streaming applications. Integrate ML models seamlessly into your data pipelines. <strong>I will be grateful for your contributions!</strong></p>
     </div>
 </header>
 
@@ -452,9 +532,9 @@
                     <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
                 </svg>
             </div>
-            <h3>API Documentation</h3>
-            <p>Complete API reference with detailed documentation for all modules, classes, and methods in the Otter Streams library.</p>
-            <a href="javadoc/1.0.13-SNAPSHOT/index.html" class="card-link">
+            <h3>Documentation</h3>
+            <p>Complete developer guide with detailed documentation for all modules, configuration options, and best practices.</p>
+            <a href="documentation.html" class="card-link">
                 View Documentation
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <line x1="5" y1="12" x2="19" y2="12"></line>
@@ -470,9 +550,9 @@
                     <polyline points="12 6 12 12 16 14"></polyline>
                 </svg>
             </div>
-            <h3>Getting Started</h3>
-            <p>Quick start guides and examples to help you integrate ML inference into your Flink applications in minutes.</p>
-            <a href="getting-started.html" class="card-link">
+            <h3>SDK Architecture</h3>
+            <p>Explore the scalable, high-performance architecture powering Otter Streams - the real-time ML inference library for Apache Flink</p>
+            <a href="modules/architecture.html" class="card-link">
                 Get Started
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <line x1="5" y1="12" x2="19" y2="12"></line>
@@ -490,7 +570,7 @@
             </div>
             <h3>Examples</h3>
             <p>Real-world examples demonstrating best practices for ML inference in production streaming environments.</p>
-            <a href="https://github.com/martourez21/otter-streams/tree/main/otter-stream-examples" class="card-link" target="_blank">
+            <a href="modules/examples.html" class="card-link">
                 View Examples
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <line x1="5" y1="12" x2="19" y2="12"></line>
@@ -499,6 +579,107 @@
             </a>
         </div>
     </div>
+
+    <section class="modules-section">
+        <h2 class="section-title">Available Modules</h2>
+        <div class="modules-grid">
+            <div class="module-card">
+                <div class="module-icon">⚙️</div>
+                <div class="module-content">
+                    <h4>ml-inference-core</h4>
+                    <span class="module-badge">Foundation</span>
+                    <p>Core abstractions, configurations, and utilities for all ML inference operations.</p>
+                    <a href="modules/core.html" class="module-link">
+                        View Module Details →
+                    </a>
+                </div>
+            </div>
+
+            <div class="module-card">
+                <div class="module-icon">🔷</div>
+                <div class="module-content">
+                    <h4>otter-stream-onnx</h4>
+                    <span class="module-badge">Neural Networks</span>
+                    <p>High-performance ONNX Runtime integration with GPU acceleration support.</p>
+                    <a href="modules/onnx.html" class="module-link">
+                        View Module Details →
+                    </a>
+                </div>
+            </div>
+
+            <div class="module-card">
+                <div class="module-icon">🔷</div>
+                <div class="module-content">
+                    <h4>otter-stream-tensorflow</h4>
+                    <span class="module-badge">SavedModel</span>
+                    <p>Native TensorFlow SavedModel integration with automatic signature discovery.</p>
+                    <a href="modules/tensorflow.html" class="module-link">
+                        View Module Details →
+                    </a>
+                </div>
+            </div>
+
+            <div class="module-card">
+                <div class="module-icon">🔷</div>
+                <div class="module-content">
+                    <h4>otter-stream-pytorch</h4>
+                    <span class="module-badge">TorchScript</span>
+                    <p>PyTorch TorchScript integration via Deep Java Library with GPU detection.</p>
+                    <a href="modules/pytorch.html" class="module-link">
+                        View Module Details →
+                    </a>
+                </div>
+            </div>
+
+            <div class="module-card">
+                <div class="module-icon">🔷</div>
+                <div class="module-content">
+                    <h4>otter-streams-xgboost</h4>
+                    <span class="module-badge">Gradient Boosting</span>
+                    <p>High-performance gradient boosting inference for tabular data using XGBoost4J.</p>
+                    <a href="modules/xgboost.html" class="module-link">
+                        View Module Details →
+                    </a>
+                </div>
+            </div>
+
+            <div class="module-card">
+                <div class="module-icon">📋</div>
+                <div class="module-content">
+                    <h4>otter-stream-pmml</h4>
+                    <span class="module-badge">XML Standard</span>
+                    <p>PMML support via JPMML for portable model deployment across platforms.</p>
+                    <a href="modules/pmml.html" class="module-link">
+                        View Module Details →
+                    </a>
+                </div>
+            </div>
+
+            <div class="module-card">
+                <div class="module-icon">🌐</div>
+                <div class="module-content">
+                    <h4>otter-stream-remote</h4>
+                    <span class="module-badge">Cloud Services</span>
+                    <p>Remote inference clients for cloud ML services and HTTP/gRPC endpoints.</p>
+                    <a href="modules/remote.html" class="module-link">
+                        View Module Details →
+                    </a>
+                </div>
+            </div>
+
+            <div class="module-card">
+                <div class="module-icon">📋</div>
+                <div class="module-content">
+                    <h4>otter-stream-examples</h4>
+                    <span class="module-badge">Examples</span>
+                    <p>Production-ready examples demonstrating real-world use cases and best practices.</p>
+                    <a href="modules/examples.html" class="module-link">
+                        View Module Details →
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
 
     <section class="features-section">
         <h2 class="section-title">Why Otter Streams?</h2>
@@ -603,7 +784,7 @@
                         </svg>
                         Issues
                     </a>
-                    <a href="javadoc/1.0.13-SNAPSHOT/index.html" class="footer-link">
+                    <a href="javadoc/1.0.14-SNAPSHOT/index.html" class="footer-link">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
                             <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
@@ -614,35 +795,35 @@
             </div>
 
             <div class="footer-section">
-                <h4>Contact & Contribute</h4>
+                <h4>Documentation</h4>
                 <div class="footer-links">
+                    <a href="documentation.html" class="footer-link">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
+                            <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
+                        </svg>
+                        Full Documentation
+                    </a>
+                    <a href="documentation.html" class="footer-link">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <polyline points="12 6 12 12 16 14"></polyline>
+                        </svg>
+                        SDK Architecture
+                    </a>
+                    <a href="modules/architecture.html" class="footer-link">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="16 18 22 12 16 6"></polyline>
+                            <polyline points="8 6 2 12 8 18"></polyline>
+                        </svg>
+                        Architecture
+                    </a>
                     <a href="mailto:nestorabiawuh@gmail.com" class="footer-link">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
                             <polyline points="22,6 12,13 2,6"></polyline>
                         </svg>
-                        Email Developer
-                    </a>
-                    <a href="https://www.linkedin.com/in/nestor-abiangang/" class="footer-link" target="_blank">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path>
-                            <rect x="2" y="9" width="4" height="12"></rect>
-                            <circle cx="4" cy="4" r="2"></circle>
-                        </svg>
-                        LinkedIn
-                    </a>
-                    <a href="https://github.com/martourez21" class="footer-link" target="_blank">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path>
-                        </svg>
-                        GitHub Profile
-                    </a>
-                    <a href="getting-started.html" class="footer-link">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <circle cx="12" cy="12" r="10"></circle>
-                            <polyline points="12 6 12 12 16 14"></polyline>
-                        </svg>
-                        Getting Started
+                        Contact Support
                     </a>
                 </div>
             </div>
@@ -650,12 +831,12 @@
 
         <div class="footer-bottom">
             <p class="org-info">Built with Passion by <span class="org-name">Nestor Martourez</span> at <span class="org-name">CodedStreams</span> © 2025</p>
-            <p class="org-info" style="margin-top: 10px; font-style: italic;">Open-source project welcoming contributions! </p>
+            <p class="org-info" style="margin-top: 10px; font-style: italic;">Open-source project welcoming contributions!</p>
             <div class="social-links">
-                <a href="https://github.com/martourez21/otter-streams" class="social-link" target="_blank"> Star on GitHub</a>
+                <a href="https://github.com/martourez21/otter-streams" class="social-link" target="_blank">Star on GitHub</a>
                 <span class="social-link">Apache License 2.0</span>
-                <a href="https://github.com/martourez21/otter-streams/issues" class="social-link" target="_blank"> Report Issues</a>
-                <a href="getting-started.html" class="social-link"> Get Started</a>
+                <a href="https://github.com/martourez21/otter-streams/issues" class="social-link" target="_blank">Report Issues</a>
+                <a href="getting-started.html" class="social-link">Get Started</a>
             </div>
         </div>
     </div>

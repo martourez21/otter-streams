@@ -1,0 +1,1286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Getting Started with Otter Streams | Apache Flink ML Inference</title>
+    <meta name="description" content="Quick start guide for Otter Streams - Real-time ML inference library for Apache Flink streaming applications">
+    <link rel="icon" href="https://raw.githubusercontent.com/martourez21/otter-streams/main/docs/assets/otterstream-sdk-icon.ico" type="image/x-icon">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #0091d5;
+            --primary-dark: #006ba1;
+            --secondary: #4db8e8;
+            --dark-bg: #0f1419;
+            --card-bg: #1a1f2e;
+            --text-primary: #e4e6eb;
+            --text-secondary: #8b92a8;
+            --border: #2d3748;
+            --code-bg: #1e293b;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            line-height: 1.6;
+            color: var(--text-primary);
+            background: var(--dark-bg);
+            min-height: 100vh;
+        }
+
+        /* Layout styles */
+        .layout {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 280px;
+            background: var(--card-bg);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            z-index: 1000;
+        }
+
+        .main-content {
+            flex: 1;
+            margin-left: 280px;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        @media (max-width: 1024px) {
+            .sidebar {
+                transform: translateX(-100%);
+                transition: transform 0.3s ease;
+                width: 280px;
+            }
+
+            .sidebar.active {
+                transform: translateX(0);
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+        }
+
+        /* Sidebar styles */
+        .sidebar-header {
+            padding: 30px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .logo {
+            width: 45px;
+            height: 45px;
+            background: white;
+            border-radius: 8px;
+            padding: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .brand {
+            color: var(--text-primary);
+            font-size: 1.2em;
+            font-weight: 700;
+        }
+
+        .javadocs-link {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 20px;
+            background: rgba(0, 145, 213, 0.1);
+            border: 1px solid rgba(0, 145, 213, 0.2);
+            border-radius: 8px;
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.9em;
+            transition: all 0.3s;
+        }
+
+        .javadocs-link:hover {
+            background: rgba(0, 145, 213, 0.2);
+            border-color: var(--primary);
+        }
+
+        .javadocs-link svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        .sidebar-nav {
+            padding: 20px;
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .nav-section {
+            margin-bottom: 30px;
+        }
+
+        .nav-section-title {
+            font-size: 0.85em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-secondary);
+            font-weight: 600;
+            margin-bottom: 15px;
+            padding-left: 10px;
+        }
+
+        .nav-items {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 15px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            border-radius: 6px;
+            font-size: 0.95em;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .nav-item:hover {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-primary);
+        }
+
+        .nav-item.active {
+            background: rgba(0, 145, 213, 0.2);
+            color: var(--primary);
+            font-weight: 500;
+        }
+
+        .nav-item.active::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 3px;
+            height: 60%;
+            background: var(--primary);
+            border-radius: 0 3px 3px 0;
+        }
+
+        .nav-item svg {
+            width: 18px;
+            height: 18px;
+            flex-shrink: 0;
+        }
+
+        /* Header styles */
+        .header {
+            background: linear-gradient(135deg, #0091d5 0%, #006ba1 100%);
+            padding: 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg"><defs><pattern id="grid" width="50" height="50" patternUnits="userSpaceOnUse"><path d="M 50 0 L 0 0 0 50" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="1"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
+            opacity: 0.3;
+        }
+
+        .top-nav {
+            background: rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(10px);
+            padding: 15px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5em;
+            cursor: pointer;
+            padding: 5px;
+        }
+
+        @media (max-width: 1024px) {
+            .mobile-menu-btn {
+                display: block;
+            }
+
+            .top-nav-links {
+                display: none;
+            }
+        }
+
+        .top-nav-links {
+            display: flex;
+            gap: 25px;
+            align-items: center;
+        }
+
+        .top-nav-link {
+            color: rgba(255, 255, 255, 0.9);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.95em;
+            transition: color 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .top-nav-link:hover {
+            color: white;
+        }
+
+        .top-nav-link svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        /* Hero styles */
+        .hero {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 100px 40px 120px;
+            text-align: center;
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero h1 {
+            font-size: 3.5em;
+            font-weight: 700;
+            margin-bottom: 15px;
+            color: white;
+            line-height: 1.2;
+        }
+
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2.5em;
+            }
+        }
+
+        .badges {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-bottom: 30px;
+        }
+
+        .badge {
+            display: inline-block;
+            background: rgba(255,255,255,0.2);
+            backdrop-filter: blur(10px);
+            padding: 8px 20px;
+            border-radius: 20px;
+            color: white;
+            font-weight: 600;
+            font-size: 0.9em;
+            margin-bottom: 20px;
+        }
+
+        .hero-subtitle {
+            font-size: 1.3em;
+            color: rgba(255,255,255,0.9);
+            max-width: 800px;
+            margin: 0 auto;
+            font-weight: 300;
+        }
+
+        @media (max-width: 768px) {
+            .hero-subtitle {
+                font-size: 1.1em;
+            }
+        }
+
+        /* Content styles */
+        .container {
+            max-width: 1200px;
+            margin: -60px auto 0;
+            padding: 0 40px 80px;
+            position: relative;
+            z-index: 2;
+            flex: 1;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 20px 60px;
+            }
+        }
+
+        .section {
+            margin-bottom: 60px;
+            scroll-margin-top: 20px;
+        }
+
+        .section-title {
+            font-size: 2em;
+            margin-bottom: 20px;
+            color: var(--text-primary);
+            font-weight: 700;
+            border-bottom: 2px solid var(--primary);
+            padding-bottom: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .section-title {
+                font-size: 1.8em;
+            }
+        }
+
+        .section-subtitle {
+            font-size: 1.3em;
+            margin: 30px 0 15px;
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        .section p {
+            color: var(--text-secondary);
+            margin-bottom: 20px;
+            line-height: 1.7;
+        }
+
+        .section ul, .section ol {
+            color: var(--text-secondary);
+            margin-left: 20px;
+            margin-bottom: 20px;
+        }
+
+        .section li {
+            margin-bottom: 10px;
+            line-height: 1.7;
+        }
+
+        /* Cards */
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin: 30px 0;
+        }
+
+        @media (max-width: 768px) {
+            .cards-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 30px;
+            border: 1px solid var(--border);
+            transition: transform 0.3s, box-shadow 0.3s, border-color 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            transform: scaleX(0);
+            transition: transform 0.3s;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0, 145, 213, 0.15);
+            border-color: var(--primary);
+        }
+
+        .card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .card h4 {
+            color: var(--text-primary);
+            font-size: 1.1em;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card-icon {
+            color: var(--primary);
+            font-size: 1.3em;
+        }
+
+        .card p {
+            color: var(--text-secondary);
+            font-size: 0.95em;
+            line-height: 1.6;
+        }
+
+        /* Code Blocks */
+        .code-block {
+            background: var(--code-bg);
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            margin: 25px 0;
+            overflow: hidden;
+        }
+
+        .code-header {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 12px 20px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .code-language {
+            color: var(--text-secondary);
+            font-size: 0.9em;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .copy-button {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-secondary);
+            padding: 6px 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.85em;
+            transition: all 0.3s;
+        }
+
+        .copy-button:hover {
+            color: var(--primary);
+            border-color: var(--primary);
+        }
+
+        .copy-button.copied {
+            color: var(--success);
+            border-color: var(--success);
+        }
+
+        pre {
+            padding: 25px;
+            margin: 0;
+            overflow-x: auto;
+            font-family: 'JetBrains Mono', 'SF Mono', Monaco, 'Cascadia Code', 'Source Code Pro', monospace;
+            font-size: 0.95em;
+            line-height: 1.5;
+            color: #e4e6eb;
+        }
+
+        code {
+            font-family: 'JetBrains Mono', 'SF Mono', Monaco, 'Cascadia Code', 'Source Code Pro', monospace;
+            background: rgba(0, 145, 213, 0.1);
+            color: var(--primary);
+            padding: 3px 6px;
+            border-radius: 4px;
+            font-size: 0.9em;
+        }
+
+        /* Status Badges */
+        .status-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.8em;
+            font-weight: 600;
+            margin-right: 8px;
+        }
+
+        .status-ready {
+            background: rgba(16, 185, 129, 0.15);
+            color: var(--success);
+        }
+
+        .status-development {
+            background: rgba(245, 158, 11, 0.15);
+            color: var(--warning);
+        }
+
+        .status-experimental {
+            background: rgba(239, 68, 68, 0.15);
+            color: var(--danger);
+        }
+
+        /* Quick Links */
+        .quick-links {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 30px;
+            margin: 40px 0;
+        }
+
+        .links-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .links-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .link-card {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            text-decoration: none;
+            color: var(--text-primary);
+            transition: all 0.3s;
+            border: 1px solid transparent;
+        }
+
+        .link-card:hover {
+            background: rgba(0, 145, 213, 0.1);
+            border-color: var(--primary);
+            transform: translateY(-2px);
+        }
+
+        .link-icon {
+            font-size: 1.5em;
+        }
+
+        /* Footer styles */
+        .footer {
+            background: var(--card-bg);
+            border-top: 1px solid var(--border);
+            padding: 60px 40px 40px;
+            margin-top: 80px;
+        }
+
+        @media (max-width: 768px) {
+            .footer {
+                padding: 40px 20px 30px;
+            }
+        }
+
+        .footer-content {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr;
+            gap: 60px;
+            margin-bottom: 50px;
+        }
+
+        @media (max-width: 1024px) {
+            .footer-grid {
+                grid-template-columns: 1fr;
+                gap: 40px;
+            }
+        }
+
+        .footer-section h4 {
+            color: var(--text-primary);
+            font-size: 1.1em;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+
+        .footer-section p {
+            color: var(--text-secondary);
+            line-height: 1.7;
+        }
+
+        .footer-links {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .footer-link {
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: color 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .footer-link:hover {
+            color: var(--primary);
+        }
+
+        .footer-link svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        .footer-bottom {
+            padding-top: 30px;
+            border-top: 1px solid var(--border);
+            text-align: center;
+            color: var(--text-secondary);
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+<div class="layout">
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="logo-section">
+                <div class="logo">
+                    <img src="https://raw.githubusercontent.com/martourez21/otter-streams/main/docs/assets/otterstream-sdk-icon.ico" alt="Otter Streams">
+                </div>
+                <span class="brand">Otter Streams SDK</span>
+            </div>
+            <a href="../javadoc/${VERSION}/index.html" class="javadocs-link">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
+                    <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
+                </svg>
+                View Full JavaDocs
+            </a>
+            <a href="../index.html" class="javadocs-link" style="margin-top: 10px;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                </svg>
+                Back to Home
+            </a>
+        </div>
+
+        <nav class="sidebar-nav">
+            <div class="nav-section">
+                <div class="nav-section-title">Getting Started</div>
+                <div class="nav-items">
+                    <a href="#overview" class="nav-item active">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <polyline points="12 6 12 12 16 14"></polyline>
+                        </svg>
+                        Overview
+                    </a>
+                    <a href="#installation" class="nav-item">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+                        </svg>
+                        Installation
+                    </a>
+                    <a href="#model-preparation" class="nav-item">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+                        </svg>
+                        Model Preparation
+                    </a>
+                    <a href="#integration" class="nav-item">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+                        </svg>
+                        Flink Integration
+                    </a>
+                    <a href="#examples" class="nav-item">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polygon points="14 2 18 6 7 17 3 17 3 13 14 2"></polygon>
+                            <line x1="3" y1="22" x2="21" y2="22"></line>
+                        </svg>
+                        Examples
+                    </a>
+                </div>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-section-title">Advanced Topics</div>
+                <div class="nav-items">
+                    <a href="#configuration" class="nav-item">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"></path>
+                            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                        </svg>
+                        Configuration
+                    </a>
+                    <a href="#performance" class="nav-item">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline>
+                            <polyline points="17 6 23 6 23 12"></polyline>
+                        </svg>
+                        Performance
+                    </a>
+                    <a href="#monitoring" class="nav-item">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M18 20V10"></path>
+                            <path d="M12 20V4"></path>
+                            <path d="M6 20v-6"></path>
+                        </svg>
+                        Monitoring
+                    </a>
+                    <a href="#troubleshooting" class="nav-item">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <line x1="12" y1="8" x2="12" y2="12"></line>
+                            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                        </svg>
+                        Troubleshooting
+                    </a>
+                </div>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-section-title">Resources</div>
+                <div class="nav-items">
+                    <a href="https://github.com/martourez21/otter-streams" class="nav-item" target="_blank">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path>
+                        </svg>
+                        GitHub Repository
+                    </a>
+                    <a href="../javadoc/${VERSION}/index.html" class="nav-item">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
+                            <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
+                        </svg>
+                        API Reference
+                    </a>
+                </div>
+            </div>
+        </nav>
+    </aside>
+
+    <main class="main-content">
+        <header class="header">
+            <nav class="top-nav">
+                <button class="mobile-menu-btn" id="mobileMenuBtn">☰</button>
+                <div class="top-nav-links">
+                    <a href="../index.html" class="top-nav-link">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                        </svg>
+                        Home
+                    </a>
+                    <a href="../getting-started.html" class="top-nav-link">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <polyline points="12 6 12 12 16 14"></polyline>
+                        </svg>
+                        Getting Started
+                    </a>
+                    <a href="../documentation.html" class="top-nav-link">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
+                            <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
+                        </svg>
+                        Documentation
+                    </a>
+                    <a href="../javadoc/${VERSION}/index.html" class="top-nav-link">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
+                            <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
+                        </svg>
+                        API Docs
+                    </a>
+                    <a href="https://github.com/martourez21/otter-streams" class="top-nav-link" target="_blank">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path>
+                        </svg>
+                        GitHub
+                    </a>
+                </div>
+            </nav>
+
+            <div class="hero">
+                <div class="badges">
+                    <span class="badge"> Quick Start</span>
+                    <span class="badge"> Apache Flink</span>
+                    <span class="badge"> Real-time ML</span>
+                </div>
+                <h1>Getting Started with Otter Streams</h1>
+                <p class="hero-subtitle">Learn how to integrate real-time machine learning inference into your Apache Flink streaming applications in just 5 minutes</p>
+            </div>
+        </header>
+
+        <div class="container">
+            <!-- Overview -->
+            <section id="overview" class="section">
+                <h2 class="section-title"> What's Implemented</h2>
+
+                <div class="cards-grid">
+                    <div class="card">
+                        <h4><span class="card-icon">✅</span> Complete Core Framework</h4>
+                        <p>Async inference, caching, metrics, and configuration system with multi-source model loading support.</p>
+                    </div>
+
+                    <div class="card">
+                        <h4><span class="card-icon">🧠</span> Multi-Framework Support</h4>
+                        <p>ONNX, TensorFlow, PyTorch, XGBoost, and PMML with native execution engines.</p>
+                    </div>
+
+                    <div class="card">
+                        <h4><span class="card-icon">🌐</span> Flexible Deployment</h4>
+                        <p>Local, HTTP, AWS SageMaker, and custom remote inference endpoints.</p>
+                    </div>
+
+                    <div class="card">
+                        <h4><span class="card-icon">⚡</span> Performance Features</h4>
+                        <p>Batch processing, async operations, intelligent caching, and GPU acceleration.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Installation -->
+            <section id="installation" class="section">
+                <h2 class="section-title">📦 Installation</h2>
+
+                <h3 class="section-subtitle">Clone and Build</h3>
+                <div class="code-block">
+                    <div class="code-header">
+                        <span class="code-language">bash</span>
+                        <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                    </div>
+                    <pre><code># Clone the repository
+git clone https://github.com/martourez21/otter-streams.git
+cd otter-streams
+
+# Build the project
+mvn clean install -DskipTests
+
+# Or use the setup script
+chmod +x setup.sh
+./setup.sh</code></pre>
+                </div>
+
+                <h3 class="section-subtitle">Maven Dependencies</h3>
+                <div class="code-block">
+                    <div class="code-header">
+                        <span class="code-language">xml</span>
+                        <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                    </div>
+                    <pre><code>&lt;!-- Core framework (required) --&gt;
+&lt;dependency&gt;
+    &lt;groupId&gt;com.codedstreams&lt;/groupId&gt;
+    &lt;artifactId&gt;ml-inference-core&lt;/artifactId&gt;
+    &lt;version&gt;1.0.0&lt;/version&gt;
+&lt;/dependency&gt;
+
+&lt;!-- Add framework-specific modules as needed --&gt;
+&lt;dependency&gt;
+    &lt;groupId&gt;com.codedstreams&lt;/groupId&gt;
+    &lt;artifactId&gt;otter-stream-onnx&lt;/artifactId&gt;
+    &lt;version&gt;1.0.0&lt;/version&gt;
+&lt;/dependency&gt;</code></pre>
+                </div>
+            </section>
+
+            <!-- Model Preparation -->
+            <section id="model-preparation" class="section">
+                <h2 class="section-title">🤖 Model Preparation</h2>
+
+                <h3 class="section-subtitle">Export Your Model to ONNX (Recommended)</h3>
+                <div class="code-block">
+                    <div class="code-header">
+                        <span class="code-language">python</span>
+                        <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                    </div>
+                    <pre><code># PyTorch to ONNX
+import torch
+torch.onnx.export(
+    model,
+    dummy_input,
+    "model.onnx",
+    input_names=['input'],
+    output_names=['output']
+)
+
+# TensorFlow to ONNX
+import tf2onnx
+model_proto, _ = tf2onnx.convert.from_keras(model, input_signature=spec)
+with open("model.onnx", "wb") as f:
+    f.write(model_proto.SerializeToString())
+
+# Scikit-learn to ONNX
+from skl2onnx import to_onnx
+onnx_model = to_onnx(model, X[:1].astype(np.float32))
+with open("model.onnx", "wb") as f:
+    f.write(onnx_model.SerializeToString())</code></pre>
+                </div>
+
+                <h3 class="section-subtitle">Supported Formats</h3>
+                <div class="cards-grid">
+                    <div class="card">
+                        <h4><span class="status-badge status-ready">Ready</span> ONNX</h4>
+                        <p><code>.onnx</code> files - Most compatible format</p>
+                    </div>
+
+                    <div class="card">
+                        <h4><span class="status-badge status-ready">Ready</span> TensorFlow</h4>
+                        <p><code>saved_model.pb</code> files in saved_model directory</p>
+                    </div>
+
+                    <div class="card">
+                        <h4><span class="status-badge status-ready">Ready</span> PyTorch</h4>
+                        <p><code>.pt</code>, <code>.pth</code> files (TorchScript)</p>
+                    </div>
+
+                    <div class="card">
+                        <h4><span class="status-badge status-ready">Ready</span> XGBoost</h4>
+                        <p><code>.model</code>, <code>.bin</code>, <code>.json</code> files</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Flink Integration -->
+            <section id="integration" class="section">
+                <h2 class="section-title">🔧 Flink Integration</h2>
+
+                <h3 class="section-subtitle">Basic Usage Example</h3>
+                <div class="code-block">
+                    <div class="code-header">
+                        <span class="code-language">java</span>
+                        <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                    </div>
+                    <pre><code>import com.flinkml.inference.config.*;
+import com.flinkml.inference.function.*;
+import com.flinkml.inference.onnx.*;
+
+// 1. Configure your model
+InferenceConfig config = InferenceConfig.builder()
+    .modelConfig(ModelConfig.builder()
+        .modelId("fraud-detection")
+        .modelPath("models/fraud_model.onnx")
+        .format(ModelFormat.ONNX)
+        .modelName("fraud_predictor")
+        .modelVersion("1.0")
+        .build())
+    .batchSize(32)
+    .timeout(5000)
+    .maxRetries(3)
+    .enableMetrics(true)
+    .build();
+
+// 2. Create inference function
+AsyncModelInferenceFunction&lt;Map&lt;String, Object&gt;, InferenceResult&gt; inferenceFunction =
+    new AsyncModelInferenceFunction&lt;&gt;(
+        config,
+        cfg -&gt; new OnnxInferenceEngine()
+    );
+
+// 3. Apply to Flink stream
+DataStream&lt;InferenceResult&gt; predictions = AsyncDataStream.unorderedWait(
+    transactionStream,
+    inferenceFunction,
+    5000,                    // Async timeout
+    TimeUnit.MILLISECONDS,
+    100                      // Max concurrent requests
+);</code></pre>
+                </div>
+            </section>
+
+            <!-- Examples -->
+            <section id="examples" class="section">
+                <h2 class="section-title">💡 Examples</h2>
+
+                <h3 class="section-subtitle">Run the Fraud Detection Example</h3>
+                <div class="code-block">
+                    <div class="code-header">
+                        <span class="code-language">bash</span>
+                        <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                    </div>
+                    <pre><code># Run the fraud detection example
+mvn exec:java -pl otter-stream-examples \
+  -Dexec.mainClass="com.flinkml.inference.examples.FraudDetectionExample"</code></pre>
+                </div>
+
+                <h3 class="section-subtitle">More Examples</h3>
+                <div class="cards-grid">
+                    <div class="card">
+                        <h4>🎭 Fraud Detection</h4>
+                        <p>Real-time transaction analysis with feature extraction and ML scoring.</p>
+                    </div>
+
+                    <div class="card">
+                        <h4>🤖 Sentiment Analysis</h4>
+                        <p>Streaming text classification with ONNX models.</p>
+                    </div>
+
+                    <div class="card">
+                        <h4>📈 Anomaly Detection</h4>
+                        <p>Time-series monitoring with automatic alerting.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Next Steps -->
+            <section class="section">
+                <h2 class="section-title"> Next Steps</h2>
+
+                <div class="cards-grid">
+                    <div class="card">
+                        <h4>1️⃣ Try the Example</h4>
+                        <p>Run the fraud detection example to see the framework in action.</p>
+                    </div>
+
+                    <div class="card">
+                        <h4>2️⃣ Load Your Model</h4>
+                        <p>Export your model to ONNX and test it with the framework.</p>
+                    </div>
+
+                    <div class="card">
+                        <h4>3️⃣ Integrate with Flink</h4>
+                        <p>Add ML inference to your existing Flink streaming job.</p>
+                    </div>
+
+                    <div class="card">
+                        <h4>4️⃣ Contribute!</h4>
+                        <p>We welcome contributions! Check out our GitHub repository.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section class="section">
+                <div class="quick-links">
+                    <h3 class="section-title">Quick Links</h3>
+                    <div class="links-grid">
+                        <a href="../documentation.html" class="link-card">
+                            <span class="link-icon">📚</span>
+                            <span>Full Documentation</span>
+                        </a>
+                        <a href="../javadoc/${VERSION}/index.html" class="link-card">
+                            <span class="link-icon">🔍</span>
+                            <span>API Reference</span>
+                        </a>
+                        <a href="../examples.html" class="link-card">
+                            <span class="link-icon">💡</span>
+                            <span>More Examples</span>
+                        </a>
+                        <a href="../index.html" class="link-card">
+                            <span class="link-icon">🏠</span>
+                            <span>Back to Home</span>
+                        </a>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <footer class="footer">
+            <div class="footer-content">
+                <div class="footer-grid">
+                    <div class="footer-section">
+                        <h4>About Otter Streams</h4>
+                        <p>Otter Streams is an open-source ML inference library designed specifically for Apache Flink streaming applications. Built with performance and reliability in mind. <strong>Contributions are welcome!</strong></p>
+                    </div>
+
+                    <div class="footer-section">
+                        <h4>Documentation</h4>
+                        <div class="footer-links">
+                            <a href="../index.html" class="footer-link">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                                </svg>
+                                Home
+                            </a>
+                            <a href="../documentation.html" class="footer-link">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
+                                    <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
+                                </svg>
+                                Documentation
+                            </a>
+                            <a href="../getting-started.html" class="footer-link">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <circle cx="12" cy="12" r="10"></circle>
+                                    <polyline points="12 6 12 12 16 14"></polyline>
+                                </svg>
+                                Getting Started
+                            </a>
+                            <a href="../javadoc/${VERSION}/index.html" class="footer-link">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
+                                    <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
+                                </svg>
+                                API Docs
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="footer-section">
+                        <h4>Resources</h4>
+                        <div class="footer-links">
+                            <a href="https://github.com/martourez21/otter-streams" class="footer-link" target="_blank">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path>
+                                </svg>
+                                GitHub Repository
+                            </a>
+                            <a href="https://flink.apache.org/" class="footer-link" target="_blank">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
+                                    <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
+                                </svg>
+                                Apache Flink Docs
+                            </a>
+                            <a href="mailto:nestorabiawuh@gmail.com" class="footer-link">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                                    <polyline points="22,6 12,13 2,6"></polyline>
+                                </svg>
+                                Contact Developer
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="footer-bottom">
+                    <p>Built with Passion by <strong style="color: var(--primary);">Nestor Martourez</strong> at <strong style="color: var(--primary);">CodedStreams</strong> © 2025</p>
+                    <p style="margin-top: 10px; font-style: italic;">Open-source project welcoming contributions! Licensed under Apache License 2.0</p>
+                </div>
+            </div>
+        </footer>
+    </main>
+</div>
+
+<script>
+    // Mobile menu toggle
+    document.getElementById('mobileMenuBtn').addEventListener('click', function() {
+        document.getElementById('sidebar').classList.toggle('active');
+    });
+
+    // Close sidebar when clicking outside on mobile
+    document.addEventListener('click', function(event) {
+        const sidebar = document.getElementById('sidebar');
+        const mobileBtn = document.getElementById('mobileMenuBtn');
+
+        if (window.innerWidth <= 1024 &&
+            sidebar.classList.contains('active') &&
+            !sidebar.contains(event.target) &&
+            !mobileBtn.contains(event.target)) {
+            sidebar.classList.remove('active');
+        }
+    });
+
+    // Add target="_blank" to external links
+    document.addEventListener('DOMContentLoaded', function() {
+        document.querySelectorAll('a[href^="http"]').forEach(link => {
+            if (!link.href.includes(window.location.hostname)) {
+                link.setAttribute('target', '_blank');
+                link.setAttribute('rel', 'noopener noreferrer');
+            }
+        });
+    });
+
+    // Smooth scrolling for anchor links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+            const targetId = this.getAttribute('href');
+            if (targetId === '#') return;
+
+            const targetElement = document.querySelector(targetId);
+            if (targetElement) {
+                window.scrollTo({
+                    top: targetElement.offsetTop - 100,
+                    behavior: 'smooth'
+                });
+            }
+        });
+    });
+
+    // Copy code function
+    function copyCode(button) {
+        const codeBlock = button.closest('.code-block').querySelector('pre code');
+        const text = codeBlock.textContent;
+
+        navigator.clipboard.writeText(text).then(() => {
+            const originalText = button.textContent;
+            button.textContent = 'Copied!';
+            button.classList.add('copied');
+
+            setTimeout(() => {
+                button.textContent = originalText;
+                button.classList.remove('copied');
+            }, 2000);
+        });
+    }
+
+    // Update active sidebar link on scroll
+    const sections = document.querySelectorAll('.section');
+    const sidebarLinks = document.querySelectorAll('.nav-item[href^="#"]');
+
+    window.addEventListener('scroll', () => {
+        let current = '';
+
+        sections.forEach(section => {
+            const sectionTop = section.offsetTop;
+            const sectionHeight = section.clientHeight;
+
+            if (scrollY >= (sectionTop - 150)) {
+                current = '#' + section.getAttribute('id');
+            }
+        });
+
+        sidebarLinks.forEach(link => {
+            link.classList.remove('active');
+            if (link.getAttribute('href') === current) {
+                link.classList.add('active');
+            }
+        });
+    });
+</script>
+</body>
+</html>
