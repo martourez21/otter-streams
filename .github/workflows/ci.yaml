@@ -162,15 +162,25 @@ jobs:
       - name: Generate HTML pages from templates
         run: |
           mkdir -p gh-pages-root
+          mkdir -p gh-pages-root/modules
           
-          # Copy getting started page
-          cp .github/workflows/templates/modules/examples.html gh-pages-root/examples.html
+          # Copy all template files
+          echo "Copying template files..."
+          
+          # Copy root-level HTML files
+          if [ -d ".github/workflows/templates" ]; then
+            # Copy all .html files from templates root
+            find .github/workflows/templates -maxdepth 1 -name "*.html" -exec cp {} gh-pages-root/ \;
+          
+            # Copy all module HTML files
+            if [ -d ".github/workflows/templates/modules" ]; then
+              find .github/workflows/templates/modules -name "*.html" -exec cp {} gh-pages-root/modules/ \;
+            fi
+          else
+            echo "Warning: Templates directory not found"
+          fi
           
           # Generate main index with current version
-          sed "s/\${VERSION}/${{ steps.get_version.outputs.VERSION }}/g" \
-            .github/workflows/templates/index.html > gh-pages-root/index.html
-          
-          # Generate release index
           sed "s/\${VERSION}/${{ steps.get_version.outputs.VERSION }}/g" \
             .github/workflows/templates/index.html > gh-pages-root/index.html
           
@@ -178,6 +188,36 @@ jobs:
           echo '<!DOCTYPE html><html><head><meta http-equiv="refresh" content="0; url=./index.html"></head><body>Redirecting...</body></html>' > gh-pages-root/README.html
           
           echo "Generated HTML pages for version: ${{ steps.get_version.outputs.VERSION }}"
+
+      - name: Debug - List generated files
+        run: |
+          echo "=== Files in gh-pages-root ==="
+          find gh-pages-root -type f | sort
+          echo ""
+          echo "=== Checking for required files ==="
+          REQUIRED_FILES=(
+            "index.html"
+            "getting-started.html"
+            "documentation.html"
+            "modules/architecture.html"
+            "modules/core.html"
+            "modules/examples.html"
+            "modules/metrics.html"
+            "modules/onnx.html"
+            "modules/pmml.html"
+            "modules/pytorch.html"
+            "modules/remote.html"
+            "modules/tensorflow.html"
+            "modules/xgboost.html"
+          )
+          
+          for file in "${REQUIRED_FILES[@]}"; do
+            if [ -f "gh-pages-root/$file" ]; then
+              echo "✓ Found: $file"
+            else
+              echo "✗ Missing: $file"
+            fi
+          done
 
       - name: Deploy HTML pages to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
@@ -285,19 +325,39 @@ jobs:
       - name: Generate release HTML pages
         run: |
           mkdir -p gh-pages-root
+          mkdir -p gh-pages-root/modules
           
-          # Copy getting started page
-          cp .github/workflows/templates/getting-started.html gh-pages-root/getting-started.html
+          echo "Copying template files for release..."
+          
+          # Copy all template files
+          if [ -d ".github/workflows/templates" ]; then
+            # Copy all .html files from templates root
+            find .github/workflows/templates -maxdepth 1 -name "*.html" -exec cp {} gh-pages-root/ \;
+          
+            # Copy all module HTML files
+            if [ -d ".github/workflows/templates/modules" ]; then
+              find .github/workflows/templates/modules -name "*.html" -exec cp {} gh-pages-root/modules/ \;
+            fi
+          fi
           
           # Generate release index with release version
-          sed "s/\${VERSION}/${{ steps.version.outputs.VERSION }}/g" \
-            .github/workflows/templates/release-index.html > gh-pages-root/index.html
-          
-          # Also generate the main javadoc index
-          sed "s/\${VERSION}/${{ steps.version.outputs.VERSION }}/g" \
-            .github/workflows/templates/javadoc-index.html > gh-pages-root/index-v${{ steps.version.outputs.VERSION }}.html
+          if [ -f ".github/workflows/templates/release-index.html" ]; then
+            sed "s/\${VERSION}/${{ steps.version.outputs.VERSION }}/g" \
+              .github/workflows/templates/release-index.html > gh-pages-root/index.html
+          else
+            # Fallback to regular index if release-index doesn't exist
+            sed "s/\${VERSION}/${{ steps.version.outputs.VERSION }}/g" \
+              .github/workflows/templates/index.html > gh-pages-root/index.html
+          fi
           
           echo "Generated release pages for version: ${{ steps.version.outputs.VERSION }}"
+
+      - name: Debug - List release files
+        run: |
+          echo "=== Files in gh-pages-root for release ==="
+          find gh-pages-root -type f | sort
+          echo ""
+          echo "Total files: $(find gh-pages-root -type f | wc -l)"
 
       - name: Deploy updated HTML pages to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
