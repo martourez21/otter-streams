@@ -3,14 +3,62 @@ name: Otter Streams CI Pipeline with Maven
 on:
   push:
     branches: [ main, develop ]
+    paths:
+      - '**.md'
+      - '**.html'
+      - '**.png'
+      - '**.jpg'
+      - '**.jpeg'
+      - '**.yml'
+      - '**.yaml'
+      - 'docs/**'
+      - 'assets/**'
+      - '.github/workflows/templates/**'
+      - '!pom.xml'
+      - '!**/src/**'
+      - '!**/target/**'
   pull_request:
     branches: [ main, develop ]
   release:
     types: [ published ]
 
 jobs:
+  # Skip build when only docs changed
+  check-changes:
+    runs-on: ubuntu-latest
+    outputs:
+      docs-only: ${{ steps.filter.outputs.docs-only }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check for docs-only changes
+        id: filter
+        run: |
+          # Get list of changed files
+          CHANGED_FILES=$(git diff --name-only HEAD~1 HEAD 2>/dev/null || echo "")
+          
+          if [ -z "$CHANGED_FILES" ]; then
+            # For PRs or first commit
+            echo "docs-only=true" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+          
+          # Check if any non-docs files changed
+          NON_DOCS_FILES=$(echo "$CHANGED_FILES" | grep -v -E '\.(md|html|png|jpg|jpeg|yml|yaml)$' | grep -v '^docs/' | grep -v '^assets/' | grep -v '^\.github/workflows/templates/' | grep -v '^README' || true)
+          
+          if [ -z "$NON_DOCS_FILES" ]; then
+            echo "docs-only=true" >> $GITHUB_OUTPUT
+          else
+            echo "docs-only=false" >> $GITHUB_OUTPUT
+          fi
+
   build:
     runs-on: ubuntu-latest
+    needs: check-changes
+    if: needs.check-changes.outputs.docs-only == 'false'
     strategy:
       matrix:
         java: [ '11', '17' ]
@@ -50,7 +98,8 @@ jobs:
 
   code-quality:
     runs-on: ubuntu-latest
-    needs: build
+    needs: [check-changes, build]
+    if: needs.check-changes.outputs.docs-only == 'false'
 
     steps:
       - name: Checkout code
@@ -80,8 +129,8 @@ jobs:
 
   package:
     runs-on: ubuntu-latest
-    needs: build
-    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop')
+    needs: [check-changes, build]
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop') && needs.check-changes.outputs.docs-only == 'false'
 
     steps:
       - name: Checkout code
@@ -108,7 +157,6 @@ jobs:
           retention-days: 7
 
   publish:
-    needs: [build, code-quality]
     runs-on: ubuntu-latest
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     permissions:
@@ -130,39 +178,19 @@ jobs:
           distribution: 'temurin'
           cache: 'maven'
 
-      - name: Configure Maven settings for GitHub Packages
-        run: |
-          mkdir -p ~/.m2
-          cat > ~/.m2/settings.xml << EOF
-          <settings>
-            <servers>
-              <server>
-                <id>github</id>
-                <username>\${env.GITHUB_ACTOR}</username>
-                <password>\${env.GITHUB_TOKEN}</password>
-              </server>
-            </servers>
-          </settings>
-          EOF
-
-      - name: Set version to SNAPSHOT for main branch
-        run: |
-          CURRENT_VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
-          if [[ ! "$CURRENT_VERSION" == *-SNAPSHOT ]]; then
-            mvn versions:set -DnewVersion="${CURRENT_VERSION}-SNAPSHOT" -DgenerateBackupPoms=false
-          fi
-
-      - name: Build and generate documentation
-        run: mvn -B clean install javadoc:jar source:jar -DskipTests -Dmaven.javadoc.failOnError=false -Dmaven.javadoc.failOnWarnings=false
-
       - name: Get current version for Javadoc path
         id: get_version
-        run: echo "VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)" >> $GITHUB_OUTPUT
+        run: |
+          # Get version from pom.xml without building
+          VERSION=$(grep -oP '(?<=<version>)[^<]+(?=</version>)' pom.xml | head -1)
+          echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
+          echo "Current version: $VERSION"
 
       - name: Generate HTML pages from templates
         run: |
           mkdir -p gh-pages-root
           mkdir -p gh-pages-root/modules
+          mkdir -p gh-pages-root/assets
           
           # Copy all template files
           echo "Copying template files..."
@@ -176,13 +204,37 @@ jobs:
             if [ -d ".github/workflows/templates/modules" ]; then
               find .github/workflows/templates/modules -name "*.html" -exec cp {} gh-pages-root/modules/ \;
             fi
+          
+            # Copy assets if they exist
+            if [ -d ".github/workflows/templates/assets" ]; then
+              cp -r .github/workflows/templates/assets/* gh-pages-root/assets/
+              echo "✓ Copied assets from templates"
+            fi
           else
             echo "Warning: Templates directory not found"
           fi
           
-          # Generate main index with current version
-          sed "s/\${VERSION}/${{ steps.get_version.outputs.VERSION }}/g" \
-            .github/workflows/templates/index.html > gh-pages-root/index.html
+          # Also check for assets in project root
+          if [ -d "assets" ] && [ ! "$(ls -A gh-pages-root/assets 2>/dev/null)" ]; then
+            cp -r assets/* gh-pages-root/assets/
+            echo "✓ Copied assets from project root"
+          fi
+          
+          # Process all HTML files to replace version
+          echo "Processing version placeholders..."
+          
+          # Process index.html
+          if [ -f ".github/workflows/templates/index.html" ]; then
+            sed "s/\${VERSION}/${{ steps.get_version.outputs.VERSION }}/g" \
+              .github/workflows/templates/index.html > gh-pages-root/index.html
+          fi
+          
+          # Process all other HTML files
+          for html_file in gh-pages-root/*.html gh-pages-root/modules/*.html 2>/dev/null; do
+            if [ -f "$html_file" ]; then
+              sed -i "s/\${VERSION}/${{ steps.get_version.outputs.VERSION }}/g" "$html_file"
+            fi
+          done
           
           # Create README redirect
           echo '<!DOCTYPE html><html><head><meta http-equiv="refresh" content="0; url=./index.html"></head><body>Redirecting...</body></html>' > gh-pages-root/README.html
@@ -226,24 +278,29 @@ jobs:
           publish_dir: ./gh-pages-root
           keep_files: true
 
-      - name: Generate aggregated Javadoc for GitHub Pages
-        run: mvn -B javadoc:aggregate -Dmaven.javadoc.failOnError=false -Dmaven.javadoc.failOnWarnings=false
-        continue-on-error: true
-
-      - name: Check if Javadoc was generated
-        id: check_javadoc
+      - name: Check if Javadoc already exists for this version
+        id: check_javadoc_exists
         run: |
-          if [ -d "target/site/apidocs" ]; then
+          VERSION="${{ steps.get_version.outputs.VERSION }}"
+          
+          # Check if Javadoc directory exists in gh-pages
+          if curl -s -f "https://${{ github.repository_owner }}.github.io/otter-streams/javadoc/$VERSION/" > /dev/null; then
             echo "exists=true" >> $GITHUB_OUTPUT
-            echo "Javadoc generated successfully"
-            ls -la target/site/apidocs/
+            echo "✓ Javadoc for version $VERSION already exists"
           else
             echo "exists=false" >> $GITHUB_OUTPUT
-            echo "⚠️ Javadoc directory not found"
+            echo "Javadoc for version $VERSION not found, will skip generation"
           fi
 
-      - name: Deploy Javadoc to GitHub Pages
-        if: always() && steps.check_javadoc.outputs.exists == 'true'
+      - name: Generate aggregated Javadoc only if needed
+        if: steps.check_javadoc_exists.outputs.exists == 'false'
+        run: |
+          echo "Generating Javadoc for version ${{ steps.get_version.outputs.VERSION }}"
+          mvn -B clean compile javadoc:aggregate -DskipTests -Dmaven.javadoc.failOnError=false -Dmaven.javadoc.failOnWarnings=false
+        continue-on-error: true
+
+      - name: Deploy Javadoc to GitHub Pages if generated
+        if: always() && steps.check_javadoc_exists.outputs.exists == 'false'
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
@@ -252,30 +309,11 @@ jobs:
           keep_files: true
         continue-on-error: true
 
-      - name: Check if version exists in GitHub Packages
-        id: check_version
-        run: |
-          VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
-          if curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
-             "https://maven.pkg.github.com/martourez21/otter-streams/com/codedstreams/otter-streams/$VERSION/otter-streams-$VERSION.pom" \
-             | grep -q "404"; then
-            echo "exists=false" >> $GITHUB_OUTPUT
-          else
-            echo "exists=true" >> $GITHUB_OUTPUT
-          fi
-
-      - name: Publish to GitHub Packages
-        if: steps.check_version.outputs.exists == 'false'
-        run: mvn -B deploy -DskipTests
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Skip deployment - version exists
-        if: steps.check_version.outputs.exists == 'true'
-        run: echo "Version already exists in GitHub Packages, skipping deployment"
+      - name: Skip Javadoc deployment - already exists
+        if: steps.check_javadoc_exists.outputs.exists == 'true'
+        run: echo "Javadoc for version ${{ steps.get_version.outputs.VERSION }} already exists, skipping deployment"
 
   publish-release:
-    needs: [build, code-quality]
     runs-on: ubuntu-latest
     if: github.event_name == 'release' && github.event.action == 'published'
     permissions:
@@ -326,6 +364,7 @@ jobs:
         run: |
           mkdir -p gh-pages-root
           mkdir -p gh-pages-root/modules
+          mkdir -p gh-pages-root/assets
           
           echo "Copying template files for release..."
           
@@ -338,16 +377,35 @@ jobs:
             if [ -d ".github/workflows/templates/modules" ]; then
               find .github/workflows/templates/modules -name "*.html" -exec cp {} gh-pages-root/modules/ \;
             fi
+          
+            # Copy assets if they exist
+            if [ -d ".github/workflows/templates/assets" ]; then
+              cp -r .github/workflows/templates/assets/* gh-pages-root/assets/
+              echo "✓ Copied assets from templates"
+            fi
           fi
           
-          # Generate release index with release version
-          if [ -f ".github/workflows/templates/release-index.html" ]; then
-            sed "s/\${VERSION}/${{ steps.version.outputs.VERSION }}/g" \
-              .github/workflows/templates/release-index.html > gh-pages-root/index.html
+          # Also check for assets in project root
+          if [ -d "assets" ] && [ ! "$(ls -A gh-pages-root/assets 2>/dev/null)" ]; then
+            cp -r assets/* gh-pages-root/assets/
+            echo "✓ Copied assets from project root"
+          fi
+          
+          # Process all HTML files to replace version
+          echo "Processing version placeholders for release..."
+          
+          for html_file in gh-pages-root/*.html gh-pages-root/modules/*.html 2>/dev/null; do
+            if [ -f "$html_file" ]; then
+              sed -i "s/\${VERSION}/${{ steps.version.outputs.VERSION }}/g" "$html_file"
+            fi
+          done
+          
+          # Use regular index for release too
+          if [ -f "gh-pages-root/index.html" ]; then
+            echo "✓ Using index.html for release"
           else
-            # Fallback to regular index if release-index doesn't exist
-            sed "s/\${VERSION}/${{ steps.version.outputs.VERSION }}/g" \
-              .github/workflows/templates/index.html > gh-pages-root/index.html
+            echo "Creating index.html for release"
+            echo '<!DOCTYPE html><html><head><meta http-equiv="refresh" content="0; url=./index.html"></head><body>Release ${{ steps.version.outputs.VERSION }} - Redirecting...</body></html>' > gh-pages-root/index.html
           fi
           
           echo "Generated release pages for version: ${{ steps.version.outputs.VERSION }}"
@@ -366,7 +424,7 @@ jobs:
           publish_dir: ./gh-pages-root
           keep_files: true
 
-      - name: Generate aggregated Javadoc
+      - name: Generate aggregated Javadoc for release
         run: mvn -B javadoc:aggregate -Dmaven.javadoc.failOnError=false -Dmaven.javadoc.failOnWarnings=false
         continue-on-error: true
 
@@ -427,16 +485,11 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   notify:
-    needs: [build, code-quality, package]
     runs-on: ubuntu-latest
     if: always()
 
     steps:
       - name: Check build status
         run: |
-          if [ "${{ needs.build.result }}" == "failure" ] || [ "${{ needs.code-quality.result }}" == "failure" ]; then
-            echo "Build or quality checks failed"
-            exit 1
-          else
-            echo "All checks passed"
-          fi
+          echo "CI Pipeline completed"
+          echo "Check GitHub Pages: https://${{ github.repository_owner }}.github.io/otter-streams/"

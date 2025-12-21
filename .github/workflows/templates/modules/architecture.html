@@ -204,6 +204,7 @@
             border: 1px solid var(--border);
             margin: 30px 0;
             text-align: center;
+            overflow: hidden;
         }
 
         .architecture-diagram img {
@@ -211,6 +212,11 @@
             height: auto;
             border-radius: 8px;
             border: 1px solid var(--border);
+            max-height: 500px;
+            object-fit: contain;
+            width: 100%;
+            display: block;
+            margin: 0 auto;
         }
 
         .diagram-caption {
@@ -322,6 +328,35 @@
             line-height: 1.6;
         }
 
+        .use-case-img {
+            width: 100%;
+            height: 220px;
+            object-fit: cover;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            margin: 15px 0;
+        }
+
+        .medium-img {
+            max-width: 100%;
+            height: auto;
+            max-height: 400px;
+            object-fit: contain;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            margin: 15px 0;
+        }
+
+        .small-img {
+            max-width: 100%;
+            height: auto;
+            max-height: 300px;
+            object-fit: contain;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            margin: 15px 0;
+        }
+
         .footer {
             background: var(--card-bg);
             border-top: 1px solid var(--border);
@@ -419,6 +454,10 @@
                 grid-template-columns: 1fr;
                 gap: 40px;
             }
+
+            .architecture-diagram img {
+                max-height: 400px;
+            }
         }
 
         @media (max-width: 768px) {
@@ -448,6 +487,40 @@
                 flex-direction: column;
                 text-align: center;
             }
+
+            .architecture-diagram img {
+                max-height: 300px;
+            }
+
+            .use-case-img {
+                height: 180px;
+            }
+
+            .medium-img {
+                max-height: 300px;
+            }
+
+            .small-img {
+                max-height: 200px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .hero h1 {
+                font-size: 2em;
+            }
+
+            .section-title {
+                font-size: 1.8em;
+            }
+
+            .architecture-diagram img {
+                max-height: 200px;
+            }
+
+            .use-case-img {
+                height: 150px;
+            }
         }
     </style>
 </head>
@@ -464,7 +537,7 @@
             <a href="../index.html" class="nav-link">Home</a>
             <a href="architecture.html" class="nav-link">Architecture</a>
             <a href="../documentation.html" class="nav-link">Documentation</a>
-            <a href="javadoc/${VERSION}/index.html" class="nav-link">API Docs</a>
+            <a href="../javadoc/${VERSION}/index.html" class="nav-link">API Docs</a>
             <a href="https://github.com/martourez21/otter-streams" class="nav-link" target="_blank">GitHub</a>
             <a href="mailto:nestorabiawuh@gmail.com" class="nav-link">Contact</a>
         </div>
@@ -472,7 +545,7 @@
 
     <div class="hero">
         <div class="version-tag">v${VERSION}</div>
-        <h1>System Architecture<br>Overview</h1>
+        <h1>SDK Architecture<br>Overview</h1>
         <p>Explore the scalable, high-performance architecture powering Otter Streams - the real-time ML inference library for Apache Flink.</p>
     </div>
 </header>
@@ -483,7 +556,7 @@
         <h2 class="section-title">🏗️ System Architecture Overview</h2>
 
         <div class="architecture-diagram">
-            <img src="docs/assets/architecture-main.png" alt="Otter Streams Main Architecture">
+            <img src="../assets/architecture-main.png" alt="Otter Streams Main Architecture" class="medium-img">
             <p class="diagram-caption">Figure 1: High-level system architecture showing complete inference pipeline</p>
         </div>
 
@@ -502,10 +575,10 @@
 
     <!-- Module Architecture -->
     <section class="section">
-        <h2 class="section-title">🧩 Module Architecture</h2>
+        <h2 class="section-title"> Module Architecture</h2>
 
         <div class="architecture-diagram">
-            <img src="docs/assets/architecture-modules.png" alt="Module Dependencies Architecture">
+            <img src="../assets/architecture-modules.png" alt="Module Dependencies Architecture" class="medium-img">
             <p class="diagram-caption">Figure 2: Module dependencies and relationships</p>
         </div>
 
@@ -553,14 +626,14 @@
         <h2 class="section-title"> Engine Architecture</h2>
 
         <div class="architecture-diagram">
-            <img src="docs/assets/architecture-onnx.png" alt="ONNX Engine Architecture">
+            <img src="../assets/architecture-onnx.png" alt="ONNX Engine Architecture" class="small-img">
             <p class="diagram-caption">Figure 3: ONNX Runtime engine architecture and workflow</p>
         </div>
 
         <div class="card">
             <h3>TensorFlow Engine Architecture</h3>
             <div class="architecture-diagram" style="margin-top: 20px;">
-                <img src="docs/assets/architecture-tensorflow.png" alt="TensorFlow Engine Architecture">
+                <img src="../assets/architecture-tensorflow.png" alt="TensorFlow Engine Architecture" class="small-img">
                 <p class="diagram-caption">Figure 4: TensorFlow SavedModel execution architecture</p>
             </div>
         </div>
@@ -571,14 +644,14 @@
         <h2 class="section-title">📊 Data Flow Architecture</h2>
 
         <div class="architecture-diagram">
-            <img src="docs/assets/dataflow-main.png" alt="Main Data Flow Architecture">
+            <img src="../assets/dataflow-main.png" alt="Main Data Flow Architecture" class="medium-img">
             <p class="diagram-caption">Figure 5: End-to-end data flow from input to output</p>
         </div>
 
         <div class="card">
             <h3>Fraud Detection Data Flow</h3>
             <div class="architecture-diagram" style="margin-top: 20px;">
-                <img src="docs/assets/dataflow-fraud.png" alt="Fraud Detection Data Flow">
+                <img src="../assets/dataflow-fraud.png" alt="Fraud Detection Data Flow" class="small-img">
                 <p class="diagram-caption">Figure 6: Real-time fraud detection pipeline sequence</p>
             </div>
         </div>
@@ -591,9 +664,7 @@
         <div class="use-case-grid">
             <div class="use-case">
                 <h4>Recommendation System</h4>
-                <div class="architecture-diagram" style="margin: 15px 0; padding: 20px;">
-                    <img src="docs/assets/usecase-recommendations.png" alt="Recommendation System Architecture">
-                </div>
+                <img src="../assets/usecase-recommendations.png" alt="Recommendation System Architecture" class="use-case-img">
                 <p><strong>Architecture Features:</strong></p>
                 <ul>
                     <li>Real-time user behavior processing</li>
@@ -605,9 +676,7 @@
 
             <div class="use-case">
                 <h4>Anomaly Detection</h4>
-                <div class="architecture-diagram" style="margin: 15px 0; padding: 20px;">
-                    <img src="docs/assets/usecase-anomaly.png" alt="Anomaly Detection Architecture">
-                </div>
+                <img src="../assets/usecase-anomaly.png" alt="Anomaly Detection Architecture" class="use-case-img">
                 <p><strong>Architecture Features:</strong></p>
                 <ul>
                     <li>Time-series window processing</li>
@@ -624,14 +693,14 @@
         <h2 class="section-title">📈 Monitoring Architecture</h2>
 
         <div class="architecture-diagram">
-            <img src="docs/assets/monitoring-overview.png" alt="Monitoring Architecture Overview">
+            <img src="../assets/monitoring-overview.png" alt="Monitoring Architecture Overview" class="medium-img">
             <p class="diagram-caption">Figure 7: Complete monitoring and observability architecture</p>
         </div>
 
         <div class="card">
             <h3>Metrics Collection Architecture</h3>
             <div class="architecture-diagram" style="margin-top: 20px;">
-                <img src="docs/assets/monitoring-metrics.png" alt="Metrics Collection Architecture">
+                <img src="../assets/monitoring-metrics.png" alt="Metrics Collection Architecture" class="small-img">
                 <p class="diagram-caption">Figure 8: Metrics collection and dashboard architecture</p>
             </div>
         </div>
@@ -652,7 +721,7 @@ InferenceConfig.builder()
 
     <!-- Performance Architecture -->
     <section class="section">
-        <h2 class="section-title">⚡ Performance Architecture</h2>
+        <h2 class="section-title"> Performance Architecture</h2>
 
         <div class="card">
             <h3>Optimization Features</h3>
