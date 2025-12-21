@@ -417,6 +417,29 @@
             color: var(--danger);
         }
 
+        /* Alert Boxes */
+        .alert {
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 4px solid;
+        }
+
+        .alert-info {
+            background: rgba(0, 145, 213, 0.1);
+            border-left-color: var(--primary);
+        }
+
+        .alert-warning {
+            background: rgba(210, 153, 34, 0.1);
+            border-left-color: var(--warning);
+        }
+
+        .alert-success {
+            background: rgba(46, 160, 67, 0.1);
+            border-left-color: var(--success);
+        }
+
         /* Footer */
         .footer {
             background: var(--card-bg);
@@ -521,7 +544,7 @@
         </div>
         <div class="nav-links">
             <a href="../index.html" class="nav-link">🏠 Home</a>
-            <a href="javadoc/index.html" class="nav-link">📚 API Docs</a>
+            <a href="../javadoc/1.0.15/index.html" class="nav-link">📚 API Docs</a>
             <a href="https://github.com/martourez21/otter-streams" class="nav-link">📦 GitHub</a>
             <a href="mailto:nestorabiawuh@gmail.com" class="nav-link">✉️ Contact</a>
         </div>
@@ -569,8 +592,10 @@
                     <h3>Resources</h3>
                     <div class="sidebar-links">
                         <a href="https://github.com/martourez21/otter-streams" class="sidebar-link">📦 Repository</a>
-                        <a href="javadoc/index.html" class="sidebar-link">📚 API Documentation</a>
+                        <a href="../javadoc/1.0.15/index.html" class="sidebar-link">📚 API Documentation</a>
                         <a href="https://github.com/martourez21/otter-streams/issues" class="sidebar-link">🐛 Issue Tracker</a>
+                        <a href="../modules/architecture.html" class="sidebar-link">🏗️ Architecture</a>
+                        <a href="../modules/examples.html" class="sidebar-link">💡 Examples</a>
                         <a href="mailto:nestorabiawuh@gmail.com" class="sidebar-link">💌 Contact Developer</a>
                     </div>
                 </div>
@@ -638,14 +663,14 @@ chmod +x setup.sh
 &lt;dependency&gt;
     &lt;groupId&gt;com.codedstreams&lt;/groupId&gt;
     &lt;artifactId&gt;ml-inference-core&lt;/artifactId&gt;
-    &lt;version&gt;1.0.0&lt;/version&gt;
+    &lt;version&gt;1.0.15&lt;/version&gt;
 &lt;/dependency&gt;
 
 &lt;!-- Add framework-specific modules as needed --&gt;
 &lt;dependency&gt;
     &lt;groupId&gt;com.codedstreams&lt;/groupId&gt;
     &lt;artifactId&gt;otter-stream-onnx&lt;/artifactId&gt;
-    &lt;version&gt;1.0.0&lt;/version&gt;
+    &lt;version&gt;1.0.15&lt;/version&gt;
 &lt;/dependency&gt;</code></pre>
                 </div>
             </section>
@@ -788,6 +813,331 @@ mvn exec:java -pl otter-stream-examples \
                 </div>
             </section>
 
+            <!-- Configuration -->
+            <section id="configuration" class="section">
+                <h2 class="section-title">⚙️ Configuration</h2>
+
+                <div class="alert alert-info">
+                    <p><strong>Tip:</strong> Most configuration options have sensible defaults. Start with the basics and customize as needed.</p>
+                </div>
+
+                <h3 class="section-subtitle">Complete Configuration Example</h3>
+                <div class="code-block">
+                    <div class="code-header">
+                        <span class="code-language">java</span>
+                        <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                    </div>
+                    <pre><code>InferenceConfig config = InferenceConfig.builder()
+    // Model configuration
+    .modelConfig(ModelConfig.builder()
+        .modelId("my-model")
+        .modelPath("/path/to/model.onnx")
+        .format(ModelFormat.ONNX)
+        .modelName("production-model")
+        .modelVersion("2.0")
+        .build())
+
+    // Performance settings
+    .batchSize(64)
+    .batchTimeout(Duration.ofMillis(100))
+    .parallelism(4)
+    .maxConcurrentRequests(200)
+    .queueSize(1000)
+
+    // Caching
+    .enableCaching(true)
+    .cacheSize(10000)
+    .cacheTtl(Duration.ofMinutes(30))
+
+    // Error handling
+    .maxRetries(3)
+    .retryDelay(Duration.ofMillis(100))
+    .timeout(Duration.ofSeconds(10))
+
+    // Monitoring
+    .enableMetrics(true)
+    .metricsPrefix("myapp.ml.inference")
+    .collectLatencyMetrics(true)
+    .collectThroughputMetrics(true)
+    .collectErrorMetrics(true)
+    .collectCacheMetrics(true)
+    .metricsExportInterval(Duration.ofSeconds(30))
+
+    // Resource management
+    .gpuAcceleration(true)
+    .cpuThreads(4)
+    .memoryLimit(2048) // MB
+
+    .build();</code></pre>
+                </div>
+
+                <h3 class="section-subtitle">Common Configuration Scenarios</h3>
+                <div class="cards-grid">
+                    <div class="card">
+                        <h4>🧪 Development</h4>
+                        <p>Small batch size, no caching, minimal resources. Focus on correctness.</p>
+                    </div>
+
+                    <div class="card">
+                        <h4>🚀 Production</h4>
+                        <p>Large batch size, caching enabled, full monitoring. Focus on performance.</p>
+                    </div>
+
+                    <div class="card">
+                        <h4>📈 High Throughput</h4>
+                        <p>Parallel processing, large queue size, GPU acceleration for maximum speed.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Performance -->
+            <section id="performance" class="section">
+                <h2 class="section-title">⚡ Performance Optimization</h2>
+
+                <div class="alert alert-warning">
+                    <p><strong>Important:</strong> Always measure performance in your specific environment before optimizing.</p>
+                </div>
+
+                <h3 class="section-subtitle">Performance Checklist</h3>
+                <div class="cards-grid">
+                    <div class="card">
+                        <h4>📊 Batch Optimization</h4>
+                        <p>Find optimal batch size for your model (usually between 16-128).</p>
+                        <ul>
+                            <li>Start with batch size 32</li>
+                            <li>Measure latency vs throughput</li>
+                            <li>Adjust based on your SLA</li>
+                        </ul>
+                    </div>
+
+                    <div class="card">
+                        <h4>💾 Caching Strategy</h4>
+                        <p>Enable caching for repeated predictions with similar inputs.</p>
+                        <ul>
+                            <li>Result caching for deterministic models</li>
+                            <li>Feature caching for expensive preprocessing</li>
+                            <li>Model caching for frequent reloads</li>
+                        </ul>
+                    </div>
+
+                    <div class="card">
+                        <h4>⚙️ Parallel Processing</h4>
+                        <p>Configure parallelism based on your Flink cluster resources.</p>
+                        <ul>
+                            <li>1-2 threads per CPU core</li>
+                            <li>Monitor Flink task manager metrics</li>
+                            <li>Adjust based on backpressure</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <h3 class="section-subtitle">Performance Tuning Example</h3>
+                <div class="code-block">
+                    <div class="code-header">
+                        <span class="code-language">java</span>
+                        <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                    </div>
+                    <pre><code>// High-performance configuration
+InferenceConfig config = InferenceConfig.builder()
+    .modelConfig(modelConfig)
+
+    // Batch settings for throughput
+    .batchSize(64)
+    .batchTimeout(Duration.ofMillis(50))
+
+    // Parallel execution
+    .parallelism(Runtime.getRuntime().availableProcessors())
+    .maxConcurrentRequests(500)
+    .queueSize(5000)
+
+    // Caching for repeated patterns
+    .enableCaching(true)
+    .cacheSize(50000)
+    .cacheTtl(Duration.ofHours(1))
+
+    // GPU acceleration if available
+    .gpuAcceleration(true)
+
+    // Memory optimization
+    .memoryLimit(4096)
+    .cpuThreads(8)
+
+    .build();</code></pre>
+                </div>
+            </section>
+
+            <!-- Monitoring -->
+            <section id="monitoring" class="section">
+                <h2 class="section-title">📊 Monitoring & Observability</h2>
+
+                <h3 class="section-subtitle">Available Metrics</h3>
+                <div class="cards-grid">
+                    <div class="card">
+                        <h4>⏱️ Latency Metrics</h4>
+                        <p>Track prediction time, preprocessing, and postprocessing.</p>
+                        <ul>
+                            <li><code>inference.latency.p50</code></li>
+                            <li><code>inference.latency.p95</code></li>
+                            <li><code>inference.latency.p99</code></li>
+                        </ul>
+                    </div>
+
+                    <div class="card">
+                        <h4>📈 Throughput Metrics</h4>
+                        <p>Monitor requests per second and batch efficiency.</p>
+                        <ul>
+                            <li><code>inference.throughput.requests</code></li>
+                            <li><code>inference.throughput.batches</code></li>
+                            <li><code>inference.queue.size</code></li>
+                        </ul>
+                    </div>
+
+                    <div class="card">
+                        <h4>🔍 Error Metrics</h4>
+                        <p>Track failures, retries, and timeout rates.</p>
+                        <ul>
+                            <li><code>inference.errors.total</code></li>
+                            <li><code>inference.errors.rate</code></li>
+                            <li><code>inference.retries.count</code></li>
+                        </ul>
+                    </div>
+
+                    <div class="card">
+                        <h4>💾 Cache Metrics</h4>
+                        <p>Monitor cache hit rates and efficiency.</p>
+                        <ul>
+                            <li><code>inference.cache.hit_rate</code></li>
+                            <li><code>inference.cache.size</code></li>
+                            <li><code>inference.cache.evictions</code></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <h3 class="section-subtitle">Integration with Monitoring Systems</h3>
+                <div class="code-block">
+                    <div class="code-header">
+                        <span class="code-language">java</span>
+                        <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                    </div>
+                    <pre><code>// Enable comprehensive monitoring
+InferenceConfig config = InferenceConfig.builder()
+    .modelConfig(modelConfig)
+
+    // Enable all metrics
+    .enableMetrics(true)
+    .metricsPrefix("myapp.ml.inference")
+
+    // Detailed metrics collection
+    .collectLatencyMetrics(true)
+    .collectThroughputMetrics(true)
+    .collectErrorMetrics(true)
+    .collectCacheMetrics(true)
+    .collectMemoryMetrics(true)
+    .collectGpuMetrics(true)
+
+    // Export to Prometheus
+    .metricsExporter("prometheus")
+    .metricsExportInterval(Duration.ofSeconds(15))
+
+    // Alert thresholds
+    .alertOnHighLatency(Duration.ofMillis(1000))
+    .alertOnHighErrorRate(0.05) // 5%
+    .alertOnQueueBackpressure(1000)
+
+    .build();</code></pre>
+                </div>
+            </section>
+
+            <!-- Troubleshooting -->
+            <section id="troubleshooting" class="section">
+                <h2 class="section-title">🔍 Troubleshooting Guide</h2>
+
+                <div class="alert alert-info">
+                    <p><strong>Need Help?</strong> Check the <a href="https://github.com/martourez21/otter-streams/issues" style="color: var(--primary);">GitHub Issues</a> or <a href="mailto:nestorabiawuh@gmail.com" style="color: var(--primary);">contact the developer</a>.</p>
+                </div>
+
+                <h3 class="section-subtitle">Common Issues and Solutions</h3>
+                <div class="cards-grid">
+                    <div class="card">
+                        <h4>🚫 Model Loading Failures</h4>
+                        <p><strong>Symptoms:</strong> Model fails to load, throws exceptions</p>
+                        <p><strong>Solutions:</strong></p>
+                        <ul>
+                            <li>Verify model file exists and is readable</li>
+                            <li>Check model format compatibility</li>
+                            <li>Ensure all dependencies are installed</li>
+                            <li>Check file permissions</li>
+                        </ul>
+                    </div>
+
+                    <div class="card">
+                        <h4>🐌 Slow Inference</h4>
+                        <p><strong>Symptoms:</strong> High latency, low throughput</p>
+                        <p><strong>Solutions:</strong></p>
+                        <ul>
+                            <li>Increase batch size</li>
+                            <li>Enable GPU acceleration</li>
+                            <li>Optimize model (quantization, pruning)</li>
+                            <li>Adjust batch timeout</li>
+                        </ul>
+                    </div>
+
+                    <div class="card">
+                        <h4>💥 Memory Issues</h4>
+                        <p><strong>Symptoms:</strong> OutOfMemory errors, high GC activity</p>
+                        <p><strong>Solutions:</strong></p>
+                        <ul>
+                            <li>Reduce batch size</li>
+                            <li>Enable result caching</li>
+                            <li>Increase Flink task manager memory</li>
+                            <li>Monitor with metrics</li>
+                        </ul>
+                    </div>
+
+                    <div class="card">
+                        <h4>🔗 Connection Problems</h4>
+                        <p><strong>Symptoms:</strong> Remote inference failures, timeouts</p>
+                        <p><strong>Solutions:</strong></p>
+                        <ul>
+                            <li>Check network connectivity</li>
+                            <li>Increase timeout settings</li>
+                            <li>Implement retry logic</li>
+                            <li>Add circuit breaker</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <h3 class="section-subtitle">Debug Mode</h3>
+                <div class="code-block">
+                    <div class="code-header">
+                        <span class="code-language">java</span>
+                        <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                    </div>
+                    <pre><code>// Enable debug logging
+InferenceConfig config = InferenceConfig.builder()
+    .modelConfig(modelConfig)
+
+    // Debug settings
+    .enableDebug(true)
+    .logLevel("DEBUG")
+    .logPredictions(true)        // Log input/output
+    .logLatencies(true)          // Detailed timing
+    .logErrors(true)             // Full error stack traces
+    .logCacheActivity(true)      // Cache hits/misses
+
+    // Performance profiling
+    .profileMode(true)
+    .profileSampleRate(0.01)     // 1% of requests
+    .profileOutput("profiles/")
+
+    // Health checks
+    .healthCheckInterval(Duration.ofMinutes(5))
+    .enableSelfTest(true)
+
+    .build();</code></pre>
+                </div>
+            </section>
+
             <!-- Next Steps -->
             <section class="section">
                 <h2 class="section-title"> Next Steps</h2>
@@ -813,6 +1163,10 @@ mvn exec:java -pl otter-stream-examples \
                         <p>We welcome contributions! Check out our GitHub repository.</p>
                     </div>
                 </div>
+
+                <div class="alert alert-success" style="margin-top: 30px;">
+                    <p><strong>Ready to dive deeper?</strong> Explore the <a href="../modules/architecture.html" style="color: var(--success); font-weight: 600;">Architecture Documentation</a> and <a href="../modules/examples.html" style="color: var(--success); font-weight: 600;">Example Gallery</a> for more advanced use cases.</p>
+                </div>
             </section>
         </div>
     </div>
@@ -822,10 +1176,12 @@ mvn exec:java -pl otter-stream-examples \
 <footer class="footer">
     <div class="footer-content">
         <div class="footer-links">
-            <a href="../index.html" class="footer-link">🏠 Home</a>
-            <a href="javadoc/index.html" class="footer-link">📚 API Docs</a>
-            <a href="https://github.com/martourez21/otter-streams" class="footer-link">📦 GitHub</a>
-            <a href="https://github.com/martourez21/otter-streams/issues" class="footer-link">🐛 Issues</a>
+            <a href="../index.html" class="footer-link"> Home</a>
+            <a href="../javadoc/1.0.15/index.html" class="footer-link"> API Docs</a>
+            <a href="https://github.com/martourez21/otter-streams" class="footer-link"> GitHub</a>
+            <a href="https://github.com/martourez21/otter-streams/issues" class="footer-link"> Issues</a>
+            <a href="../modules/architecture.html" class="footer-link"> Architecture</a>
+            <a href="../modules/examples.html" class="footer-link"> Examples</a>
         </div>
         <p class="org-info">Built with Passion by <span class="org-name">Nestor Martourez</span> | © 2025 CodedStreams</p>
         <p class="org-info">Apache Flink ML Inference Library | I welcome your contributions! </p>

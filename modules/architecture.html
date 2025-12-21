@@ -205,29 +205,36 @@
             margin: 30px 0;
             text-align: center;
             overflow: hidden;
+            min-height: 350px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
         }
 
-        .diagram-image {
+        .architecture-diagram img {
             max-width: 100%;
             height: auto;
             border-radius: 8px;
             border: 1px solid var(--border);
-            object-fit: contain;
             width: 100%;
             display: block;
             margin: 0 auto;
+            background: rgba(0, 145, 213, 0.05);
         }
 
         .large-diagram {
-            max-height: 500px;
+            max-height: 600px;
+            min-height: 400px;
         }
 
         .medium-diagram {
-            max-height: 400px;
+            max-height: 500px;
+            min-height: 300px;
         }
 
         .small-diagram {
-            max-height: 300px;
+            max-height: 400px;
+            min-height: 200px;
         }
 
         .diagram-caption {
@@ -320,6 +327,7 @@
             border-radius: 12px;
             padding: 30px;
             border: 1px solid var(--border);
+            min-height: 450px;
         }
 
         .use-case h4 {
@@ -341,11 +349,12 @@
 
         .use-case-img {
             width: 100%;
-            height: 200px;
+            height: 250px;
             object-fit: cover;
             border-radius: 8px;
             border: 1px solid var(--border);
             margin: 15px 0;
+            background: rgba(0, 145, 213, 0.05);
         }
 
         .footer {
@@ -447,15 +456,18 @@
             }
 
             .large-diagram {
-                max-height: 400px;
+                max-height: 500px;
+                min-height: 350px;
             }
 
             .medium-diagram {
-                max-height: 300px;
+                max-height: 400px;
+                min-height: 250px;
             }
 
             .small-diagram {
-                max-height: 250px;
+                max-height: 300px;
+                min-height: 180px;
             }
         }
 
@@ -488,19 +500,26 @@
             }
 
             .large-diagram {
-                max-height: 300px;
+                max-height: 400px;
+                min-height: 250px;
             }
 
             .medium-diagram {
-                max-height: 250px;
+                max-height: 300px;
+                min-height: 200px;
             }
 
             .small-diagram {
-                max-height: 200px;
+                max-height: 250px;
+                min-height: 150px;
             }
 
             .use-case-img {
-                height: 180px;
+                height: 200px;
+            }
+
+            .use-case {
+                min-height: 400px;
             }
         }
 
@@ -514,19 +533,26 @@
             }
 
             .large-diagram {
-                max-height: 200px;
+                max-height: 300px;
+                min-height: 200px;
             }
 
             .medium-diagram {
-                max-height: 180px;
+                max-height: 250px;
+                min-height: 150px;
             }
 
             .small-diagram {
-                max-height: 150px;
+                max-height: 200px;
+                min-height: 120px;
             }
 
             .use-case-img {
-                height: 150px;
+                height: 180px;
+            }
+
+            .use-case {
+                min-height: 350px;
             }
         }
 
@@ -539,6 +565,36 @@
             font-weight: 600;
             border-radius: 8px;
             border: 1px solid var(--border);
+            padding: 40px;
+            text-align: center;
+            font-size: 1.1em;
+        }
+
+        .loading-placeholder {
+            background: linear-gradient(90deg, #1a1f2e 25%, #2d3748 50%, #1a1f2e 75%);
+            background-size: 400% 100%;
+            animation: loading 1.5s infinite;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+        }
+
+        @keyframes loading {
+            0% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .img-error {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .img-error p {
+            color: var(--text-secondary);
+            margin-top: 10px;
         }
     </style>
 </head>
@@ -575,7 +631,9 @@
 
         <div class="architecture-diagram">
             <img src="../assets/architecture-main.png" alt="Otter Streams Main Architecture" class="diagram-image large-diagram"
-                 onerror="this.onerror=null; this.src='https://via.placeholder.com/800x400/0091d5/ffffff?text=Architecture+Diagram'; this.classList.add('img-placeholder'); this.style.height='400px';">
+                 onerror="handleImageError(this)"
+                 onload="handleImageLoad(this)"
+                 loading="lazy">
             <p class="diagram-caption">Figure 1: High-level system architecture showing complete inference pipeline</p>
         </div>
 
@@ -594,11 +652,13 @@
 
     <!-- Module Architecture -->
     <section class="section">
-        <h2 class="section-title"> Module Architecture</h2>
+        <h2 class="section-title">🧩 Module Architecture</h2>
 
         <div class="architecture-diagram">
             <img src="../assets/architecture-modules.png" alt="Module Dependencies Architecture" class="diagram-image medium-diagram"
-                 onerror="this.onerror=null; this.src='https://via.placeholder.com/800x300/0091d5/ffffff?text=Module+Dependencies'; this.classList.add('img-placeholder'); this.style.height='300px';">
+                 onerror="handleImageError(this)"
+                 onload="handleImageLoad(this)"
+                 loading="lazy">
             <p class="diagram-caption">Figure 2: Module dependencies and relationships</p>
         </div>
 
@@ -643,11 +703,13 @@
 
     <!-- Engine Architecture -->
     <section class="section">
-        <h2 class="section-title"> Engine Architecture</h2>
+        <h2 class="section-title">🎯 Engine Architecture</h2>
 
         <div class="architecture-diagram">
             <img src="../assets/architecture-onnx.png" alt="ONNX Engine Architecture" class="diagram-image small-diagram"
-                 onerror="this.onerror=null; this.src='https://via.placeholder.com/800x250/0091d5/ffffff?text=ONNX+Engine'; this.classList.add('img-placeholder'); this.style.height='250px';">
+                 onerror="handleImageError(this)"
+                 onload="handleImageLoad(this)"
+                 loading="lazy">
             <p class="diagram-caption">Figure 3: ONNX Runtime engine architecture and workflow</p>
         </div>
 
@@ -655,7 +717,9 @@
             <h3>TensorFlow Engine Architecture</h3>
             <div class="architecture-diagram" style="margin-top: 20px;">
                 <img src="../assets/architecture-tensorflow.png" alt="TensorFlow Engine Architecture" class="diagram-image small-diagram"
-                     onerror="this.onerror=null; this.src='https://via.placeholder.com/800x250/0091d5/ffffff?text=TensorFlow+Engine'; this.classList.add('img-placeholder'); this.style.height='250px';">
+                     onerror="handleImageError(this)"
+                     onload="handleImageLoad(this)"
+                     loading="lazy">
                 <p class="diagram-caption">Figure 4: TensorFlow SavedModel execution architecture</p>
             </div>
         </div>
@@ -663,11 +727,13 @@
 
     <!-- Data Flow Architecture -->
     <section class="section">
-        <h2 class="section-title"> Data Flow Architecture</h2>
+        <h2 class="section-title">📊 Data Flow Architecture</h2>
 
         <div class="architecture-diagram">
             <img src="../assets/dataflow-main.png" alt="Main Data Flow Architecture" class="diagram-image medium-diagram"
-                 onerror="this.onerror=null; this.src='https://via.placeholder.com/800x300/0091d5/ffffff?text=Data+Flow'; this.classList.add('img-placeholder'); this.style.height='300px';">
+                 onerror="handleImageError(this)"
+                 onload="handleImageLoad(this)"
+                 loading="lazy">
             <p class="diagram-caption">Figure 5: End-to-end data flow from input to output</p>
         </div>
 
@@ -675,7 +741,9 @@
             <h3>Fraud Detection Data Flow</h3>
             <div class="architecture-diagram" style="margin-top: 20px;">
                 <img src="../assets/dataflow-fraud.png" alt="Fraud Detection Data Flow" class="diagram-image small-diagram"
-                     onerror="this.onerror=null; this.src='https://via.placeholder.com/800x250/0091d5/ffffff?text=Fraud+Detection'; this.classList.add('img-placeholder'); this.style.height='250px';">
+                     onerror="handleImageError(this)"
+                     onload="handleImageLoad(this)"
+                     loading="lazy">
                 <p class="diagram-caption">Figure 6: Real-time fraud detection pipeline sequence</p>
             </div>
         </div>
@@ -683,13 +751,15 @@
 
     <!-- Use Case Architecture -->
     <section class="section">
-        <h2 class="section-title"> Use Case Architecture</h2>
+        <h2 class="section-title">🚀 Use Case Architecture</h2>
 
         <div class="use-case-grid">
             <div class="use-case">
                 <h4>Recommendation System</h4>
                 <img src="../assets/usecase-recommendations.png" alt="Recommendation System Architecture" class="use-case-img"
-                     onerror="this.onerror=null; this.src='https://via.placeholder.com/600x200/0091d5/ffffff?text=Recommendations'; this.classList.add('img-placeholder');">
+                     onerror="handleImageError(this)"
+                     onload="handleImageLoad(this)"
+                     loading="lazy">
                 <p><strong>Architecture Features:</strong></p>
                 <ul>
                     <li>Real-time user behavior processing</li>
@@ -702,7 +772,9 @@
             <div class="use-case">
                 <h4>Anomaly Detection</h4>
                 <img src="../assets/usecase-anomaly.png" alt="Anomaly Detection Architecture" class="use-case-img"
-                     onerror="this.onerror=null; this.src='https://via.placeholder.com/600x200/0091d5/ffffff?text=Anomaly+Detection'; this.classList.add('img-placeholder');">
+                     onerror="handleImageError(this)"
+                     onload="handleImageLoad(this)"
+                     loading="lazy">
                 <p><strong>Architecture Features:</strong></p>
                 <ul>
                     <li>Time-series window processing</li>
@@ -720,7 +792,9 @@
 
         <div class="architecture-diagram">
             <img src="../assets/monitoring-overview.png" alt="Monitoring Architecture Overview" class="diagram-image medium-diagram"
-                 onerror="this.onerror=null; this.src='https://via.placeholder.com/800x300/0091d5/ffffff?text=Monitoring'; this.classList.add('img-placeholder'); this.style.height='300px';">
+                 onerror="handleImageError(this)"
+                 onload="handleImageLoad(this)"
+                 loading="lazy">
             <p class="diagram-caption">Figure 7: Complete monitoring and observability architecture</p>
         </div>
 
@@ -728,7 +802,9 @@
             <h3>Metrics Collection Architecture</h3>
             <div class="architecture-diagram" style="margin-top: 20px;">
                 <img src="../assets/monitoring-metrics.png" alt="Metrics Collection Architecture" class="diagram-image small-diagram"
-                     onerror="this.onerror=null; this.src='https://via.placeholder.com/800x250/0091d5/ffffff?text=Metrics'; this.classList.add('img-placeholder'); this.style.height='250px';">
+                     onerror="handleImageError(this)"
+                     onload="handleImageLoad(this)"
+                     loading="lazy">
                 <p class="diagram-caption">Figure 8: Metrics collection and dashboard architecture</p>
             </div>
         </div>
@@ -749,7 +825,7 @@ InferenceConfig.builder()
 
     <!-- Performance Architecture -->
     <section class="section">
-        <h2 class="section-title"> Performance Architecture</h2>
+        <h2 class="section-title">⚡ Performance Architecture</h2>
 
         <div class="card">
             <h3>Optimization Features</h3>
@@ -878,6 +954,48 @@ InferenceConfig.builder()
                 link.setAttribute('rel', 'noopener noreferrer');
             }
         });
+
+        // Debug image loading
+        console.log('Checking image paths...');
+        document.querySelectorAll('img[src^="../assets/"]').forEach(img => {
+            console.log('Image path:', img.src, 'Exists?', img.complete ? 'Loaded' : 'Loading/Error');
+        });
+    });
+
+    function handleImageError(img) {
+        console.error('Image failed to load:', img.src);
+
+        // Create better error display
+        const container = img.parentElement;
+        img.style.display = 'none';
+
+        const errorDiv = document.createElement('div');
+        errorDiv.className = 'img-placeholder img-error';
+        errorDiv.innerHTML = `
+            <div style="font-size: 2em; margin-bottom: 10px;">🖼️</div>
+            <div style="font-weight: 600; color: var(--primary); margin-bottom: 10px;">Architecture Diagram</div>
+            <p>Image could not be loaded</p>
+            <p style="font-size: 0.9em; margin-top: 5px;">Path: ${img.src.split('/').pop()}</p>
+        `;
+
+        container.appendChild(errorDiv);
+    }
+
+    function handleImageLoad(img) {
+        console.log('Image loaded successfully:', img.src);
+        img.style.opacity = '1';
+        img.style.transition = 'opacity 0.3s';
+
+        // Add subtle visual indicator that image loaded
+        img.parentElement.style.borderColor = 'var(--primary)';
+        img.parentElement.style.transition = 'border-color 0.3s';
+    }
+
+    // Add loading states
+    document.querySelectorAll('img').forEach(img => {
+        if (!img.complete) {
+            img.style.opacity = '0';
+        }
     });
 </script>
 </body>
