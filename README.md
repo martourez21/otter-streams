@@ -1,196 +1,34 @@
-# Otter Streams - Real-time ML Inference for Apache Flink
-<p align="center">
-  <img src="docs/assets/otterstream-sdk-icon.ico" alt="Otter Streams Logo" width="200"/>
-</p>
+#  Otter-Streams
 
-[![Maven Central](https://img.shields.io/maven-central/v/com.codedstreams/otter-streams)](https://search.maven.org/artifact/com.codedstreams/otter-streams)[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)[![GitHub stars](https://img.shields.io/github/stars/martourez21/otter-streams?style=social)](https://github.com/martourez21/otter-streams/stargazers)[![GitHub issues](https://img.shields.io/github/issues/martourez21/otter-streams)](https://github.com/martourez21/otter-streams/issues)[![Java](https://img.shields.io/badge/Java-11%2B-red?logo=openjdk)](https://openjdk.java.net/)[![Apache Flink](https://img.shields.io/badge/Apache%20Flink-1.17%2B-E6526F?logo=apacheflink)](https://flink.apache.org/)[![Maven](https://img.shields.io/badge/Maven-3.6%2B-C71A36?logo=apachemaven)](https://maven.apache.org/)[![Documentation](https://img.shields.io/badge/docs-GitHub%20Pages-blue)](https://martourez21.github.io/otter-streams/)[![Discussions](https://img.shields.io/badge/Discussions-Enabled-blue)](https://github.com/martourez21/otter-streams/discussions)[![Contributing](https://img.shields.io/badge/contributions-welcome-green)](https://github.com/martourez21/otter-streams/blob/main/CONTRIBUTING.md)
+> Production-grade machine learning inference for Apache Flink
 
+[![Java CI](https://github.com/martourez21/otter-streams/actions/workflows/ci.yml/badge.svg)](https://github.com/martourez21/otter-streams/actions/workflows/ci.yml)
+[![Maven Central](https://img.shields.io/maven-central/v/com.codedstreams/otter-streams)](https://search.maven.org/artifact/com.codedstreams/otter-streams)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+[![GitHub stars](https://img.shields.io/github/stars/martourez21/otter-streams?style=social)](https://github.com/martourez21/otter-streams/stargazers)
+[![Discussions](https://img.shields.io/badge/Discussions-Enabled-blue)](https://github.com/martourez21/otter-streams/discussions)
 
-**Production-grade machine learning inference library for Apache Flink** with support for multiple ML frameworks and deployment modes. Perform real-time model inference on streaming data with enterprise-grade features.
+<div align="center">
+  <img src="docs/assets/otterstream-sdk-icon.ico" alt="Otter Streams Logo" width="120"/>
+</div>
 
-## 🚀 Overview
+---
 
-Otter Streams enables seamless integration of machine learning models into Apache Flink streaming pipelines. Whether you're doing fraud detection, real-time recommendations, or anomaly detection, this framework provides the tools to deploy ML models at scale with minimal latency.
+## ✨ What is Otter Streams?
 
-### Key Features
+Otter Streams is an open-source library that brings production-grade machine learning inference to Apache Flink streaming applications. Deploy your ML models externally or directly into Flink pipelines with enterprise-grade performance, reliability, and monitoring.
 
-- 🎯 **Multi-Framework Support**: ONNX, TensorFlow, PyTorch, XGBoost, PMML
-- 🌐 **Flexible Deployment**: Local, HTTP, gRPC, and cloud AI platforms
-- ⚡ **High Performance**: Async inference, batching, and intelligent caching
-- 📊 **Production Ready**: Metrics, monitoring, retry logic, and error handling
-- 🔧 **Enterprise Grade**: Thread-safe, configurable, and extensible architecture
+### Why choose Otter Streams?
 
-## 🏗️ Architecture Overview
+- **🚀 Real-time ML at scale** - Perform inference on streaming data with millisecond latency
+- **🔌 Framework agnostic** - Support for ONNX, TensorFlow, PyTorch, XGBoost, and PMML
+- **🏢 Production ready** - Built-in monitoring, caching, and error handling
+- **☁️ Deployment flexibility** - Local execution, cloud services, or hybrid deployments
+- **📊 Full observability** - Comprehensive metrics and monitoring out of the box
 
-```mermaid
-graph TB
-    A[Flink DataStream] --> B[AsyncModelInferenceFunction]
-    B --> C[Inference Engine Router]
-    
-    C --> D[ONNX Runtime]
-    C --> E[TensorFlow Engine]
-    C --> F[PyTorch DJL]
-    C --> G[XGBoost]
-    C --> H[PMML Evaluator]
-    C --> I[Remote HTTP]
-    C --> J[Cloud AI Platforms]
-    
-    D --> K[(Model Cache)]
-    E --> K
-    F --> K
-    G --> K
-    H --> K
-    
-    L[Metrics Collector] --> M[Prometheus<br/>Micrometer]
-    N[Configuration<br/>Manager] --> C
-    
-    style A fill:#e1f5fe
-    style B fill:#f3e5f5
-    style C fill:#fff3e0
-    style K fill:#e8f5e8
-```
+## 🎯 Quick Start
 
-## 📦 Modules & Use Cases
-
-### Core Module (`ml-inference-core`)
-**Foundation for all inference operations**
-
-```mermaid
-graph LR
-    A[Stream Input] --> B[Async Inference<br/>Function]
-    B --> C[Inference Engine]
-    C --> D[Model Cache]
-    C --> E[Metrics Collector]
-    E --> F[Monitoring Dashboard]
-    D --> G[Performance<br/>Optimization]
-    
-    style B fill:#e3f2fd
-    style C fill:#f3e5f5
-    style D fill:#e8f5e8
-```
-
-**Use Cases**: Base for all ML inference pipelines, custom engine development
-
-### ONNX Runtime (`otter-stream-onnx`)
-**Universal model format support**
-
-```mermaid
-graph LR
-    A[PyTorch Model] --> B[Export to ONNX]
-    C[TensorFlow Model] --> B
-    D[Scikit-learn Model] --> B
-    B --> E[ONNX Runtime<br/>Engine]
-    E --> F[Flink Stream]
-    
-    style E fill:#fff3e0
-    style B fill:#e8f5e8
-```
-
-**Supported Formats**: `.onnx`
-**Use Cases**: Cross-framework model deployment, standardized inference
-
-### TensorFlow (`otter-stream-tensorflow`)
-**Native TensorFlow model execution**
-
-```mermaid
-graph LR
-    A[TF SavedModel] --> B[TensorFlow<br/>Engine]
-    B --> C[GPU Acceleration]
-    B --> D[Batch Processing]
-    C --> E[High Throughput]
-    D --> E
-    
-    style B fill:#e3f2fd
-    style C fill:#f3e5f5
-```
-
-**Supported Formats**: `saved_model.pb`, TensorFlow Hub models
-**Use Cases**: Real-time computer vision, NLP models, existing TF ecosystems
-
-### PyTorch (`otter-stream-pytorch`)
-**PyTorch model inference via DJL**
-
-```mermaid
-graph LR
-    A[PyTorch Model] --> B[TorchScript<br/>Export]
-    B --> C[DJL Engine]
-    C --> D[Auto GPU<br/>Detection]
-    C --> E[Memory<br/>Optimized]
-    D --> F[Hardware<br/>Acceleration]
-    
-    style C fill:#fff3e0
-    style B fill:#e8f5e8
-```
-
-**Supported Formats**: `.pt`, `.pth` (TorchScript)
-**Use Cases**: Research models, custom architectures, dynamic graphs
-
-### XGBoost (`otter-streams-xgboost`)
-**Gradient boosting for tabular data**
-
-```mermaid
-graph LR
-    A[Tabular Data] --> B[Feature<br/>Engineering]
-    B --> C[XGBoost<br/>Engine]
-    C --> D[Batch<br/>Inference]
-    C --> E[Real-time<br/>Scoring]
-    D --> F[High Volume<br/>Processing]
-    
-    style C fill:#e3f2fd
-    style D fill:#f3e5f5
-```
-
-**Supported Formats**: `.model`, `.xgb`, `.ubj`
-**Use Cases**: Fraud detection, credit scoring, recommendation systems
-
-### PMML (`otter-stream-pnnnl`)
-**Standardized model format support**
-
-```mermaid
-graph LR
-    A[Scikit-learn] --> B[PMML Export]
-    C[R Models] --> B
-    D[Spark ML] --> B
-    B --> E[PMML Engine]
-    E --> F[Standardized<br/>Scoring]
-    
-    style E fill:#fff3e0
-    style B fill:#e8f5e8
-```
-
-**Supported Formats**: `.pmml`, `.xml`
-**Use Cases**: Enterprise ML systems, standardized model exchange
-
-### Remote Inference (`otter-stream-remote`)
-**Cloud and external service integration**
-
-```mermaid
-graph TB
-    A[Flink Job] --> B[Remote Client]
-    
-    B --> C[HTTP/REST API]
-    B --> D[AWS SageMaker]
-    B --> E[Google Vertex AI]
-    B --> F[Azure ML]
-    B --> G[Custom Endpoints]
-    
-    C --> H[Auto Retry]
-    D --> I[Managed<br/>Service]
-    E --> J[GPU<br/>Acceleration]
-    F --> K[Enterprise<br/>Integration]
-    
-    style B fill:#e3f2fd
-    style D fill:#fff3e0
-    style E fill:#e8f5e8
-```
-
-**Use Cases**: Cloud ML services, existing model endpoints, hybrid deployments
-
-## ⚡ Quick Start
-
-### Installation
-
-Add the core dependency to your `pom.xml`:
+### Add to Your Project
 
 ```xml
 <dependency>
@@ -200,274 +38,167 @@ Add the core dependency to your `pom.xml`:
 </dependency>
 ```
 
-Add framework-specific modules as needed:
-
-```xml
-<dependency>
-    <groupId>com.codedstreams</groupId>
-    <artifactId>otter-stream-onnx</artifactId>
-    <version>1.0.0</version>
-</dependency>
-```
-
-### Basic Usage
+### Basic Example
 
 ```java
-// 1. Configure your model
-InferenceConfig config = InferenceConfig.builder()
-    .modelConfig(ModelConfig.builder()
-        .modelId("fraud-detection")
-        .modelPath("models/fraud_model.onnx")
-        .format(ModelFormat.ONNX)
-        .modelName("fraud_predictor")
-        .modelVersion("2.1")
-        .build())
-    .batchSize(32)                    // Optimize throughput
-    .timeout(Duration.ofSeconds(5))   // Request timeout
-    .maxRetries(3)                    // Automatic retry
-    .enableMetrics(true)              // Performance monitoring
-    .enableCaching(true)              // Result caching
-    .build();
-
-// 2. Create inference function
-AsyncModelInferenceFunction<Transaction, FraudScore> inferenceFunction =
-    new AsyncModelInferenceFunction<>(
-        config,
-        cfg -> new OnnxInferenceEngine()
-    );
-
-// 3. Integrate with Flink stream
-DataStream<FraudScore> predictions = AsyncDataStream.unorderedWait(
-    transactionStream,
-    inferenceFunction,
-    5000,                            // Async timeout
-    TimeUnit.MILLISECONDS,
-    100                              // Max concurrent requests
-);
+// Add ML inference to your Flink stream in minutes
+DataStream<FraudScore> predictions = transactionStream
+    .map(new AsyncModelInferenceFunction<>(config));
 ```
 
-## 🎯 Real-world Examples
+**📖 [See the Getting Started Guide](GETTING_STARTED.md)** for detailed instructions.
 
-### Fraud Detection Pipeline
+## 📚 Documentation
 
-```mermaid
-sequenceDiagram
-    participant K as Kafka
-    participant F as Flink Job
-    participant M as ML Model
-    participant S as Alert System
-    
-    K->>F: Transaction Stream
-    F->>M: Extract Features & Predict
-    M->>F: Fraud Probability (0.95)
-    F->>S: 🚨 High Risk Alert
-    F->>F: Update Real-time Dashboard
+- **[📖 Getting Started](GETTING_STARTED.md)** - Your first inference pipeline
+- **[🏗️ Architecture Overview](ARCHITECTURE.md)** - System design and components
+- **[🎯 Examples & Use Cases](EXAMPLES.md)** - Real-world implementation patterns
+- **[🔧 API Reference](https://martourez21.github.io/otter-streams/javadoc/)** - Complete API documentation
+- **[📊 Performance Guide](PERFORMANCE.md)** - Optimization and tuning
+
+## 🌟 Key Features
+
+| Feature | Description |
+|---------|-------------|
+| **Multi-Framework Support** | Run models from ONNX, TensorFlow, PyTorch, XGBoost, and PMML |
+| **Async & High Performance** | Non-blocking execution with intelligent batching |
+| **Enterprise Monitoring** | Built-in metrics, logging, and health checks |
+| **Flexible Deployment** | Local, cloud, or hybrid inference strategies |
+| **Production Resilience** | Retry logic, caching, and error handling |
+
+## 🏢 Use Cases
+
+### Real-time Fraud Detection
+```java
+// Detect fraudulent transactions as they occur
+DataStream<FraudScore> scores = transactionStream
+    .process(new FraudDetectionModel());
 ```
 
-### Real-time Recommendation
-
-```mermaid
-graph LR
-    A[User Actions] --> B[Feature<br/>Extraction]
-    B --> C[Model Inference]
-    C --> D[Ranking<br/>Service]
-    D --> E[Personalized<br/>Content]
-    
-    style C fill:#e3f2fd
-    style E fill:#e8f5e8
+### Personalized Recommendations
+```java
+// Generate personalized content in real-time
+DataStream<Recommendation> recs = userBehaviorStream
+    .process(new RecommendationModel());
 ```
 
 ### Anomaly Detection
-
-```mermaid
-graph TB
-    A[IoT Sensor Data] --> B[Window<br/>Aggregation]
-    B --> C[Anomaly Detection<br/>Model]
-    C --> D{Normal?}
-    D -->|Yes| E[Continue Monitoring]
-    D -->|No| F[🚨 Trigger Alert]
-    
-    style C fill:#fff3e0
-    style F fill:#ffebee
-```
-
-## 🔧 Configuration Examples
-
-### Local Model Inference
-
 ```java
-InferenceConfig.builder()
-    .modelConfig(ModelConfig.builder()
-        .modelId("sentiment-analysis")
-        .modelPath("/models/sentiment.onnx")
-        .format(ModelFormat.ONNX)
-        .modelOptions(Map.of(
-            "interOpThreads", 4,
-            "intraOpThreads", 2,
-            "optimizationLevel", "ALL"
-        ))
-        .build())
-    .batchSize(64)
-    .enableCaching(true)
-    .cacheSize(10000)
-    .build();
+// Monitor systems and detect anomalies immediately
+DataStream<AnomalyScore> anomalies = sensorStream
+    .process(new AnomalyDetectionModel());
 ```
 
-### Remote HTTP Endpoint
+**🔍 [Explore more use cases](EXAMPLES.md)**
 
-```java
-InferenceConfig.builder()
-    .modelConfig(ModelConfig.builder()
-        .modelId("cloud-model")
-        .format(ModelFormat.REMOTE_HTTP)
-        .endpointUrl("https://api.example.com/v1/predict")
-        .authConfig(AuthConfig.builder()
-            .apiKey("your-api-key")
-            .headers(Map.of(
-                "Content-Type", "application/json",
-                "X-Custom-Header", "value"
-            ))
-            .build())
-        .build())
-    .timeout(Duration.ofSeconds(10))
-    .maxRetries(3)
-    .build();
+## 🛠 Supported Frameworks
+
+<table>
+<tr>
+<td align="center" width="20%">
+<img src="https://raw.githubusercontent.com/martourez21/otter-streams/main/docs/assets/onnx-logo.png" alt="ONNX" width="40"/>
+<br/>
+<strong>ONNX Runtime</strong>
+</td>
+<td align="center" width="20%">
+<img src="https://raw.githubusercontent.com/martourez21/otter-streams/main/docs/assets/tensorflow-logo.png" alt="TensorFlow" width="40"/>
+<br/>
+<strong>TensorFlow</strong>
+</td>
+<td align="center" width="20%">
+<img src="https://raw.githubusercontent.com/martourez21/otter-streams/main/docs/assets/pytorch-logo.png" alt="PyTorch" width="40"/>
+<br/>
+<strong>PyTorch</strong>
+</td>
+<td align="center" width="20%">
+<img src="https://raw.githubusercontent.com/martourez21/otter-streams/main/docs/assets/xgboost-logo.png" alt="XGBoost" width="40"/>
+<br/>
+<strong>XGBoost</strong>
+</td>
+<td align="center" width="20%">
+<img src="https://raw.githubusercontent.com/martourez21/otter-streams/main/docs/assets/pmml-logo.png" alt="PMML" width="40"/>
+<br/>
+<strong>PMML</strong>
+</td>
+</tr>
+</table>
+
+**🔗 [See Framework Integration Details](ARCHITECTURE.md)**
+
+## 📦 Project Structure
+
+```
+otter-streams/
+├── ml-inference-core/          # Core inference engine
+├── otter-stream-onnx/         # ONNX Runtime integration
+├── otter-stream-tensorflow/   # TensorFlow SavedModel support
+├── otter-stream-pytorch/      # PyTorch model inference
+├── otter-stream-xgboost/      # XGBoost integration
+├── otter-stream-pmml/         # PMML model support
+├── otter-stream-remote/       # Remote inference service
+├── otter-stream-examples/     # Usage examples
+└── docs/                      # Documentation
 ```
 
-### AWS SageMaker Integration
+**🏗️ [Learn about the architecture](ARCHITECTURE.md)**
 
-```java
-InferenceConfig.builder()
-    .modelConfig(ModelConfig.builder()
-        .modelId("sagemaker-endpoint")
-        .format(ModelFormat.SAGEMAKER)
-        .endpointUrl("my-production-endpoint")
-        .authConfig(AuthConfig.builder()
-            .apiKey("AKIA...:secret-key")
-            .build())
-        .build())
-    .build();
-```
+## 🤝 Community & Support
 
-## 📊 Performance Features
+### Get Help
+- **📖 [Documentation](https://martourez21.github.io/otter-streams/)** - Complete user guide
+- **💬 [GitHub Discussions](https://github.com/martourez21/otter-streams/discussions)** - Questions and ideas
+- **🐛 [Issue Tracker](https://github.com/martourez21/otter-streams/issues)** - Bug reports and feature requests
+- **📧 [Email Support](mailto:nestorabiawuh@gmail.com)** - Direct contact
 
-### Async Processing
-```java
-// Non-blocking inference with backpressure
-AsyncDataStream.unorderedWait(
-    stream,
-    inferenceFunction,
-    5000,           // Timeout
-    TimeUnit.MILLISECONDS,
-    100             // Max concurrent requests
-);
-```
+### Stay Updated
+- ⭐ **Star the repository** to show your support
+- 👀 **Watch releases** to get notifications
+- 🔄 **Follow updates** on GitHub
 
-### Intelligent Batching
-```java
-InferenceConfig.builder()
-    .batchSize(32)              // Batch size
-    .batchTimeout(Duration.ofMillis(100))  // Max wait time
-    .build();
-```
+## 👥 Contributing
 
-### Result Caching
-```java
-InferenceConfig.builder()
-    .enableCaching(true)
-    .cacheSize(10000)           // Cache entries
-    .cacheTtl(Duration.ofMinutes(10))  // Time-to-live
-    .build();
-```
+We love our contributors! Whether you're fixing bugs, improving documentation, or adding new features, all contributions are welcome.
 
-## 🛠️ Development
+**📋 [Read our Contributing Guide](CONTRIBUTING.md)**
 
-### Building from Source
-
+### Quick Start for Contributors
 ```bash
-# Clone repository
-git clone https://github.com/YOUR_USERNAME/otter-streams.git
-cd otter-streams
+# 1. Fork and clone
+git clone https://github.com/your-username/otter-streams.git
 
-# Build project
-./setup.sh
+# 2. Build the project
+mvn clean install
 
-# Run tests
+# 3. Run tests
 mvn test
-
-# Build specific module
-mvn clean install -pl otter-stream-onnx
 ```
 
-### Module Dependencies
-
-```mermaid
-graph TD
-    A[otter-stream-examples] --> B[ml-inference-core]
-    B --> C[otter-stream-onnx]
-    B --> D[otter-stream-tensorflow]
-    B --> E[otter-stream-pytorch]
-    B --> F[otter-streams-xgboost]
-    B --> G[otter-stream-pnnnl]
-    B --> H[otter-stream-remote]
-    
-    style B fill:#e3f2fd
-    style A fill:#fff3e0
-```
-
-## 📈 Monitoring & Metrics
-
-The framework automatically collects comprehensive metrics:
-
-- **Throughput**: Inferences per second
-- **Latency**: P50, P95, P99 inference times
-- **Cache Performance**: Hit/miss ratios
-- **Error Rates**: Failed inference percentage
-- **Resource Usage**: Memory and CPU utilization
-
-```java
-// Enable detailed metrics
-InferenceConfig.builder()
-    .enableMetrics(true)
-    .metricsPrefix("myapp.ml.inference")
-    .collectLatencyMetrics(true)
-    .collectThroughputMetrics(true)
-    .build();
-```
-
-## 🔮 Roadmap
-
-- [ ] **v1.1**: gRPC support, Kubernetes operator
-- [ ] **v1.2**: Model versioning, A/B testing
-- [ ] **v1.3**: Feature store integration
-- [ ] **v2.0**: Distributed model serving, auto-scaling
-
-## 🤝 Contributing
-
-We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) for details.
-
-1. Fork the repository
-2. Create a feature branch
-3. Add tests for your changes
-4. Submit a pull request
+### Ways to Contribute
+- 🐛 **Report bugs** and issues
+- 💡 **Suggest features** and improvements
+- 📚 **Improve documentation**
+- 🔧 **Fix issues** labeled "good first issue"
+- 🧪 **Add tests** and examples
+- 🌍 **Help others** in discussions
 
 ## 📄 License
 
-This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENSE) file for details.
+Otter Streams is licensed under the **Apache License 2.0**. See the [LICENSE](LICENSE) file for details.
 
-## 🆘 Support
+## 🙏 Acknowledgements
 
-- 📚 [Documentation](https://YOUR_USERNAME.github.io/otter-streams/)
-- 🐛 [Issue Tracker](https://github.com/YOUR_USERNAME/otter-streams/issues)
-- 💬 [Discussions](https://github.com/YOUR_USERNAME/otter-streams/discussions)
-- 📧 [Email Support](mailto:nestorabiawuh@gmail.com)
+Built with Passion by [Nestor Martourez](https://github.com/martourez21) and the open-source community. Special thanks to:
+
+- The Apache Flink community
+- All our contributors and users
+- Open-source ML framework maintainers
 
 ---
 
 <div align="center">
 
-**Built with ❤️ for the Apache Flink community**
+**Ready to add ML to your streaming pipelines?**
 
-[Getting Started](GETTING_STARTED.md) • [Examples](otter-stream-examples/) • [API Docs](https://martourez21.github.io/otter-streams/javadoc/)
+[📖 Get Started](GETTING_STARTED.md) · [💬 Join Discussions](https://github.com/martourez21/otter-streams/discussions) · [⭐ Star the Project](https://github.com/martourez21/otter-streams/stargazers)
 
 </div>
