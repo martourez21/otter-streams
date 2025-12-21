@@ -3,11 +3,7 @@
   <img src="docs/assets/otterstream-sdk-icon.ico" alt="Otter Streams Logo" width="200"/>
 </p>
 
-![Release](https://img.shields.io/github/v/release/CodedStreams/otter-streams?include_prereleases)
-![Maven Central](https://img.shields.io/maven-central/v/com.codedstreams/ml-inference-core)
-![Apache Flink](https://img.shields.io/badge/Apache%20Flink-1.17%2B-orange)
-![Java](https://img.shields.io/badge/Java-11%2B-blue)
-![License](https://img.shields.io/github/license/CodedStreams/otter-streams)
+[![Maven Central](https://img.shields.io/maven-central/v/com.codedstreams/otter-streams)](https://search.maven.org/artifact/com.codedstreams/otter-streams)[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)[![GitHub stars](https://img.shields.io/github/stars/martourez21/otter-streams?style=social)](https://github.com/martourez21/otter-streams/stargazers)[![GitHub issues](https://img.shields.io/github/issues/martourez21/otter-streams)](https://github.com/martourez21/otter-streams/issues)[![Java](https://img.shields.io/badge/Java-11%2B-red?logo=openjdk)](https://openjdk.java.net/)[![Apache Flink](https://img.shields.io/badge/Apache%20Flink-1.17%2B-E6526F?logo=apacheflink)](https://flink.apache.org/)[![Maven](https://img.shields.io/badge/Maven-3.6%2B-C71A36?logo=apachemaven)](https://maven.apache.org/)[![Documentation](https://img.shields.io/badge/docs-GitHub%20Pages-blue)](https://martourez21.github.io/otter-streams/)[![Discussions](https://img.shields.io/badge/Discussions-Enabled-blue)](https://github.com/martourez21/otter-streams/discussions)[![Contributing](https://img.shields.io/badge/contributions-welcome-green)](https://github.com/martourez21/otter-streams/blob/main/CONTRIBUTING.md)
 
 
 **Production-grade machine learning inference library for Apache Flink** with support for multiple ML frameworks and deployment modes. Perform real-time model inference on streaming data with enterprise-grade features.
