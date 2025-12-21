@@ -207,16 +207,27 @@
             overflow: hidden;
         }
 
-        .architecture-diagram img {
+        .diagram-image {
             max-width: 100%;
             height: auto;
             border-radius: 8px;
             border: 1px solid var(--border);
-            max-height: 500px;
             object-fit: contain;
             width: 100%;
             display: block;
             margin: 0 auto;
+        }
+
+        .large-diagram {
+            max-height: 500px;
+        }
+
+        .medium-diagram {
+            max-height: 400px;
+        }
+
+        .small-diagram {
+            max-height: 300px;
         }
 
         .diagram-caption {
@@ -330,28 +341,8 @@
 
         .use-case-img {
             width: 100%;
-            height: 220px;
+            height: 200px;
             object-fit: cover;
-            border-radius: 8px;
-            border: 1px solid var(--border);
-            margin: 15px 0;
-        }
-
-        .medium-img {
-            max-width: 100%;
-            height: auto;
-            max-height: 400px;
-            object-fit: contain;
-            border-radius: 8px;
-            border: 1px solid var(--border);
-            margin: 15px 0;
-        }
-
-        .small-img {
-            max-width: 100%;
-            height: auto;
-            max-height: 300px;
-            object-fit: contain;
             border-radius: 8px;
             border: 1px solid var(--border);
             margin: 15px 0;
@@ -455,8 +446,16 @@
                 gap: 40px;
             }
 
-            .architecture-diagram img {
+            .large-diagram {
                 max-height: 400px;
+            }
+
+            .medium-diagram {
+                max-height: 300px;
+            }
+
+            .small-diagram {
+                max-height: 250px;
             }
         }
 
@@ -488,20 +487,20 @@
                 text-align: center;
             }
 
-            .architecture-diagram img {
+            .large-diagram {
                 max-height: 300px;
+            }
+
+            .medium-diagram {
+                max-height: 250px;
+            }
+
+            .small-diagram {
+                max-height: 200px;
             }
 
             .use-case-img {
                 height: 180px;
-            }
-
-            .medium-img {
-                max-height: 300px;
-            }
-
-            .small-img {
-                max-height: 200px;
             }
         }
 
@@ -514,13 +513,32 @@
                 font-size: 1.8em;
             }
 
-            .architecture-diagram img {
+            .large-diagram {
                 max-height: 200px;
+            }
+
+            .medium-diagram {
+                max-height: 180px;
+            }
+
+            .small-diagram {
+                max-height: 150px;
             }
 
             .use-case-img {
                 height: 150px;
             }
+        }
+
+        .img-placeholder {
+            background: linear-gradient(135deg, #0091d5, #006ba1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            border-radius: 8px;
+            border: 1px solid var(--border);
         }
     </style>
 </head>
@@ -545,7 +563,7 @@
 
     <div class="hero">
         <div class="version-tag">v${VERSION}</div>
-        <h1>SDK Architecture<br>Overview</h1>
+        <h1>System Architecture<br>Overview</h1>
         <p>Explore the scalable, high-performance architecture powering Otter Streams - the real-time ML inference library for Apache Flink.</p>
     </div>
 </header>
@@ -556,7 +574,8 @@
         <h2 class="section-title">🏗️ System Architecture Overview</h2>
 
         <div class="architecture-diagram">
-            <img src="../assets/architecture-main.png" alt="Otter Streams Main Architecture" class="medium-img">
+            <img src="../assets/architecture-main.png" alt="Otter Streams Main Architecture" class="diagram-image large-diagram"
+                 onerror="this.onerror=null; this.src='https://via.placeholder.com/800x400/0091d5/ffffff?text=Architecture+Diagram'; this.classList.add('img-placeholder'); this.style.height='400px';">
             <p class="diagram-caption">Figure 1: High-level system architecture showing complete inference pipeline</p>
         </div>
 
@@ -578,7 +597,8 @@
         <h2 class="section-title"> Module Architecture</h2>
 
         <div class="architecture-diagram">
-            <img src="../assets/architecture-modules.png" alt="Module Dependencies Architecture" class="medium-img">
+            <img src="../assets/architecture-modules.png" alt="Module Dependencies Architecture" class="diagram-image medium-diagram"
+                 onerror="this.onerror=null; this.src='https://via.placeholder.com/800x300/0091d5/ffffff?text=Module+Dependencies'; this.classList.add('img-placeholder'); this.style.height='300px';">
             <p class="diagram-caption">Figure 2: Module dependencies and relationships</p>
         </div>
 
@@ -626,14 +646,16 @@
         <h2 class="section-title"> Engine Architecture</h2>
 
         <div class="architecture-diagram">
-            <img src="../assets/architecture-onnx.png" alt="ONNX Engine Architecture" class="small-img">
+            <img src="../assets/architecture-onnx.png" alt="ONNX Engine Architecture" class="diagram-image small-diagram"
+                 onerror="this.onerror=null; this.src='https://via.placeholder.com/800x250/0091d5/ffffff?text=ONNX+Engine'; this.classList.add('img-placeholder'); this.style.height='250px';">
             <p class="diagram-caption">Figure 3: ONNX Runtime engine architecture and workflow</p>
         </div>
 
         <div class="card">
             <h3>TensorFlow Engine Architecture</h3>
             <div class="architecture-diagram" style="margin-top: 20px;">
-                <img src="../assets/architecture-tensorflow.png" alt="TensorFlow Engine Architecture" class="small-img">
+                <img src="../assets/architecture-tensorflow.png" alt="TensorFlow Engine Architecture" class="diagram-image small-diagram"
+                     onerror="this.onerror=null; this.src='https://via.placeholder.com/800x250/0091d5/ffffff?text=TensorFlow+Engine'; this.classList.add('img-placeholder'); this.style.height='250px';">
                 <p class="diagram-caption">Figure 4: TensorFlow SavedModel execution architecture</p>
             </div>
         </div>
@@ -641,17 +663,19 @@
 
     <!-- Data Flow Architecture -->
     <section class="section">
-        <h2 class="section-title">📊 Data Flow Architecture</h2>
+        <h2 class="section-title"> Data Flow Architecture</h2>
 
         <div class="architecture-diagram">
-            <img src="../assets/dataflow-main.png" alt="Main Data Flow Architecture" class="medium-img">
+            <img src="../assets/dataflow-main.png" alt="Main Data Flow Architecture" class="diagram-image medium-diagram"
+                 onerror="this.onerror=null; this.src='https://via.placeholder.com/800x300/0091d5/ffffff?text=Data+Flow'; this.classList.add('img-placeholder'); this.style.height='300px';">
             <p class="diagram-caption">Figure 5: End-to-end data flow from input to output</p>
         </div>
 
         <div class="card">
             <h3>Fraud Detection Data Flow</h3>
             <div class="architecture-diagram" style="margin-top: 20px;">
-                <img src="../assets/dataflow-fraud.png" alt="Fraud Detection Data Flow" class="small-img">
+                <img src="../assets/dataflow-fraud.png" alt="Fraud Detection Data Flow" class="diagram-image small-diagram"
+                     onerror="this.onerror=null; this.src='https://via.placeholder.com/800x250/0091d5/ffffff?text=Fraud+Detection'; this.classList.add('img-placeholder'); this.style.height='250px';">
                 <p class="diagram-caption">Figure 6: Real-time fraud detection pipeline sequence</p>
             </div>
         </div>
@@ -664,7 +688,8 @@
         <div class="use-case-grid">
             <div class="use-case">
                 <h4>Recommendation System</h4>
-                <img src="../assets/usecase-recommendations.png" alt="Recommendation System Architecture" class="use-case-img">
+                <img src="../assets/usecase-recommendations.png" alt="Recommendation System Architecture" class="use-case-img"
+                     onerror="this.onerror=null; this.src='https://via.placeholder.com/600x200/0091d5/ffffff?text=Recommendations'; this.classList.add('img-placeholder');">
                 <p><strong>Architecture Features:</strong></p>
                 <ul>
                     <li>Real-time user behavior processing</li>
@@ -676,7 +701,8 @@
 
             <div class="use-case">
                 <h4>Anomaly Detection</h4>
-                <img src="../assets/usecase-anomaly.png" alt="Anomaly Detection Architecture" class="use-case-img">
+                <img src="../assets/usecase-anomaly.png" alt="Anomaly Detection Architecture" class="use-case-img"
+                     onerror="this.onerror=null; this.src='https://via.placeholder.com/600x200/0091d5/ffffff?text=Anomaly+Detection'; this.classList.add('img-placeholder');">
                 <p><strong>Architecture Features:</strong></p>
                 <ul>
                     <li>Time-series window processing</li>
@@ -693,14 +719,16 @@
         <h2 class="section-title">📈 Monitoring Architecture</h2>
 
         <div class="architecture-diagram">
-            <img src="../assets/monitoring-overview.png" alt="Monitoring Architecture Overview" class="medium-img">
+            <img src="../assets/monitoring-overview.png" alt="Monitoring Architecture Overview" class="diagram-image medium-diagram"
+                 onerror="this.onerror=null; this.src='https://via.placeholder.com/800x300/0091d5/ffffff?text=Monitoring'; this.classList.add('img-placeholder'); this.style.height='300px';">
             <p class="diagram-caption">Figure 7: Complete monitoring and observability architecture</p>
         </div>
 
         <div class="card">
             <h3>Metrics Collection Architecture</h3>
             <div class="architecture-diagram" style="margin-top: 20px;">
-                <img src="../assets/monitoring-metrics.png" alt="Metrics Collection Architecture" class="small-img">
+                <img src="../assets/monitoring-metrics.png" alt="Metrics Collection Architecture" class="diagram-image small-diagram"
+                     onerror="this.onerror=null; this.src='https://via.placeholder.com/800x250/0091d5/ffffff?text=Metrics'; this.classList.add('img-placeholder'); this.style.height='250px';">
                 <p class="diagram-caption">Figure 8: Metrics collection and dashboard architecture</p>
             </div>
         </div>

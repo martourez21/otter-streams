@@ -192,10 +192,9 @@ jobs:
           mkdir -p gh-pages-root/modules
           mkdir -p gh-pages-root/assets
           
-          # Copy all template files
           echo "Copying template files..."
           
-          # Copy root-level HTML files
+          # Copy all template files
           if [ -d ".github/workflows/templates" ]; then
             # Copy all .html files from templates root
             find .github/workflows/templates -maxdepth 1 -name "*.html" -exec cp {} gh-pages-root/ \;
@@ -220,21 +219,33 @@ jobs:
             echo "✓ Copied assets from project root"
           fi
           
-          # Process all HTML files to replace version
           echo "Processing version placeholders..."
           
           # Process index.html
           if [ -f ".github/workflows/templates/index.html" ]; then
             sed "s/\${VERSION}/${{ steps.get_version.outputs.VERSION }}/g" \
               .github/workflows/templates/index.html > gh-pages-root/index.html
+            echo "✓ Processed index.html"
           fi
           
           # Process all other HTML files
-          for html_file in gh-pages-root/*.html gh-pages-root/modules/*.html 2>/dev/null; do
+          echo "Processing other HTML files..."
+          
+          # Process root HTML files
+          for html_file in gh-pages-root/*.html; do
             if [ -f "$html_file" ]; then
               sed -i "s/\${VERSION}/${{ steps.get_version.outputs.VERSION }}/g" "$html_file"
             fi
           done
+          
+          # Process module HTML files
+          if [ -d "gh-pages-root/modules" ]; then
+            for html_file in gh-pages-root/modules/*.html; do
+              if [ -f "$html_file" ]; then
+                sed -i "s/\${VERSION}/${{ steps.get_version.outputs.VERSION }}/g" "$html_file"
+              fi
+            done
+          fi
           
           # Create README redirect
           echo '<!DOCTYPE html><html><head><meta http-equiv="refresh" content="0; url=./index.html"></head><body>Redirecting...</body></html>' > gh-pages-root/README.html
@@ -394,11 +405,19 @@ jobs:
           # Process all HTML files to replace version
           echo "Processing version placeholders for release..."
           
-          for html_file in gh-pages-root/*.html gh-pages-root/modules/*.html 2>/dev/null; do
+          for html_file in gh-pages-root/*.html; do
             if [ -f "$html_file" ]; then
               sed -i "s/\${VERSION}/${{ steps.version.outputs.VERSION }}/g" "$html_file"
             fi
           done
+          
+          if [ -d "gh-pages-root/modules" ]; then
+            for html_file in gh-pages-root/modules/*.html; do
+              if [ -f "$html_file" ]; then
+                sed -i "s/\${VERSION}/${{ steps.version.outputs.VERSION }}/g" "$html_file"
+              fi
+            done
+          fi
           
           # Use regular index for release too
           if [ -f "gh-pages-root/index.html" ]; then
