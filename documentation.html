@@ -27,6 +27,7 @@
             --text-secondary: #8b92a8;
             --border: #2d3748;
             --success: #0091d5;
+            --sql-color: #2dd4bf;
         }
 
         body {
@@ -151,6 +152,18 @@
             border-color: var(--primary);
         }
 
+        .sql-docs-link {
+            background: rgba(45, 212, 191, 0.1);
+            border-color: rgba(45, 212, 191, 0.2);
+            color: var(--sql-color);
+            margin-top: 10px;
+        }
+
+        .sql-docs-link:hover {
+            background: rgba(45, 212, 191, 0.2);
+            border-color: var(--sql-color);
+        }
+
         .javadocs-link svg {
             width: 16px;
             height: 16px;
@@ -206,6 +219,11 @@
             font-weight: 500;
         }
 
+        .nav-item.sql-active {
+            background: rgba(45, 212, 191, 0.2);
+            color: var(--sql-color);
+        }
+
         .nav-item.active::before {
             content: '';
             position: absolute;
@@ -216,6 +234,10 @@
             height: 60%;
             background: var(--primary);
             border-radius: 0 3px 3px 0;
+        }
+
+        .nav-item.sql-active::before {
+            background: var(--sql-color);
         }
 
         .nav-item svg {
@@ -316,6 +338,11 @@
             }
         }
 
+        .sql-highlight {
+            color: var(--sql-color);
+            font-weight: 600;
+        }
+
         .version-tag {
             display: inline-block;
             background: rgba(255,255,255,0.2);
@@ -326,6 +353,18 @@
             font-weight: 600;
             font-size: 0.9em;
             margin-bottom: 20px;
+        }
+
+        .sql-badge {
+            display: inline-block;
+            background: rgba(45, 212, 191, 0.3);
+            border: 1px solid var(--sql-color);
+            color: white;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.9em;
+            margin-left: 10px;
         }
 
         .container {
@@ -388,6 +427,19 @@
             transform: scaleX(1);
         }
 
+        .sql-card {
+            border: 1px solid var(--sql-color);
+        }
+
+        .sql-card::before {
+            background: linear-gradient(90deg, var(--sql-color), #14b8a6);
+        }
+
+        .sql-card:hover {
+            border-color: var(--sql-color);
+            box-shadow: 0 20px 40px rgba(45, 212, 191, 0.15);
+        }
+
         .card-icon {
             width: 60px;
             height: 60px;
@@ -398,6 +450,10 @@
             justify-content: center;
             font-size: 1.8em;
             margin-bottom: 20px;
+        }
+
+        .sql-card .card-icon {
+            background: linear-gradient(135deg, var(--sql-color), #14b8a6);
         }
 
         .card h3 {
@@ -424,9 +480,17 @@
             transition: gap 0.3s;
         }
 
+        .sql-card .card-link {
+            color: var(--sql-color);
+        }
+
         .card-link:hover {
             gap: 12px;
             color: #4db8e8;
+        }
+
+        .sql-card .card-link:hover {
+            color: #14b8a6;
         }
 
         .card-link svg {
@@ -475,6 +539,11 @@
             box-shadow: 0 10px 30px rgba(0, 145, 213, 0.1);
         }
 
+        .sql-module:hover {
+            border-color: var(--sql-color);
+            box-shadow: 0 10px 30px rgba(45, 212, 191, 0.1);
+        }
+
         .module-icon {
             width: 50px;
             height: 50px;
@@ -485,6 +554,10 @@
             justify-content: center;
             font-size: 1.5em;
             flex-shrink: 0;
+        }
+
+        .sql-module .module-icon {
+            background: linear-gradient(135deg, var(--sql-color), #14b8a6);
         }
 
         .module-content h4 {
@@ -511,6 +584,11 @@
             margin-top: 5px;
         }
 
+        .sql-module .module-badge {
+            background: rgba(45, 212, 191, 0.2);
+            color: var(--sql-color);
+        }
+
         .module-link {
             color: var(--primary);
             text-decoration: none;
@@ -519,6 +597,10 @@
             display: inline-flex;
             align-items: center;
             gap: 5px;
+        }
+
+        .sql-module .module-link {
+            color: var(--sql-color);
         }
 
         .module-link:hover {
@@ -557,6 +639,10 @@
             align-items: center;
             justify-content: center;
             color: #0091d5;
+        }
+
+        .sql-feature .feature-icon {
+            color: var(--sql-color);
         }
 
         .feature h4 {
@@ -742,15 +828,67 @@
             border-radius: 0 8px 8px 0;
         }
 
+        .sql-note {
+            background: rgba(45, 212, 191, 0.1);
+            border-left-color: var(--sql-color);
+        }
+
         .note h4 {
             color: var(--primary);
             margin-bottom: 10px;
             font-size: 1.1em;
         }
 
+        .sql-note h4 {
+            color: var(--sql-color);
+        }
+
         .note p {
             color: var(--text-secondary);
             margin: 0;
+        }
+
+        .api-tabs {
+            display: flex;
+            gap: 10px;
+            margin: 20px 0;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 10px;
+        }
+
+        .api-tab {
+            padding: 10px 20px;
+            background: transparent;
+            border: 1px solid transparent;
+            color: var(--text-secondary);
+            cursor: pointer;
+            border-radius: 6px;
+            transition: all 0.3s;
+        }
+
+        .api-tab:hover {
+            background: rgba(0, 145, 213, 0.1);
+            color: var(--primary);
+        }
+
+        .api-tab.active {
+            background: rgba(0, 145, 213, 0.2);
+            color: var(--primary);
+            border-color: var(--primary);
+        }
+
+        .sql-tab.active {
+            background: rgba(45, 212, 191, 0.2);
+            color: var(--sql-color);
+            border-color: var(--sql-color);
+        }
+
+        .api-content {
+            display: none;
+        }
+
+        .api-content.active {
+            display: block;
         }
     </style>
 </head>
@@ -770,6 +908,12 @@
                     <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
                 </svg>
                 View Full JavaDocs
+            </a>
+            <a href="modules/sql.html" class="javadocs-link sql-docs-link">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+                </svg>
+                Flink SQL Docs
             </a>
             <a href="index.html" class="javadocs-link" style="margin-top: 10px;">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -811,6 +955,12 @@
                         </svg>
                         ML Inference Core
                     </a>
+                    <a href="modules/sql.html" class="nav-item sql-active">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+                        </svg>
+                        Flink SQL
+                    </a>
                     <a href="modules/onnx.html" class="nav-item">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
@@ -833,7 +983,7 @@
                 <div class="nav-items">
                     <a href="modules/pytorch.html" class="nav-item">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M18 20V6a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v14"></path>
+                            <path d="M18 20V6a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v14"></path>
                             <path d="M2 20h20"></path>
                             <path d="M14 12v.01"></path>
                         </svg>
@@ -928,6 +1078,12 @@
                         </svg>
                         Getting Started
                     </a>
+                    <a href="modules/sql.html" class="top-nav-link">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+                        </svg>
+                        Flink SQL
+                    </a>
                     <a href="javadoc/1.0.15/index.html" class="top-nav-link">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
@@ -945,14 +1101,14 @@
             </nav>
 
             <div class="hero">
+                <div class="version-tag">v1.0.15<span class="sql-badge">Flink SQL</span></div>
                 <h1>SDK Documentation</h1>
-                <p>Complete developer guide for integrating real-time machine learning inference into Apache Flink streaming applications</p>
+                <p>Complete developer guide for integrating real-time machine learning inference into Apache Flink streaming applications.
+                    <strong>Now with <span class="sql-highlight">Flink SQL</span> support!</strong></p>
             </div>
         </header>
 
         <div class="container">
-            <span class="version-tag">Version 1.0.15</span>
-
             <div class="cards-grid">
                 <div class="card">
                     <div class="card-icon">📚</div>
@@ -967,12 +1123,12 @@
                     </a>
                 </div>
 
-                <div class="card">
-                    <div class="card-icon">⚡</div>
-                    <h3>Quick Start Guide</h3>
-                    <p>Get up and running quickly with step-by-step instructions for setting up your first ML inference pipeline.</p>
-                    <a href="getting-started.html" class="card-link">
-                        Get Started
+                <div class="card sql-card">
+                    <div class="card-icon">📊</div>
+                    <h3>Flink SQL Guide</h3>
+                    <p>Use ML inference directly in Flink SQL with UDFs, table functions, and declarative API.</p>
+                    <a href="modules/sql.html" class="card-link">
+                        Explore SQL
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <line x1="5" y1="12" x2="19" y2="12"></line>
                             <polyline points="12 5 19 12 12 19"></polyline>
@@ -996,35 +1152,51 @@
 
             <div id="core-concepts" class="content-section">
                 <h2>Core Concepts</h2>
-                <p>Otter Streams SDK is designed to seamlessly integrate machine learning inference into Apache Flink streaming applications. This section covers the fundamental concepts and architecture.</p>
+                <p>Otter Streams SDK is designed to seamlessly integrate machine learning inference into Apache Flink streaming applications.
+                    <strong>Now supporting both DataStream and Flink SQL APIs!</strong> This section covers the fundamental concepts and architecture.</p>
+
+                <div class="note sql-note">
+                    <h4>New: Flink SQL Integration</h4>
+                    <p>Otter Streams now provides full Flink SQL support with UDFs, table functions, and declarative ML inference.
+                        This allows you to use ML models directly in your SQL queries without writing Java code.</p>
+                </div>
 
                 <div class="modules-grid">
-                    <div class="module-card">
+                    <a href="modules/core.html" class="module-card">
                         <div class="module-icon">🏗️</div>
                         <div class="module-content">
                             <h4>Architecture Overview</h4>
                             <p>Learn how Otter Streams integrates with Apache Flink's streaming architecture to enable real-time ML inference.</p>
                             <span class="module-badge">Fundamental</span>
                         </div>
-                    </div>
+                    </a>
 
-                    <div class="module-card">
+                    <a href="modules/sql.html" class="module-card sql-module">
+                        <div class="module-icon">📊</div>
+                        <div class="module-content">
+                            <h4>Flink SQL Integration</h4>
+                            <p>Use ML inference directly in SQL with UDFs, table functions, and declarative API.</p>
+                            <span class="module-badge">New!</span>
+                        </div>
+                    </a>
+
+                    <a href="modules/core.html" class="module-card">
                         <div class="module-icon">🧠</div>
                         <div class="module-content">
                             <h4>ML Inference Engine</h4>
                             <p>Understand the core inference engine that powers model execution across different frameworks.</p>
                             <span class="module-badge">Core</span>
                         </div>
-                    </div>
+                    </a>
 
-                    <div class="module-card">
+                    <a href="modules/core.html" class="module-card">
                         <div class="module-icon">⚙️</div>
                         <div class="module-content">
                             <h4>Configuration</h4>
                             <p>Learn how to configure and optimize ML inference pipelines for your specific use case.</p>
                             <span class="module-badge">Essential</span>
                         </div>
-                    </div>
+                    </a>
                 </div>
             </div>
 
@@ -1037,32 +1209,102 @@
                     <p>Before you begin, ensure you have Apache Flink 1.15+ and Java 11 or later installed.</p>
                 </div>
 
-                <h3>Step 1: Add Dependency</h3>
-                <div class="code-block">
-                    <code>
-                        &lt;dependency&gt;<br>
-                        &nbsp;&nbsp;&lt;groupId&gt;com.codedstreams&lt;/groupId&gt;<br>
-                        &nbsp;&nbsp;&lt;artifactId&gt;otter-streams&lt;/artifactId&gt;<br>
-                        &nbsp;&nbsp;&lt;version&gt;1.0.15&lt;/version&gt;<br>
-                        &lt;/dependency&gt;
-                    </code>
+                <div class="api-tabs">
+                    <button class="api-tab active" onclick="showApi('datastream')">DataStream API</button>
+                    <button class="api-tab sql-tab" onclick="showApi('sql')">Flink SQL API</button>
                 </div>
 
-                <h3>Step 2: Basic Usage</h3>
-                <div class="code-block">
-                    <code>
-                        // Create ML inference operator<br>
-                        MLInferenceOperator&lt;MyInput, MyOutput&gt; inferenceOp =<br>
-                        &nbsp;&nbsp;new MLInferenceOperator.Builder&lt;&gt;()<br>
-                        &nbsp;&nbsp;&nbsp;&nbsp;.withModelPath("path/to/model.onnx")<br>
-                        &nbsp;&nbsp;&nbsp;&nbsp;.withInputType(MyInput.class)<br>
-                        &nbsp;&nbsp;&nbsp;&nbsp;.withOutputType(MyOutput.class)<br>
-                        &nbsp;&nbsp;&nbsp;&nbsp;.build();<br>
-                        <br>
-                        // Use in Flink DataStream<br>
-                        DataStream&lt;MyOutput&gt; resultStream =<br>
-                        &nbsp;&nbsp;inputStream.process(inferenceOp);
-                    </code>
+                <!-- DataStream API -->
+                <div id="datastream-api" class="api-content active">
+                    <h3>Step 1: Add Dependency</h3>
+                    <div class="code-block">
+                        <code>
+                            &lt;dependency&gt;<br>
+                            &nbsp;&nbsp;&lt;groupId&gt;com.codedstreams&lt;/groupId&gt;<br>
+                            &nbsp;&nbsp;&lt;artifactId&gt;ml-inference-core&lt;/artifactId&gt;<br>
+                            &nbsp;&nbsp;&lt;version&gt;1.0.15&lt;/version&gt;<br>
+                            &lt;/dependency&gt;<br>
+                            &lt;dependency&gt;<br>
+                            &nbsp;&nbsp;&lt;groupId&gt;com.codedstreams&lt;/groupId&gt;<br>
+                            &nbsp;&nbsp;&lt;artifactId&gt;otter-stream-onnx&lt;/artifactId&gt;<br>
+                            &nbsp;&nbsp;&lt;version&gt;1.0.15&lt;/version&gt;<br>
+                            &lt;/dependency&gt;
+                        </code>
+                    </div>
+
+                    <h3>Step 2: Basic Usage</h3>
+                    <div class="code-block">
+                        <code>
+                            // Create ML inference operator<br>
+                            MLInferenceOperator&lt;MyInput, MyOutput&gt; inferenceOp =<br>
+                            &nbsp;&nbsp;new MLInferenceOperator.Builder&lt;&gt;()<br>
+                            &nbsp;&nbsp;&nbsp;&nbsp;.withModelPath("path/to/model.onnx")<br>
+                            &nbsp;&nbsp;&nbsp;&nbsp;.withInputType(MyInput.class)<br>
+                            &nbsp;&nbsp;&nbsp;&nbsp;.withOutputType(MyOutput.class)<br>
+                            &nbsp;&nbsp;&nbsp;&nbsp;.build();<br>
+                            <br>
+                            // Use in Flink DataStream<br>
+                            DataStream&lt;MyOutput&gt; resultStream =<br>
+                            &nbsp;&nbsp;inputStream.process(inferenceOp);
+                        </code>
+                    </div>
+                </div>
+
+                <!-- SQL API -->
+                <div id="sql-api" class="api-content">
+                    <div class="note sql-note">
+                        <h4>SQL API Benefits</h4>
+                        <p>The Flink SQL API provides a declarative way to use ML inference, making it easier to integrate with existing
+                            SQL-based workflows, BI tools, and data exploration platforms.</p>
+                    </div>
+
+                    <h3>Step 1: Add SQL Dependency</h3>
+                    <div class="code-block">
+                        <code>
+                            &lt;dependency&gt;<br>
+                            &nbsp;&nbsp;&lt;groupId&gt;com.codedstreams&lt;/groupId&gt;<br>
+                            &nbsp;&nbsp;&lt;artifactId&gt;otter-stream-sql&lt;/artifactId&gt;<br>
+                            &nbsp;&nbsp;&lt;version&gt;1.0.15&lt;/version&gt;<br>
+                            &lt;/dependency&gt;
+                        </code>
+                    </div>
+
+                    <h3>Step 2: Register ML Functions</h3>
+                    <div class="code-block">
+                        <code>
+                            // Register ML inference UDF in SQL<br>
+                            CREATE FUNCTION FraudDetector <br>
+                            AS 'com.codedstreams.otter.MLInferenceUDF'<br>
+                            USING JAR '/path/to/otter-stream-sql.jar';<br>
+                            <br>
+                            // Or in Java code<br>
+                            tEnv.createTemporarySystemFunction(<br>
+                            &nbsp;&nbsp;"ML_PREDICT",<br>
+                            &nbsp;&nbsp;new MLInferenceUDF("models/fraud_model.onnx")<br>
+                            );
+                        </code>
+                    </div>
+
+                    <h3>Step 3: Use in SQL Queries</h3>
+                    <div class="code-block">
+                        <code>
+                            -- Real-time fraud detection with ML<br>
+                            SELECT <br>
+                            &nbsp;&nbsp;transaction_id,<br>
+                            &nbsp;&nbsp;amount,<br>
+                            &nbsp;&nbsp;FraudDetector(amount, category, merchant) as fraud_score<br>
+                            FROM transactions<br>
+                            WHERE FraudDetector(amount, category, merchant) > 0.8;<br>
+                            <br>
+                            -- Table function for complex outputs<br>
+                            SELECT <br>
+                            &nbsp;&nbsp;t.transaction_id,<br>
+                            &nbsp;&nbsp;p.score,<br>
+                            &nbsp;&nbsp;p.confidence<br>
+                            FROM transactions t,<br>
+                            LATERAL TABLE(ML_PREDICT_TABLE(t.features)) AS p(score, confidence);
+                        </code>
+                    </div>
                 </div>
 
                 <p>For detailed instructions, visit the <a href="getting-started.html">Getting Started</a> guide.</p>
@@ -1079,6 +1321,15 @@
                             <h4>Core Module</h4>
                             <p>Foundation classes and interfaces for ML inference in Flink streams.</p>
                             <span class="module-badge">Essential</span>
+                        </div>
+                    </a>
+
+                    <a href="modules/sql.html" class="module-card sql-module">
+                        <div class="module-icon">📊</div>
+                        <div class="module-content">
+                            <h4>Flink SQL</h4>
+                            <p>SQL integration with UDFs, table functions, and declarative ML inference.</p>
+                            <span class="module-badge">New!</span>
                         </div>
                     </a>
 
@@ -1145,12 +1396,12 @@
                         </a>
                     </div>
 
-                    <div class="card">
+                    <div class="card sql-card">
                         <div class="card-icon">🚀</div>
-                        <h3>Try Examples</h3>
-                        <p>Check out practical examples to see Otter Streams SDK in action with real-world use cases.</p>
-                        <a href="modules/examples.html" class="card-link">
-                            View Examples
+                        <h3>Try SQL Examples</h3>
+                        <p>Check out SQL examples to see ML inference in action with declarative queries.</p>
+                        <a href="modules/sql.html#examples" class="card-link">
+                            View SQL Examples
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <line x1="5" y1="12" x2="19" y2="12"></line>
                                 <polyline points="12 5 19 12 12 19"></polyline>
@@ -1179,7 +1430,8 @@
                 <div class="footer-grid">
                     <div class="footer-section">
                         <h4>About Otter Streams SDK</h4>
-                        <p>A powerful SDK for integrating real-time machine learning inference into Apache Flink streaming applications.</p>
+                        <p>A powerful SDK for integrating real-time machine learning inference into Apache Flink streaming applications.
+                            <strong>Now with full Flink SQL support!</strong></p>
                         <div class="footer-links">
                             <a href="index.html" class="footer-link">
                                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -1206,6 +1458,12 @@
                                     <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
                                 </svg>
                                 API Reference
+                            </a>
+                            <a href="modules/sql.html" class="footer-link">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+                                </svg>
+                                Flink SQL Guide
                             </a>
                             <a href="https://github.com/martourez21/otter-streams" class="footer-link" target="_blank">
                                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -1234,6 +1492,13 @@
                                 </svg>
                                 Getting Started
                             </a>
+                            <a href="mailto:nestorabiawuh@gmail.com" class="footer-link">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                                    <polyline points="22,6 12,13 2,6"></polyline>
+                                </svg>
+                                Contact Support
+                            </a>
                         </div>
                     </div>
                 </div>
@@ -1244,6 +1509,8 @@
                     </div>
                     <div class="social-links">
                         <a href="https://github.com/martourez21/otter-streams" class="social-link" target="_blank">GitHub</a>
+                        <a href="modules/sql.html" class="social-link">Flink SQL</a>
+                        <a href="getting-started.html" class="social-link">Get Started</a>
                     </div>
                 </div>
             </div>
@@ -1296,6 +1563,24 @@
             }
         });
     });
+
+    // API Tab Switching
+    function showApi(apiType) {
+        // Update tabs
+        document.querySelectorAll('.api-tab').forEach(tab => {
+            tab.classList.remove('active');
+        });
+        document.querySelectorAll('.api-content').forEach(content => {
+            content.classList.remove('active');
+        });
+
+        // Activate selected tab
+        event.target.classList.add('active');
+        if (apiType === 'sql') {
+            event.target.classList.add('sql-tab');
+        }
+        document.getElementById(apiType + '-api').classList.add('active');
+    }
 </script>
 </body>
 </html>
