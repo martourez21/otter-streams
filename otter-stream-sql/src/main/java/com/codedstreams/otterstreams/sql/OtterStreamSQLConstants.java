@@ -3,7 +3,7 @@ package com.codedstreams.otterstreams.sql;
 /**
  * Constants used throughout Otter Stream SQL module.
  *
- * @author Nestor Martourez Abiangang A.
+ * @author Nestor Martourez A.
  * @since 1.0.0
  */
 public final class OtterStreamSQLConstants {
