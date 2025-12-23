@@ -13,6 +13,10 @@ import org.kie.api.runtime.StatelessKieSession;
  *   <li>Thread-safe per task</li>
  *   <li>Fast rule evaluation</li>
  * </ul>
+ *
+ *  @author Nestor Martourez
+ *  @author Sr Software and Data Streaming Engineer @ CodedStreams
+ *  @since 1.0.0
  */
 public class DroolsDecisionEngine implements DecisionEngine<Object> {
 

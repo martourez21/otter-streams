@@ -17,6 +17,10 @@ import java.util.function.Function;
  *
  * @param <T> Input event type
  * @param <R> Output enriched event type
+ *
+ * @author Nestor Martourez
+ * @author Sr Software and Data Streaming Engineer @ CodedStreams
+ * @since 1.0.0
  */
 public class AsyncMLInferenceFunction<T, R> implements AsyncFunction<T, R> {
 

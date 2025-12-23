@@ -5,6 +5,11 @@ import java.util.Collections;
 
 /**
  * Handles async inference results.
+ *
+ *
+ * @author Nestor Martourez
+ * @author Sr Software and Data Streaming Engineer @ CodedStreams
+ * @since 1.0.0
  */
 public class AsyncResultHandler<T> {
 

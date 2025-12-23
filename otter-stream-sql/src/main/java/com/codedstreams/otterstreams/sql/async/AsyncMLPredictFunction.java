@@ -17,6 +17,10 @@ import java.util.concurrent.Executors;
 
 /**
  * Async function for non-blocking inference.
+ *
+ * @author Nestor Martourez
+ * @author Sr Software and Data Streaming Engineer @ CodedStreams
+ * @since 1.0.0
  */
 public class AsyncMLPredictFunction extends RichAsyncFunction<Map<String, Object>, Double> {
     private static final Logger LOG = LoggerFactory.getLogger(AsyncMLPredictFunction.class);
