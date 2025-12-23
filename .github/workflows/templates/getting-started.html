@@ -162,6 +162,11 @@
             gap: 8px;
         }
 
+        .sql-badge {
+            background: rgba(45, 212, 191, 0.3);
+            border: 1px solid rgba(45, 212, 191, 0.5);
+        }
+
         /* Main Content */
         .container {
             max-width: 1200px;
@@ -440,6 +445,165 @@
             border-left-color: var(--success);
         }
 
+        /* NEW: Step-by-step styles */
+        .steps-container {
+            margin: 30px 0;
+            counter-reset: step-counter;
+        }
+
+        .step {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 25px;
+            position: relative;
+            transition: all 0.3s;
+        }
+
+        .step:hover {
+            border-color: var(--primary);
+            background: rgba(0, 145, 213, 0.05);
+        }
+
+        .step:last-child {
+            margin-bottom: 0;
+        }
+
+        .step-number {
+            position: absolute;
+            top: -12px;
+            left: 20px;
+            background: var(--primary);
+            color: white;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.1em;
+        }
+
+        .step-title {
+            color: var(--text-primary);
+            font-size: 1.2em;
+            margin: 0 0 15px 0;
+            padding-left: 40px;
+            font-weight: 600;
+        }
+
+        .step-content {
+            padding-left: 40px;
+        }
+
+        .step-actions {
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+            border-left: 3px solid var(--primary);
+        }
+
+        .step-actions h4 {
+            color: var(--primary);
+            margin-bottom: 10px;
+            font-size: 1em;
+        }
+
+        .step-actions ul {
+            margin: 10px 0 0 20px;
+        }
+
+        .step-actions li {
+            margin-bottom: 8px;
+            font-size: 0.95em;
+        }
+
+        /* Enhanced list styles */
+        .checklist {
+            list-style: none;
+            margin-left: 0;
+        }
+
+        .checklist li {
+            position: relative;
+            padding-left: 25px;
+            margin-bottom: 12px;
+        }
+
+        .checklist li:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: var(--success);
+            font-weight: bold;
+        }
+
+        /* Priority indicators */
+        .priority {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 0.8em;
+            font-weight: 600;
+            margin-left: 8px;
+        }
+
+        .priority-high {
+            background: rgba(248, 81, 73, 0.15);
+            color: var(--danger);
+        }
+
+        .priority-medium {
+            background: rgba(210, 153, 34, 0.15);
+            color: var(--warning);
+        }
+
+        .priority-low {
+            background: rgba(46, 160, 67, 0.15);
+            color: var(--success);
+        }
+
+        /* API Tabs */
+        .api-tabs {
+            display: flex;
+            gap: 10px;
+            margin: 20px 0;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 10px;
+        }
+
+        .api-tab {
+            padding: 10px 20px;
+            background: transparent;
+            border: 1px solid transparent;
+            color: var(--text-secondary);
+            cursor: pointer;
+            border-radius: 6px;
+            transition: all 0.3s;
+        }
+
+        .api-tab:hover {
+            background: rgba(0, 145, 213, 0.1);
+            color: var(--primary);
+        }
+
+        .api-tab.active {
+            background: rgba(0, 145, 213, 0.2);
+            color: var(--primary);
+            border-color: var(--primary);
+        }
+
+        .api-content {
+            display: none;
+        }
+
+        .api-content.active {
+            display: block;
+        }
+
         /* Footer */
         .footer {
             background: var(--card-bg);
@@ -529,6 +693,10 @@
             .cards-grid {
                 grid-template-columns: 1fr;
             }
+
+            .api-tabs {
+                flex-direction: column;
+            }
         }
     </style>
 </head>
@@ -545,6 +713,7 @@
         <div class="nav-links">
             <a href="../index.html" class="nav-link">🏠 Home</a>
             <a href="../javadoc/${VERSION}/index.html" class="nav-link">📚 API Docs</a>
+            <a href="../modules/sql.html" class="nav-link">📊 Flink SQL</a>
             <a href="https://github.com/martourez21/otter-streams" class="nav-link">📦 GitHub</a>
             <a href="mailto:nestorabiawuh@gmail.com" class="nav-link">✉️ Contact</a>
         </div>
@@ -555,9 +724,10 @@
             <span class="badge"> Quick Start</span>
             <span class="badge"> Apache Flink</span>
             <span class="badge"> Real-time ML</span>
+            <span class="badge sql-badge">📊 Flink SQL Support</span>
         </div>
         <h1>Getting Started with Otter Streams</h1>
-        <p class="hero-subtitle">Learn how to integrate real-time machine learning inference into your Apache Flink streaming applications in just 5 minutes</p>
+        <p class="hero-subtitle">Learn how to integrate real-time machine learning inference into your Apache Flink streaming applications with both DataStream and SQL APIs</p>
     </div>
 </header>
 
@@ -574,6 +744,7 @@
                         <a href="#installation" class="sidebar-link">📦 Installation</a>
                         <a href="#model-preparation" class="sidebar-link">🤖 Model Preparation</a>
                         <a href="#integration" class="sidebar-link">🔧 Flink Integration</a>
+                        <a href="#sql-integration" class="sidebar-link">📊 Flink SQL</a>
                         <a href="#examples" class="sidebar-link"> Examples</a>
                     </div>
                 </div>
@@ -593,6 +764,7 @@
                     <div class="sidebar-links">
                         <a href="https://github.com/martourez21/otter-streams" class="sidebar-link">📦 Repository</a>
                         <a href="../javadoc/${VERSION}/index.html" class="sidebar-link">📚 API Documentation</a>
+                        <a href="../modules/sql.html" class="sidebar-link">📊 SQL Documentation</a>
                         <a href="https://github.com/martourez21/otter-streams/issues" class="sidebar-link">🐛 Issue Tracker</a>
                         <a href="../modules/architecture.html" class="sidebar-link">🏗️ Architecture</a>
                         <a href="../modules/examples.html" class="sidebar-link">💡 Examples</a>
@@ -620,14 +792,19 @@
                     </div>
 
                     <div class="card">
-                        <h4><span class="card-icon">🌐</span> Flexible Deployment</h4>
-                        <p>Local, HTTP, AWS SageMaker, and custom remote inference endpoints.</p>
+                        <h4><span class="card-icon">📊</span> Flink SQL Integration</h4>
+                        <p>Full Flink SQL support with UDFs, table functions, and SQL API for ML inference.</p>
                     </div>
 
                     <div class="card">
                         <h4><span class="card-icon">⚡</span> Performance Features</h4>
                         <p>Batch processing, async operations, intelligent caching, and GPU acceleration.</p>
                     </div>
+                </div>
+
+                <div class="alert alert-info">
+                    <p><strong>New Feature:</strong> Otter Streams now supports both DataStream and Flink SQL APIs!
+                        <a href="../modules/sql.html" style="color: var(--primary); font-weight: 600;">Check out the SQL documentation</a> for details.</p>
                 </div>
             </section>
 
@@ -663,6 +840,13 @@ chmod +x setup.sh
 &lt;dependency&gt;
     &lt;groupId&gt;com.codedstreams&lt;/groupId&gt;
     &lt;artifactId&gt;ml-inference-core&lt;/artifactId&gt;
+    &lt;version&gt;${VERSION}&lt;/version&gt;
+&lt;/dependency&gt;
+
+&lt;!-- Flink SQL Integration --&gt;
+&lt;dependency&gt;
+    &lt;groupId&gt;com.codedstreams&lt;/groupId&gt;
+    &lt;artifactId&gt;otter-stream-sql&lt;/artifactId&gt;
     &lt;version&gt;${VERSION}&lt;/version&gt;
 &lt;/dependency&gt;
 
@@ -736,18 +920,52 @@ with open("model.onnx", "wb") as f:
             <section id="integration" class="section">
                 <h2 class="section-title">🔧 Flink Integration</h2>
 
-                <h3 class="section-subtitle">Basic Usage Example</h3>
-                <div class="code-block">
-                    <div class="code-header">
-                        <span class="code-language">java</span>
-                        <button class="copy-button" onclick="copyCode(this)">Copy</button>
-                    </div>
-                    <pre><code>import com.flinkml.inference.config.*;
-import com.flinkml.inference.function.*;
-import com.flinkml.inference.onnx.*;
+                <div class="api-tabs">
+                    <button class="api-tab active" onclick="showApi('datastream')">DataStream API</button>
+                    <button class="api-tab" onclick="showApi('sql')">Flink SQL API</button>
+                </div>
 
-// 1. Configure your model
-InferenceConfig config = InferenceConfig.builder()
+                <!-- DataStream API -->
+                <div id="datastream-api" class="api-content active">
+                    <div class="steps-container">
+                        <!-- Step 1 -->
+                        <div class="step">
+                            <div class="step-number">1</div>
+                            <h3 class="step-title">Set Up Dependencies</h3>
+                            <div class="step-content">
+                                <p>Add Otter Streams to your Flink project:</p>
+                                <div class="code-block">
+                                    <div class="code-header">
+                                        <span class="code-language">xml</span>
+                                        <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                                    </div>
+                                    <pre><code>&lt;!-- pom.xml --&gt;
+&lt;dependency&gt;
+    &lt;groupId&gt;com.codedstreams&lt;/groupId&gt;
+    &lt;artifactId&gt;ml-inference-core&lt;/artifactId&gt;
+    &lt;version&gt;${VERSION}&lt;/version&gt;
+&lt;/dependency&gt;
+&lt;dependency&gt;
+    &lt;groupId&gt;com.codedstreams&lt;/groupId&gt;
+    &lt;artifactId&gt;otter-stream-onnx&lt;/artifactId&gt;
+    &lt;version&gt;${VERSION}&lt;/version&gt;
+&lt;/dependency&gt;</code></pre>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Step 2 -->
+                        <div class="step">
+                            <div class="step-number">2</div>
+                            <h3 class="step-title">Configure Your Model</h3>
+                            <div class="step-content">
+                                <p>Create an inference configuration with your model details:</p>
+                                <div class="code-block">
+                                    <div class="code-header">
+                                        <span class="code-language">java</span>
+                                        <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                                    </div>
+                                    <pre><code>InferenceConfig config = InferenceConfig.builder()
     .modelConfig(ModelConfig.builder()
         .modelId("fraud-detection")
         .modelPath("models/fraud_model.onnx")
@@ -759,23 +977,331 @@ InferenceConfig config = InferenceConfig.builder()
     .timeout(5000)
     .maxRetries(3)
     .enableMetrics(true)
-    .build();
+    .build();</code></pre>
+                                </div>
+                            </div>
+                        </div>
 
-// 2. Create inference function
-AsyncModelInferenceFunction&lt;Map&lt;String, Object&gt;, InferenceResult&gt; inferenceFunction =
+                        <!-- Step 3 -->
+                        <div class="step">
+                            <div class="step-number">3</div>
+                            <h3 class="step-title">Create Inference Function</h3>
+                            <div class="step-content">
+                                <p>Instantiate the async inference function with your configuration:</p>
+                                <div class="code-block">
+                                    <div class="code-header">
+                                        <span class="code-language">java</span>
+                                        <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                                    </div>
+                                    <pre><code>AsyncModelInferenceFunction&lt;Map&lt;String, Object&gt;, InferenceResult&gt; inferenceFunction =
     new AsyncModelInferenceFunction&lt;&gt;(
         config,
-        cfg -&gt; new OnnxInferenceEngine()
-    );
+        cfg -> new OnnxInferenceEngine()
+    );</code></pre>
+                                </div>
+                            </div>
+                        </div>
 
-// 3. Apply to Flink stream
-DataStream&lt;InferenceResult&gt; predictions = AsyncDataStream.unorderedWait(
+                        <!-- Step 4 -->
+                        <div class="step">
+                            <div class="step-number">4</div>
+                            <h3 class="step-title">Apply to DataStream</h3>
+                            <div class="step-content">
+                                <p>Integrate with your Flink streaming pipeline:</p>
+                                <div class="code-block">
+                                    <div class="code-header">
+                                        <span class="code-language">java</span>
+                                        <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                                    </div>
+                                    <pre><code>DataStream&lt;InferenceResult&gt; predictions = AsyncDataStream.unorderedWait(
     transactionStream,
     inferenceFunction,
     5000,                    // Async timeout
     TimeUnit.MILLISECONDS,
     100                      // Max concurrent requests
 );</code></pre>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Step 5 -->
+                        <div class="step">
+                            <div class="step-number">5</div>
+                            <h3 class="step-title">Process Results</h3>
+                            <div class="step-content">
+                                <p>Handle the inference results in your downstream processing:</p>
+                                <div class="code-block">
+                                    <div class="code-header">
+                                        <span class="code-language">java</span>
+                                        <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                                    </div>
+                                    <pre><code>predictions
+    .filter(result -> result.getScore() > 0.8)
+    .map(result -> createAlert(result))
+    .addSink(new AlertSink());</code></pre>
+                                </div>
+                                <div class="step-actions">
+                                    <h4>Quick Test:</h4>
+                                    <ul class="checklist">
+                                        <li>Run with a small sample dataset first</li>
+                                        <li>Verify model loads correctly</li>
+                                        <li>Check inference latency meets your requirements</li>
+                                        <li>Monitor Flink metrics for backpressure</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SQL API -->
+                <div id="sql-api" class="api-content">
+                    <div class="alert alert-success">
+                        <p><strong>New Feature:</strong> Use ML inference directly in Flink SQL with our new SQL module.
+                            <a href="../modules/sql.html" style="color: var(--success); font-weight: 600;">See full SQL documentation</a> for more examples.</p>
+                    </div>
+
+                    <div class="steps-container">
+                        <!-- SQL Step 1 -->
+                        <div class="step">
+                            <div class="step-number">1</div>
+                            <h3 class="step-title">Add SQL Dependency</h3>
+                            <div class="step-content">
+                                <p>Include the SQL module in your project:</p>
+                                <div class="code-block">
+                                    <div class="code-header">
+                                        <span class="code-language">xml</span>
+                                        <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                                    </div>
+                                    <pre><code>&lt;!-- pom.xml --&gt;
+&lt;dependency&gt;
+    &lt;groupId&gt;com.codedstreams&lt;/groupId&gt;
+    &lt;artifactId&gt;otter-stream-sql&lt;/artifactId&gt;
+    &lt;version&gt;${VERSION}&lt;/version&gt;
+&lt;/dependency&gt;</code></pre>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- SQL Step 2 -->
+                        <div class="step">
+                            <div class="step-number">2</div>
+                            <h3 class="step-title">Register ML Functions</h3>
+                            <div class="step-content">
+                                <p>Register ML inference functions in your Flink table environment:</p>
+                                <div class="code-block">
+                                    <div class="code-header">
+                                        <span class="code-language">java</span>
+                                        <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                                    </div>
+                                    <pre><code>TableEnvironment tEnv = TableEnvironment.create(EnvironmentSettings.inStreamingMode());
+
+// Register ML inference as a UDF
+tEnv.createTemporarySystemFunction(
+    "ML_PREDICT",
+    new MLInferenceUDF("models/fraud_model.onnx")
+);
+
+// Or register as a table function
+tEnv.createTemporarySystemFunction(
+    "ML_PREDICT_TABLE",
+    new MLInferenceTableFunction("models/fraud_model.onnx")
+);</code></pre>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- SQL Step 3 -->
+                        <div class="step">
+                            <div class="step-number">3</div>
+                            <h3 class="step-title">Use in SQL Queries</h3>
+                            <div class="step-content">
+                                <p>Call ML inference functions directly in your SQL statements:</p>
+                                <div class="code-block">
+                                    <div class="code-header">
+                                        <span class="code-language">sql</span>
+                                        <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                                    </div>
+                                    <pre><code>-- Simple scalar function
+SELECT
+    transaction_id,
+    amount,
+    ML_PREDICT(amount, category, merchant) as fraud_score
+FROM transactions
+WHERE ML_PREDICT(amount, category, merchant) > 0.8;
+
+-- Table function for multiple outputs
+SELECT
+    t.transaction_id,
+    p.score,
+    p.confidence,
+    p.reason
+FROM transactions t,
+LATERAL TABLE(ML_PREDICT_TABLE(t.amount, t.category, t.merchant)) AS p(score, confidence, reason)
+WHERE p.score > 0.8;</code></pre>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- SQL Step 4 -->
+                        <div class="step">
+                            <div class="step-number">4</div>
+                            <h3 class="step-title">Configure via SQL Hints</h3>
+                            <div class="step-content">
+                                <p>Configure inference behavior using SQL hints:</p>
+                                <div class="code-block">
+                                    <div class="code-header">
+                                        <span class="code-language">sql</span>
+                                        <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                                    </div>
+                                    <pre><code>-- Configure batch size and timeout via hints
+SELECT
+    /*+ INFERENCE_OPTIONS('batch_size'='64', 'timeout_ms'='5000') */
+    transaction_id,
+    ML_PREDICT(amount, category, merchant) as fraud_score
+FROM transactions;
+
+-- Use different model versions
+SELECT
+    /*+ MODEL_CONFIG('model_version'='v2.1', 'enable_cache'='true') */
+    user_id,
+    ML_PREDICT(features) as prediction
+FROM user_features;</code></pre>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- SQL Step 5 -->
+                        <div class="step">
+                            <div class="step-number">5</div>
+                            <h3 class="step-title">Create Views with ML</h3>
+                            <div class="step-content">
+                                <p>Create materialized views with ML predictions for easy access:</p>
+                                <div class="code-block">
+                                    <div class="code-header">
+                                        <span class="code-language">sql</span>
+                                        <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                                    </div>
+                                    <pre><code>-- Create view with real-time predictions
+CREATE VIEW fraud_alerts AS
+SELECT
+    transaction_id,
+    user_id,
+    amount,
+    ML_PREDICT(amount, category, merchant) as fraud_score,
+    CASE
+        WHEN ML_PREDICT(amount, category, merchant) > 0.9 THEN 'HIGH_RISK'
+        WHEN ML_PREDICT(amount, category, merchant) > 0.7 THEN 'MEDIUM_RISK'
+        ELSE 'LOW_RISK'
+    END as risk_level
+FROM transactions;
+
+-- Query the view
+SELECT * FROM fraud_alerts WHERE risk_level = 'HIGH_RISK';</code></pre>
+                                </div>
+                                <div class="step-actions">
+                                    <h4>SQL Best Practices:</h4>
+                                    <ul class="checklist">
+                                        <li>Use batch inference for better performance with large datasets</li>
+                                        <li>Enable caching for repeated predictions on similar inputs</li>
+                                        <li>Monitor SQL plan to ensure optimal execution</li>
+                                        <li>Consider materialized views for frequent ML queries</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Flink SQL Integration -->
+            <section id="sql-integration" class="section">
+                <h2 class="section-title">📊 Flink SQL Integration</h2>
+
+                <div class="alert alert-info">
+                    <p><strong>Tip:</strong> The Flink SQL API provides a declarative way to use ML inference, making it easier to integrate with existing SQL-based workflows and tools.</p>
+                </div>
+
+                <h3 class="section-subtitle">Available SQL Functions</h3>
+                <div class="cards-grid">
+                    <div class="card">
+                        <h4>ML_PREDICT()</h4>
+                        <p><strong>Scalar Function:</strong> Returns a single prediction value for each input row.</p>
+                        <code>ML_PREDICT(feature1, feature2, ...) → prediction</code>
+                    </div>
+
+                    <div class="card">
+                        <h4>ML_PREDICT_TABLE()</h4>
+                        <p><strong>Table Function:</strong> Returns multiple output columns for complex models.</p>
+                        <code>ML_PREDICT_TABLE(features) → (score, confidence, label)</code>
+                    </div>
+
+                    <div class="card">
+                        <h4>ML_BATCH_PREDICT()</h4>
+                        <p><strong>Aggregate Function:</strong> Batch prediction for windowed aggregations.</p>
+                        <code>ML_BATCH_PREDICT(features) OVER (PARTITION BY ...)</code>
+                    </div>
+                </div>
+
+                <h3 class="section-subtitle">Complete SQL Example</h3>
+                <div class="code-block">
+                    <div class="code-header">
+                        <span class="code-language">sql</span>
+                        <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                    </div>
+                    <pre><code>-- Register ML model as a catalog function
+CREATE FUNCTION FraudDetector
+AS 'com.codedstreams.otter.MLInferenceUDF'
+USING JAR '/path/to/otter-stream-sql.jar';
+
+-- Create streaming table
+CREATE TABLE transactions (
+    transaction_id STRING,
+    user_id STRING,
+    amount DECIMAL(10, 2),
+    category STRING,
+    merchant STRING,
+    transaction_time TIMESTAMP(3),
+    WATERMARK FOR transaction_time AS transaction_time - INTERVAL '5' SECOND
+) WITH (
+    'connector' = 'kafka',
+    'topic' = 'transactions',
+    'properties.bootstrap.servers' = 'localhost:9092',
+    'format' = 'json'
+);
+
+-- Real-time fraud detection with ML
+CREATE TABLE fraud_alerts (
+    alert_id STRING,
+    transaction_id STRING,
+    user_id STRING,
+    amount DECIMAL(10, 2),
+    fraud_score DOUBLE,
+    detection_time TIMESTAMP(3)
+) WITH (
+    'connector' = 'kafka',
+    'topic' = 'fraud-alerts',
+    'properties.bootstrap.servers' = 'localhost:9092',
+    'format' = 'json'
+);
+
+-- Streaming ML inference pipeline
+INSERT INTO fraud_alerts
+SELECT
+    UUID() as alert_id,
+    transaction_id,
+    user_id,
+    amount,
+    FraudDetector(amount, category, merchant) as fraud_score,
+    CURRENT_TIMESTAMP as detection_time
+FROM transactions
+WHERE FraudDetector(amount, category, merchant) > 0.8;</code></pre>
+                </div>
+
+                <div class="step-actions">
+                    <h4>Learn More:</h4>
+                    <p>For complete SQL documentation, including UDF development, optimization, and best practices, visit the
+                        <a href="../modules/sql.html" style="color: var(--primary); font-weight: 600;">Flink SQL Integration Guide</a>.</p>
                 </div>
             </section>
 
@@ -789,9 +1315,13 @@ DataStream&lt;InferenceResult&gt; predictions = AsyncDataStream.unorderedWait(
                         <span class="code-language">bash</span>
                         <button class="copy-button" onclick="copyCode(this)">Copy</button>
                     </div>
-                    <pre><code># Run the fraud detection example
+                    <pre><code># Run DataStream example
 mvn exec:java -pl otter-stream-examples \
-  -Dexec.mainClass="com.flinkml.inference.examples.FraudDetectionExample"</code></pre>
+  -Dexec.mainClass="com.flinkml.inference.examples.FraudDetectionExample"
+
+# Run SQL example
+mvn exec:java -pl otter-stream-examples \
+  -Dexec.mainClass="com.flinkml.inference.examples.FraudDetectionSQLExample"</code></pre>
                 </div>
 
                 <h3 class="section-subtitle">More Examples</h3>
@@ -809,6 +1339,11 @@ mvn exec:java -pl otter-stream-examples \
                     <div class="card">
                         <h4>📈 Anomaly Detection</h4>
                         <p>Time-series monitoring with automatic alerting.</p>
+                    </div>
+
+                    <div class="card">
+                        <h4>📊 SQL ML Pipeline</h4>
+                        <p>Complete ML inference pipeline using Flink SQL API.</p>
                     </div>
                 </div>
             </section>
@@ -884,8 +1419,8 @@ mvn exec:java -pl otter-stream-examples \
                     </div>
 
                     <div class="card">
-                        <h4>📈 High Throughput</h4>
-                        <p>Parallel processing, large queue size, GPU acceleration for maximum speed.</p>
+                        <h4>📊 SQL Workloads</h4>
+                        <p>Optimized for declarative queries with automatic batching and caching.</p>
                     </div>
                 </div>
             </section>
@@ -921,12 +1456,12 @@ mvn exec:java -pl otter-stream-examples \
                     </div>
 
                     <div class="card">
-                        <h4>⚙️ Parallel Processing</h4>
-                        <p>Configure parallelism based on your Flink cluster resources.</p>
+                        <h4>📊 SQL Optimization</h4>
+                        <p>Optimize SQL queries for ML inference.</p>
                         <ul>
-                            <li>1-2 threads per CPU core</li>
-                            <li>Monitor Flink task manager metrics</li>
-                            <li>Adjust based on backpressure</li>
+                            <li>Use batch prediction functions</li>
+                            <li>Enable query plan caching</li>
+                            <li>Consider materialized views</li>
                         </ul>
                     </div>
                 </div>
@@ -1003,12 +1538,12 @@ InferenceConfig config = InferenceConfig.builder()
                     </div>
 
                     <div class="card">
-                        <h4>💾 Cache Metrics</h4>
-                        <p>Monitor cache hit rates and efficiency.</p>
+                        <h4>📊 SQL Metrics</h4>
+                        <p>Monitor SQL query performance with ML inference.</p>
                         <ul>
-                            <li><code>inference.cache.hit_rate</code></li>
-                            <li><code>inference.cache.size</code></li>
-                            <li><code>inference.cache.evictions</code></li>
+                            <li><code>sql.ml.queries.total</code></li>
+                            <li><code>sql.ml.latency.avg</code></li>
+                            <li><code>sql.ml.cache.hit_rate</code></li>
                         </ul>
                     </div>
                 </div>
@@ -1034,6 +1569,7 @@ InferenceConfig config = InferenceConfig.builder()
     .collectCacheMetrics(true)
     .collectMemoryMetrics(true)
     .collectGpuMetrics(true)
+    .collectSqlMetrics(true)
 
     // Export to Prometheus
     .metricsExporter("prometheus")
@@ -1057,53 +1593,99 @@ InferenceConfig config = InferenceConfig.builder()
                 </div>
 
                 <h3 class="section-subtitle">Common Issues and Solutions</h3>
-                <div class="cards-grid">
-                    <div class="card">
-                        <h4>🚫 Model Loading Failures</h4>
-                        <p><strong>Symptoms:</strong> Model fails to load, throws exceptions</p>
-                        <p><strong>Solutions:</strong></p>
-                        <ul>
-                            <li>Verify model file exists and is readable</li>
-                            <li>Check model format compatibility</li>
-                            <li>Ensure all dependencies are installed</li>
-                            <li>Check file permissions</li>
-                        </ul>
+                <div class="steps-container">
+                    <!-- Issue 1: Model Loading -->
+                    <div class="step">
+                        <div class="step-number">1</div>
+                        <h3 class="step-title">Model Loading Failures
+                            <span class="priority priority-high">High Priority</span>
+                        </h3>
+                        <div class="step-content">
+                            <p><strong>Symptoms:</strong> Application fails to start, model-related exceptions</p>
+
+                            <div class="step-actions">
+                                <h4>Resolution Steps:</h4>
+                                <ol>
+                                    <li><strong>Check file permissions:</strong> Ensure model file is readable
+                                        <pre style="margin: 10px 0; padding: 10px; background: var(--code-bg); border-radius: 5px;"><code>ls -la models/fraud_model.onnx</code></pre>
+                                    </li>
+                                    <li><strong>Verify model format:</strong> Confirm it's a supported format
+                                        <pre style="margin: 10px 0; padding: 10px; background: var(--code-bg); border-radius: 5px;"><code>file models/fraud_model.onnx</code></pre>
+                                    </li>
+                                    <li><strong>Test model locally:</strong> Use the test utility
+                                        <pre style="margin: 10px 0; padding: 10px; background: var(--code-bg); border-radius: 5px;"><code>mvn exec:java -Dexec.mainClass="com.flinkml.inference.util.ModelValidator"</code></pre>
+                                    </li>
+                                    <li><strong>Check dependencies:</strong> Ensure all required libraries are installed</li>
+                                </ol>
+                            </div>
+                        </div>
                     </div>
 
-                    <div class="card">
-                        <h4>🐌 Slow Inference</h4>
-                        <p><strong>Symptoms:</strong> High latency, low throughput</p>
-                        <p><strong>Solutions:</strong></p>
-                        <ul>
-                            <li>Increase batch size</li>
-                            <li>Enable GPU acceleration</li>
-                            <li>Optimize model (quantization, pruning)</li>
-                            <li>Adjust batch timeout</li>
-                        </ul>
+                    <!-- Issue 2: SQL Function Errors -->
+                    <div class="step">
+                        <div class="step-number">2</div>
+                        <h3 class="step-title">SQL Function Errors
+                            <span class="priority priority-medium">Medium Priority</span>
+                        </h3>
+                        <div class="step-content">
+                            <p><strong>Symptoms:</strong> SQL queries fail with function not found or type mismatch errors</p>
+
+                            <div class="step-actions">
+                                <h4>SQL Troubleshooting:</h4>
+                                <ol>
+                                    <li><strong>Verify function registration:</strong> Ensure UDF is properly registered</li>
+                                    <li><strong>Check parameter types:</strong> Match SQL types with Java types</li>
+                                    <li><strong>Test function isolation:</strong> Test UDF outside of Flink first</li>
+                                    <li><strong>Review SQL plan:</strong> Use EXPLAIN to see function execution plan</li>
+                                </ol>
+                            </div>
+                        </div>
                     </div>
 
-                    <div class="card">
-                        <h4>💥 Memory Issues</h4>
-                        <p><strong>Symptoms:</strong> OutOfMemory errors, high GC activity</p>
-                        <p><strong>Solutions:</strong></p>
-                        <ul>
-                            <li>Reduce batch size</li>
-                            <li>Enable result caching</li>
-                            <li>Increase Flink task manager memory</li>
-                            <li>Monitor with metrics</li>
-                        </ul>
+                    <!-- Issue 3: Performance Issues -->
+                    <div class="step">
+                        <div class="step-number">3</div>
+                        <h3 class="step-title">Performance Issues
+                            <span class="priority priority-medium">Medium Priority</span>
+                        </h3>
+                        <div class="step-content">
+                            <p><strong>Symptoms:</strong> High latency, low throughput, Flink backpressure</p>
+
+                            <div class="step-actions">
+                                <h4>Optimization Sequence:</h4>
+                                <ol>
+                                    <li><strong>Check baseline:</strong> Measure single inference time</li>
+                                    <li><strong>Increase batch size:</strong> Start with 32, test up to 128</li>
+                                    <li><strong>Enable caching:</strong> If you have repeated patterns</li>
+                                    <li><strong>Check hardware:</strong> CPU utilization, memory, I/O</li>
+                                    <li><strong>Profile model:</strong> Identify bottlenecks in model execution</li>
+                                </ol>
+                            </div>
+                        </div>
                     </div>
 
-                    <div class="card">
-                        <h4>🔗 Connection Problems</h4>
-                        <p><strong>Symptoms:</strong> Remote inference failures, timeouts</p>
-                        <p><strong>Solutions:</strong></p>
-                        <ul>
-                            <li>Check network connectivity</li>
-                            <li>Increase timeout settings</li>
-                            <li>Implement retry logic</li>
-                            <li>Add circuit breaker</li>
-                        </ul>
+                    <!-- Issue 4: Memory Issues -->
+                    <div class="step">
+                        <div class="step-number">4</div>
+                        <h3 class="step-title">Memory Issues
+                            <span class="priority priority-high">High Priority</span>
+                        </h3>
+                        <div class="step-content">
+                            <p><strong>Symptoms:</strong> OutOfMemory errors, high GC activity, unstable performance</p>
+
+                            <div class="step-actions">
+                                <h4>Memory Management Steps:</h4>
+                                <ol>
+                                    <li><strong>Reduce batch size:</strong> Start with 16 or 32</li>
+                                    <li><strong>Monitor heap usage:</strong> Use JVM metrics or VisualVM</li>
+                                    <li><strong>Adjust Flink memory:</strong> Increase task manager memory
+                                        <pre style="margin: 10px 0; padding: 10px; background: var(--code-bg); border-radius: 5px;"><code>taskmanager.memory.process.size: 4096m</code></pre>
+                                    </li>
+                                    <li><strong>Enable result caching:</strong> Reduces repeated computations</li>
+                                    <li><strong>Check for memory leaks:</strong> Use heap dumps if persistent</li>
+                                </ol>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -1124,6 +1706,7 @@ InferenceConfig config = InferenceConfig.builder()
     .logLatencies(true)          // Detailed timing
     .logErrors(true)             // Full error stack traces
     .logCacheActivity(true)      // Cache hits/misses
+    .logSqlQueries(true)         // SQL query logging
 
     // Performance profiling
     .profileMode(true)
@@ -1154,8 +1737,8 @@ InferenceConfig config = InferenceConfig.builder()
                     </div>
 
                     <div class="card">
-                        <h4>3️⃣ Integrate with Flink</h4>
-                        <p>Add ML inference to your existing Flink streaming job.</p>
+                        <h4>3️⃣ Try SQL API</h4>
+                        <p>Experiment with ML inference using Flink SQL declarative API.</p>
                     </div>
 
                     <div class="card">
@@ -1165,7 +1748,9 @@ InferenceConfig config = InferenceConfig.builder()
                 </div>
 
                 <div class="alert alert-success" style="margin-top: 30px;">
-                    <p><strong>Ready to dive deeper?</strong> Explore the <a href="../modules/architecture.html" style="color: var(--success); font-weight: 600;">Architecture Documentation</a> and <a href="../modules/examples.html" style="color: var(--success); font-weight: 600;">Example Gallery</a> for more advanced use cases.</p>
+                    <p><strong>Ready to dive deeper?</strong> Explore the <a href="../modules/architecture.html" style="color: var(--success); font-weight: 600;">Architecture Documentation</a>,
+                        <a href="../modules/sql.html" style="color: var(--success); font-weight: 600;">SQL Integration Guide</a>, and
+                        <a href="../modules/examples.html" style="color: var(--success); font-weight: 600;">Example Gallery</a> for more advanced use cases.</p>
                 </div>
             </section>
         </div>
@@ -1178,6 +1763,7 @@ InferenceConfig config = InferenceConfig.builder()
         <div class="footer-links">
             <a href="../index.html" class="footer-link"> Home</a>
             <a href="../javadoc/${VERSION}/index.html" class="footer-link"> API Docs</a>
+            <a href="../modules/sql.html" class="footer-link"> Flink SQL</a>
             <a href="https://github.com/martourez21/otter-streams" class="footer-link"> GitHub</a>
             <a href="https://github.com/martourez21/otter-streams/issues" class="footer-link"> Issues</a>
             <a href="../modules/architecture.html" class="footer-link"> Architecture</a>
@@ -1246,6 +1832,21 @@ InferenceConfig config = InferenceConfig.builder()
             }
         });
     });
+
+    // API Tab Switching
+    function showApi(apiType) {
+        // Update tabs
+        document.querySelectorAll('.api-tab').forEach(tab => {
+            tab.classList.remove('active');
+        });
+        document.querySelectorAll('.api-content').forEach(content => {
+            content.classList.remove('active');
+        });
+
+        // Activate selected tab
+        event.target.classList.add('active');
+        document.getElementById(apiType + '-api').classList.add('active');
+    }
 </script>
 </body>
 </html>

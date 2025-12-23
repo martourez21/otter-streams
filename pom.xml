@@ -45,6 +45,7 @@
     <module>otter-stream-pmml</module>
     <module>otter-stream-remote</module>
     <module>otter-stream-examples</module>
+    <module>otter-stream-sql</module>
   </modules>
 
   <properties>
@@ -56,6 +57,9 @@
     <!-- Flink -->
     <flink.version>1.17.0</flink.version>
     <scala.binary.version>2.12</scala.binary.version>
+
+    <flink.table.version>1.17.0</flink.table.version>
+    <flink.sql.version>1.17.0</flink.sql.version>
 
     <!-- ML Frameworks -->
     <onnxruntime.version>1.23.2</onnxruntime.version>
@@ -115,6 +119,32 @@
       <dependency>
         <groupId>org.apache.flink</groupId>
         <artifactId>flink-clients</artifactId>
+        <version>${flink.version}</version>
+        <scope>provided</scope>
+      </dependency>
+
+      <!-- Flink Table/SQL APIs -->
+      <dependency>
+        <groupId>org.apache.flink</groupId>
+        <artifactId>flink-table-api-java-bridge</artifactId>
+        <version>${flink.table.version}</version>
+        <scope>provided</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.flink</groupId>
+        <artifactId>flink-table-planner_${scala.binary.version}</artifactId>
+        <version>${flink.table.version}</version>
+        <scope>provided</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.flink</groupId>
+        <artifactId>flink-table-common</artifactId>
+        <version>${flink.table.version}</version>
+        <scope>provided</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.flink</groupId>
+        <artifactId>flink-sql-connector-kafka</artifactId>
         <version>${flink.version}</version>
         <scope>provided</scope>
       </dependency>
@@ -251,6 +281,7 @@
       </dependency>
 
       <!-- Testing -->
+
       <dependency>
         <groupId>org.junit.jupiter</groupId>
         <artifactId>junit-jupiter</artifactId>

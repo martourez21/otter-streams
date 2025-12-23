@@ -28,6 +28,11 @@
             <version>3.7.1-17.0</version>
             <scope>compile</scope>
         </dependency>
+
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+        </dependency>
     </dependencies>
     <build>
         <plugins>

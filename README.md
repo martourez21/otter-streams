@@ -96,27 +96,22 @@ DataStream<AnomalyScore> anomalies = sensorStream
 <table>
 <tr>
 <td align="center" width="20%">
-<img src="https://raw.githubusercontent.com/martourez21/otter-streams/main/docs/assets/onnx-logo.png" alt="ONNX" width="40"/>
 <br/>
 <strong>ONNX Runtime</strong>
 </td>
 <td align="center" width="20%">
-<img src="https://raw.githubusercontent.com/martourez21/otter-streams/main/docs/assets/tensorflow-logo.png" alt="TensorFlow" width="40"/>
 <br/>
 <strong>TensorFlow</strong>
 </td>
 <td align="center" width="20%">
-<img src="https://raw.githubusercontent.com/martourez21/otter-streams/main/docs/assets/pytorch-logo.png" alt="PyTorch" width="40"/>
 <br/>
 <strong>PyTorch</strong>
 </td>
 <td align="center" width="20%">
-<img src="https://raw.githubusercontent.com/martourez21/otter-streams/main/docs/assets/xgboost-logo.png" alt="XGBoost" width="40"/>
 <br/>
 <strong>XGBoost</strong>
 </td>
 <td align="center" width="20%">
-<img src="https://raw.githubusercontent.com/martourez21/otter-streams/main/docs/assets/pmml-logo.png" alt="PMML" width="40"/>
 <br/>
 <strong>PMML</strong>
 </td>
