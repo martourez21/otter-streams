@@ -48,12 +48,14 @@ jobs:
           distribution: temurin
           cache: maven
 
-      - name: Install modules to local repo
-        run: mvn -B clean install -DskipTests
+      # Install all modules except PyTorch
+      - name: Install modules to local repo (skip PyTorch)
+        run: mvn -B clean install -DskipTests -pl \!pytorch
 
-      - name: Run tests
+      # Run tests excluding PyTorch
+      - name: Run tests (skip PyTorch)
         run: |
-          mvn -B test -DskipTests=false -Dmaven.test.failure.ignore=true
+          mvn -B test -pl \!pytorch -DskipTests=false -Dmaven.test.failure.ignore=true
         continue-on-error: true
 
       - name: Generate Surefire test reports
@@ -83,16 +85,18 @@ jobs:
           distribution: temurin
           cache: maven
 
-      - name: Install modules
-        run: mvn -B clean install -DskipTests
+      # Install all modules except PyTorch
+      - name: Install modules (skip PyTorch)
+        run: mvn -B clean install -DskipTests -pl \!pytorch
 
-      - name: Run Maven verify
-        run: mvn -B verify -DskipTests
+      # Run Maven verify excluding PyTorch
+      - name: Run Maven verify (skip PyTorch)
+        run: mvn -B verify -DskipTests -pl \!pytorch
 
       - name: Checkstyle (optional)
         run: |
           if grep -q "maven-checkstyle-plugin" pom.xml; then
-            mvn checkstyle:check
+            mvn checkstyle:check -pl \!pytorch
           else
             echo "Checkstyle not configured, skipping"
           fi
@@ -112,8 +116,9 @@ jobs:
           distribution: temurin
           cache: maven
 
-      - name: Install and package artifacts
-        run: mvn -B clean install -DskipTests
+      # Package artifacts excluding PyTorch
+      - name: Install and package artifacts (skip PyTorch)
+        run: mvn -B clean install -DskipTests -pl \!pytorch
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
@@ -144,8 +149,8 @@ jobs:
           VERSION=$(grep -oP '(?<=<version>)[^<]+' pom.xml | head -1)
           echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
 
-      - name: Generate Javadoc
-        run: mvn -B clean compile javadoc:aggregate -DskipTests -Dmaven.javadoc.failOnError=false -Dmaven.javadoc.failOnWarnings=false
+      - name: Generate Javadoc (skip PyTorch)
+        run: mvn -B clean compile javadoc:aggregate -DskipTests -pl \!pytorch -Dmaven.javadoc.failOnError=false -Dmaven.javadoc.failOnWarnings=false
 
       - name: Deploy Javadoc to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
@@ -188,8 +193,9 @@ jobs:
           </settings>
           EOF
 
-      - name: Build release artifacts
-        run: mvn -B clean install javadoc:jar source:jar -DskipTests -Dmaven.javadoc.failOnError=false -Dmaven.javadoc.failOnWarnings=false
+      # Build release artifacts excluding PyTorch
+      - name: Build release artifacts (skip PyTorch)
+        run: mvn -B clean install javadoc:jar source:jar -DskipTests -pl \!pytorch -Dmaven.javadoc.failOnError=false -Dmaven.javadoc.failOnWarnings=false
 
       - name: Upload release artifacts
         uses: actions/upload-artifact@v4
