@@ -1,29 +1,14 @@
-name: Otter Streams CI Pipeline with Maven
+name: Otter Streams CI Pipeline
 
 on:
   push:
     branches: [ main, develop ]
-    paths:
-      - '**.md'
-      - '**.html'
-      - '**.png'
-      - '**.jpg'
-      - '**.jpeg'
-      - '**.yml'
-      - '**.yaml'
-      - 'docs/**'
-      - 'assets/**'
-      - '.github/workflows/templates/**'
-      - '!pom.xml'
-      - '!**/src/**'
-      - '!**/target/**'
   pull_request:
     branches: [ main, develop ]
   release:
     types: [ published ]
 
 jobs:
-  # Skip build when only docs changed
   check-changes:
     runs-on: ubuntu-latest
     outputs:
@@ -37,19 +22,9 @@ jobs:
       - name: Check for docs-only changes
         id: filter
         run: |
-          # Get list of changed files
-          CHANGED_FILES=$(git diff --name-only HEAD~1 HEAD 2>/dev/null || echo "")
-          
-          if [ -z "$CHANGED_FILES" ]; then
-            # For PRs or first commit
-            echo "docs-only=true" >> $GITHUB_OUTPUT
-            exit 0
-          fi
-          
-          # Check if any non-docs files changed
-          NON_DOCS_FILES=$(echo "$CHANGED_FILES" | grep -v -E '\.(md|html|png|jpg|jpeg|yml|yaml)$' | grep -v '^docs/' | grep -v '^assets/' | grep -v '^\.github/workflows/templates/' | grep -v '^README' || true)
-          
-          if [ -z "$NON_DOCS_FILES" ]; then
+          CHANGED_FILES=$(git diff --name-only HEAD~1 HEAD || echo "")
+          NON_DOCS=$(echo "$CHANGED_FILES" | grep -v -E '\.(md|html|png|jpg|jpeg|yml|yaml)$' | grep -v '^docs/' | grep -v '^assets/' | grep -v '^\.github/workflows/templates/' || true)
+          if [ -z "$NON_DOCS" ]; then
             echo "docs-only=true" >> $GITHUB_OUTPUT
           else
             echo "docs-only=false" >> $GITHUB_OUTPUT
@@ -61,55 +36,31 @@ jobs:
     if: needs.check-changes.outputs.docs-only == 'false'
     strategy:
       matrix:
-        java: [ '11', '17' ]
+        java: [11, 17]
       fail-fast: false
-
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
       - name: Set up JDK ${{ matrix.java }}
         uses: actions/setup-java@v4
         with:
           java-version: ${{ matrix.java }}
-          distribution: 'temurin'
-          cache: 'maven'
+          distribution: temurin
+          cache: maven
 
-      - name: Install all modules to local repository
+      - name: Install modules to local repo
         run: mvn -B clean install -DskipTests
 
-      - name: Run Tests (skip modules without tests)
+      - name: Run tests
         run: |
-          echo "Running tests for all modules..."
-          
-          # Get list of all modules
-          MODULES=$(mvn -q exec:exec -Dexec.executable=echo -Dexec.args='${project.modules}' 2>/dev/null | grep -v '^\[' | tr ',' '\n' | sed 's/[][]//g' | xargs)
-          
-          # Run tests for each module that has tests
-          for MODULE in $MODULES; do
-            if [ -d "$MODULE/src/test" ] && [ "$(find $MODULE/src/test -name '*.java' 2>/dev/null | wc -l)" -gt 0 ]; then
-              echo "✓ Running tests for module: $MODULE"
-              mvn -B test -pl "$MODULE" -am || echo "⚠ Tests failed for $MODULE (continuing...)"
-            else
-              echo "⊘ Skipping $MODULE (no tests found)"
-            fi
-          done
-          
-          # Also check for modules defined in root pom
-          if [ -d "src/test" ] && [ "$(find src/test -name '*.java' 2>/dev/null | wc -l)" -gt 0 ]; then
-            echo "✓ Running tests for root module"
-            mvn -B test || echo "⚠ Tests failed for root module (continuing...)"
-          fi
+          mvn -B test -DskipTests=false -Dmaven.test.failure.ignore=true
         continue-on-error: true
 
-      - name: Generate Test Report
+      - name: Generate Surefire test reports
         if: always()
-        run: |
-          echo "Generating test reports..."
-          mvn surefire-report:report-only 2>/dev/null || echo "No test reports to generate"
-        continue-on-error: true
+        run: mvn surefire-report:report-only || echo "No test reports generated"
 
-      - name: Upload Test Results
+      - name: Upload test results
         if: always()
         uses: actions/upload-artifact@v4
         with:
@@ -121,27 +72,24 @@ jobs:
 
   code-quality:
     runs-on: ubuntu-latest
-    needs: [check-changes, build]
+    needs: build
     if: needs.check-changes.outputs.docs-only == 'false'
-
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
+      - uses: actions/checkout@v4
       - name: Set up JDK 11
         uses: actions/setup-java@v4
         with:
-          java-version: '11'
-          distribution: 'temurin'
-          cache: 'maven'
+          java-version: 11
+          distribution: temurin
+          cache: maven
 
-      - name: Install modules first
+      - name: Install modules
         run: mvn -B clean install -DskipTests
 
-      - name: Run Maven Verify
+      - name: Run Maven verify
         run: mvn -B verify -DskipTests
 
-      - name: Check Code Style (if configured)
+      - name: Checkstyle (optional)
         run: |
           if grep -q "maven-checkstyle-plugin" pom.xml; then
             mvn checkstyle:check
@@ -152,19 +100,17 @@ jobs:
 
   package:
     runs-on: ubuntu-latest
-    needs: [check-changes, build]
+    needs: build
     if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop') && needs.check-changes.outputs.docs-only == 'false'
-
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
       - name: Set up JDK 11
         uses: actions/setup-java@v4
         with:
-          java-version: '11'
-          distribution: 'temurin'
-          cache: 'maven'
+          java-version: 11
+          distribution: temurin
+          cache: maven
 
       - name: Install and package artifacts
         run: mvn -B clean install -DskipTests
@@ -179,174 +125,36 @@ jobs:
             !**/target/*-tests.jar
           retention-days: 7
 
-  publish:
+  deploy-javadoc:
     runs-on: ubuntu-latest
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    permissions:
-      contents: write
-      packages: write
-      pages: write
-      id-token: write
-
+    needs: package
+    if: needs.check-changes.outputs.docs-only == 'false'
     steps:
-      - name: Checkout code with templates
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
+      - uses: actions/checkout@v4
       - name: Set up JDK 11
         uses: actions/setup-java@v4
         with:
-          java-version: '11'
-          distribution: 'temurin'
-          cache: 'maven'
+          java-version: 11
+          distribution: temurin
+          cache: maven
 
-      - name: Get current version for Javadoc path
-        id: get_version
+      - name: Get project version
+        id: version
         run: |
-          # Get version from pom.xml without building
-          VERSION=$(grep -oP '(?<=<version>)[^<]+(?=</version>)' pom.xml | head -1)
+          VERSION=$(grep -oP '(?<=<version>)[^<]+' pom.xml | head -1)
           echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
-          echo "Current version: $VERSION"
 
-      - name: Generate HTML pages from templates
-        run: |
-          mkdir -p gh-pages-root
-          mkdir -p gh-pages-root/modules
-          mkdir -p gh-pages-root/assets
-          
-          echo "Copying template files..."
-          
-          # Copy all template files
-          if [ -d ".github/workflows/templates" ]; then
-            # Copy all .html files from templates root
-            find .github/workflows/templates -maxdepth 1 -name "*.html" -exec cp {} gh-pages-root/ \;
-          
-            # Copy all module HTML files
-            if [ -d ".github/workflows/templates/modules" ]; then
-              find .github/workflows/templates/modules -name "*.html" -exec cp {} gh-pages-root/modules/ \;
-            fi
-          
-            # Copy assets if they exist
-            if [ -d ".github/workflows/templates/assets" ]; then
-              cp -r .github/workflows/templates/assets/* gh-pages-root/assets/
-              echo "✓ Copied assets from templates"
-            fi
-          else
-            echo "Warning: Templates directory not found"
-          fi
-          
-          # Also check for assets in project root
-          if [ -d "assets" ] && [ ! "$(ls -A gh-pages-root/assets 2>/dev/null)" ]; then
-            cp -r assets/* gh-pages-root/assets/
-            echo "✓ Copied assets from project root"
-          fi
-          
-          echo "Processing version placeholders..."
-          
-          # Process index.html
-          if [ -f ".github/workflows/templates/index.html" ]; then
-            sed "s/\${VERSION}/${{ steps.get_version.outputs.VERSION }}/g" \
-              .github/workflows/templates/index.html > gh-pages-root/index.html
-            echo "✓ Processed index.html"
-          fi
-          
-          # Process all other HTML files
-          echo "Processing other HTML files..."
-          
-          # Process root HTML files
-          for html_file in gh-pages-root/*.html; do
-            if [ -f "$html_file" ]; then
-              sed -i "s/\${VERSION}/${{ steps.get_version.outputs.VERSION }}/g" "$html_file"
-            fi
-          done
-          
-          # Process module HTML files
-          if [ -d "gh-pages-root/modules" ]; then
-            for html_file in gh-pages-root/modules/*.html; do
-              if [ -f "$html_file" ]; then
-                sed -i "s/\${VERSION}/${{ steps.get_version.outputs.VERSION }}/g" "$html_file"
-              fi
-            done
-          fi
-          
-          # Create README redirect
-          echo '<!DOCTYPE html><html><head><meta http-equiv="refresh" content="0; url=./index.html"></head><body>Redirecting...</body></html>' > gh-pages-root/README.html
-          
-          echo "Generated HTML pages for version: ${{ steps.get_version.outputs.VERSION }}"
+      - name: Generate Javadoc
+        run: mvn -B clean compile javadoc:aggregate -DskipTests -Dmaven.javadoc.failOnError=false -Dmaven.javadoc.failOnWarnings=false
 
-      - name: Debug - List generated files
-        run: |
-          echo "=== Files in gh-pages-root ==="
-          find gh-pages-root -type f | sort
-          echo ""
-          echo "=== Checking for required files ==="
-          REQUIRED_FILES=(
-            "index.html"
-            "getting-started.html"
-            "documentation.html"
-            "modules/architecture.html"
-            "modules/core.html"
-            "modules/examples.html"
-            "modules/metrics.html"
-            "modules/onnx.html"
-            "modules/pmml.html"
-            "modules/pytorch.html"
-            "modules/remote.html"
-            "modules/tensorflow.html"
-            "modules/xgboost.html"
-            "modules/sql.html"
-          )
-          
-          for file in "${REQUIRED_FILES[@]}"; do
-            if [ -f "gh-pages-root/$file" ]; then
-              echo "✓ Found: $file"
-            else
-              echo "✗ Missing: $file"
-            fi
-          done
-
-      - name: Deploy HTML pages to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v3
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./gh-pages-root
-          keep_files: true
-
-      - name: Check if Javadoc already exists for this version
-        id: check_javadoc_exists
-        run: |
-          VERSION="${{ steps.get_version.outputs.VERSION }}"
-          
-          # Check if Javadoc directory exists in gh-pages
-          if curl -s -f "https://${{ github.repository_owner }}.github.io/otter-streams/javadoc/$VERSION/" > /dev/null; then
-            echo "exists=true" >> $GITHUB_OUTPUT
-            echo "✓ Javadoc for version $VERSION already exists"
-          else
-            echo "exists=false" >> $GITHUB_OUTPUT
-            echo "Javadoc for version $VERSION not found, will skip generation"
-          fi
-
-      - name: Generate aggregated Javadoc only if needed
-        if: steps.check_javadoc_exists.outputs.exists == 'false'
-        run: |
-          echo "Generating Javadoc for version ${{ steps.get_version.outputs.VERSION }}"
-          mvn -B clean compile javadoc:aggregate -DskipTests -Dmaven.javadoc.failOnError=false -Dmaven.javadoc.failOnWarnings=false
-        continue-on-error: true
-
-      - name: Deploy Javadoc to GitHub Pages if generated
-        if: always() && steps.check_javadoc_exists.outputs.exists == 'false'
+      - name: Deploy Javadoc to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./target/site/apidocs
-          destination_dir: javadoc/${{ steps.get_version.outputs.VERSION }}
+          destination_dir: javadoc/${{ steps.version.outputs.VERSION }}
           keep_files: true
         continue-on-error: true
-
-      - name: Skip Javadoc deployment - already exists
-        if: steps.check_javadoc_exists.outputs.exists == 'true'
-        run: echo "Javadoc for version ${{ steps.get_version.outputs.VERSION }} already exists, skipping deployment"
 
   publish-release:
     runs-on: ubuntu-latest
@@ -356,24 +164,19 @@ jobs:
       packages: write
       pages: write
       id-token: write
-
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
+      - uses: actions/checkout@v4
       - name: Set up JDK 11
         uses: actions/setup-java@v4
         with:
-          java-version: '11'
-          distribution: 'temurin'
-          cache: 'maven'
+          java-version: 11
+          distribution: temurin
+          cache: maven
 
-      - name: Configure Maven settings for GitHub Packages
+      - name: Configure Maven for GitHub Packages
         run: |
           mkdir -p ~/.m2
-          cat > ~/.m2/settings.xml << EOF
+          cat > ~/.m2/settings.xml <<EOF
           <settings>
             <servers>
               <server>
@@ -385,154 +188,15 @@ jobs:
           </settings>
           EOF
 
-      - name: Extract version from tag
-        id: version
-        run: echo "VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
-
-      - name: Update Maven version
-        run: mvn versions:set -DnewVersion=${{ steps.version.outputs.VERSION }} -DgenerateBackupPoms=false
-
-      - name: Build release artifacts with documentation
+      - name: Build release artifacts
         run: mvn -B clean install javadoc:jar source:jar -DskipTests -Dmaven.javadoc.failOnError=false -Dmaven.javadoc.failOnWarnings=false
 
-      - name: Generate release HTML pages
-        run: |
-          mkdir -p gh-pages-root
-          mkdir -p gh-pages-root/modules
-          mkdir -p gh-pages-root/assets
-          
-          echo "Copying template files for release..."
-          
-          # Copy all template files
-          if [ -d ".github/workflows/templates" ]; then
-            # Copy all .html files from templates root
-            find .github/workflows/templates -maxdepth 1 -name "*.html" -exec cp {} gh-pages-root/ \;
-          
-            # Copy all module HTML files
-            if [ -d ".github/workflows/templates/modules" ]; then
-              find .github/workflows/templates/modules -name "*.html" -exec cp {} gh-pages-root/modules/ \;
-            fi
-          
-            # Copy assets if they exist
-            if [ -d ".github/workflows/templates/assets" ]; then
-              cp -r .github/workflows/templates/assets/* gh-pages-root/assets/
-              echo "✓ Copied assets from templates"
-            fi
-          fi
-          
-          # Also check for assets in project root
-          if [ -d "assets" ] && [ ! "$(ls -A gh-pages-root/assets 2>/dev/null)" ]; then
-            cp -r assets/* gh-pages-root/assets/
-            echo "✓ Copied assets from project root"
-          fi
-          
-          # Process all HTML files to replace version
-          echo "Processing version placeholders for release..."
-          
-          for html_file in gh-pages-root/*.html; do
-            if [ -f "$html_file" ]; then
-              sed -i "s/\${VERSION}/${{ steps.version.outputs.VERSION }}/g" "$html_file"
-            fi
-          done
-          
-          if [ -d "gh-pages-root/modules" ]; then
-            for html_file in gh-pages-root/modules/*.html; do
-              if [ -f "$html_file" ]; then
-                sed -i "s/\${VERSION}/${{ steps.version.outputs.VERSION }}/g" "$html_file"
-              fi
-            done
-          fi
-          
-          # Use regular index for release too
-          if [ -f "gh-pages-root/index.html" ]; then
-            echo "✓ Using index.html for release"
-          else
-            echo "Creating index.html for release"
-            echo '<!DOCTYPE html><html><head><meta http-equiv="refresh" content="0; url=./index.html"></head><body>Release ${{ steps.version.outputs.VERSION }} - Redirecting...</body></html>' > gh-pages-root/index.html
-          fi
-          
-          echo "Generated release pages for version: ${{ steps.version.outputs.VERSION }}"
-
-      - name: Debug - List release files
-        run: |
-          echo "=== Files in gh-pages-root for release ==="
-          find gh-pages-root -type f | sort
-          echo ""
-          echo "Total files: $(find gh-pages-root -type f | wc -l)"
-
-      - name: Deploy updated HTML pages to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v3
+      - name: Upload release artifacts
+        uses: actions/upload-artifact@v4
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./gh-pages-root
-          keep_files: true
-
-      - name: Generate aggregated Javadoc for release
-        run: mvn -B javadoc:aggregate -Dmaven.javadoc.failOnError=false -Dmaven.javadoc.failOnWarnings=false
-        continue-on-error: true
-
-      - name: Create release package
-        run: |
-          mkdir -p release-artifacts
-          # Copy all JAR files (main, sources, javadoc)
-          find . -name "*.jar" \
-            -not -path "*/target/original-*" \
-            -not -path "*/target/*-tests.jar" \
-            -exec cp {} release-artifacts/ \;
-          
-          echo "Release artifacts:"
-          ls -lh release-artifacts/
-
-      - name: Generate individual module Javadoc archives
-        run: |
-          for module in ml-inference-core otter-stream-onnx otter-stream-tensorflow otter-stream-pytorch otter-streams-xgboost otter-stream-pmml otter-stream-remote otter-stream-sql otter-stream-examples; do
-            if [ -d "$module/target/apidocs" ]; then
-              echo "Creating Javadoc archive for $module"
-              cd $module/target
-              tar -czf ../../release-artifacts/${module}-javadoc-${{ steps.version.outputs.VERSION }}.tar.gz apidocs/
-              cd ../..
-            else
-              echo "Warning: No apidocs found for $module"
-            fi
-          done
-
-      - name: Generate aggregated Javadoc archive
-        run: |
-          if [ -d "target/site/apidocs" ]; then
-            cd target/site
-            tar -czf ../../release-artifacts/otter-streams-javadoc-aggregated-${{ steps.version.outputs.VERSION }}.tar.gz apidocs/
-          else
-            echo "Warning: No aggregated apidocs found"
-          fi
-
-      - name: Upload Release Assets
-        uses: softprops/action-gh-release@v1
-        with:
-          files: release-artifacts/*
-          fail_on_unmatched_files: false
-          generate_release_notes: true
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Deploy aggregated Javadoc to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v3
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./target/site/apidocs
-          destination_dir: javadoc/${{ steps.version.outputs.VERSION }}
-          keep_files: true
-
-      - name: Publish to GitHub Packages
-        run: mvn -B deploy -DskipTests
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-  notify:
-    runs-on: ubuntu-latest
-    if: always()
-
-    steps:
-      - name: Check build status
-        run: |
-          echo "CI Pipeline completed"
-          echo "Check GitHub Pages: https://${{ github.repository_owner }}.github.io/otter-streams/"
+          name: release-artifacts
+          path: |
+            **/target/*.jar
+            !**/target/original-*.jar
+            !**/target/*-tests.jar
+          retention-days: 7
