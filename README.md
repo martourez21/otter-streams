@@ -2,7 +2,7 @@
 
 > Production-grade machine learning inference for Apache Flink
 
-[![Java CI](https://github.com/martourez21/otter-streams/actions/workflows/ci.yml/badge.svg)](https://github.com/martourez21/otter-streams/actions/workflows/ci.yml)
+[![Otter Streams CI Pipeline](https://github.com/martourez21/otter-streams/actions/workflows/ci.yaml/badge.svg)](https://github.com/martourez21/otter-streams/actions/workflows/ci.yaml)
 [![Maven Central](https://img.shields.io/maven-central/v/com.codedstreams/otter-streams)](https://search.maven.org/artifact/com.codedstreams/otter-streams)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![GitHub stars](https://img.shields.io/github/stars/martourez21/otter-streams?style=social)](https://github.com/martourez21/otter-streams/stargazers)
