@@ -16,13 +16,13 @@
         <dependency>
             <groupId>com.codedstreams</groupId>
             <artifactId>ml-inference-core</artifactId>
-            <version>1.0.17</version>
+            <version>1.0.17a</version>
         </dependency>
 
         <dependency>
             <groupId>com.codedstreams</groupId>
             <artifactId>otter-stream-onnx</artifactId>
-            <version>1.0.17</version>
+            <version>1.0.17a</version>
         </dependency>
 
         <dependency>
