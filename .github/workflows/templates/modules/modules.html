@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modules — Otter Streams</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@300;400;500;600&family=IBM+Plex+Serif:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="shared.css">
+</head>
+<body>
+
+<header class="topbar">
+    <a href="index.html" class="topbar-brand">
+        <div class="brand-icon">OS</div>
+        <span class="brand-name">Otter Streams</span>
+        <span class="brand-version">v1.0.17</span>
+    </a>
+    <nav class="topbar-nav">
+        <a href="index.html" class="topbar-link">Documentation</a>
+        <a href="api.html" class="topbar-link">API Reference</a>
+        <a href="modules.html" class="topbar-link active">Modules</a>
+        <a href="examples.html" class="topbar-link">Examples</a>
+        <a href="releases.html" class="topbar-link">Releases</a>
+    </nav>
+    <div class="topbar-right">
+        <span class="topbar-badge">Flink 1.15&ndash;1.20</span>
+        <a href="https://github.com/martourez21/otter-streams" class="gh-link" target="_blank">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+            GitHub
+        </a>
+    </div>
+</header>
+
+<div class="layout">
+    <nav class="sidebar">
+        <div class="nav-section">
+            <div class="nav-section-title">Getting Started</div>
+            <a href="index.html#intro" class="nav-item">Introduction</a>
+            <a href="index.html#quickstart" class="nav-item">Quick Start</a>
+            <a href="index.html#architecture" class="nav-item">Architecture</a>
+        </div>
+        <div class="nav-divider"></div>
+        <div class="nav-section">
+            <div class="nav-section-title">Flink SQL</div>
+            <a href="index.html#sql-udf" class="nav-item">UDF Reference</a>
+            <a href="index.html#sql-registration" class="nav-item nav-sub">Studio Registration</a>
+            <a href="index.html#sql-usage" class="nav-item nav-sub">SQL Usage</a>
+            <a href="index.html#connector" class="nav-item nav-sub">Table Connector</a>
+        </div>
+        <div class="nav-divider"></div>
+        <div class="nav-section">
+            <div class="nav-section-title">Deployment</div>
+            <a href="index.html#shaded-jar" class="nav-item">Shaded JAR Build</a>
+            <a href="examples.html#minio" class="nav-item">MinIO Model Loading</a>
+            <a href="index.html#troubleshooting" class="nav-item">Troubleshooting</a>
+        </div>
+        <div class="nav-divider"></div>
+        <div class="nav-section">
+            <div class="nav-section-title">Modules</div>
+            <a href="#core" class="nav-item active">ml-inference-core</a>
+            <a href="#sql" class="nav-item">otter-stream-sql</a>
+            <a href="#onnx" class="nav-item">otter-stream-onnx</a>
+            <a href="#tensorflow" class="nav-item">otter-stream-tensorflow</a>
+            <a href="#xgboost" class="nav-item">otter-streams-xgboost</a>
+            <a href="#pmml" class="nav-item">otter-stream-pmml</a>
+            <a href="#remote" class="nav-item">otter-stream-remote</a>
+        </div>
+        <div class="nav-divider"></div>
+        <div class="nav-section">
+            <div class="nav-section-title">Resources</div>
+            <a href="https://nightlies.apache.org/flink/flink-docs-stable/" class="nav-item" target="_blank">Apache Flink Docs</a>
+            <a href="https://github.com/martourez21/otter-streams/issues" class="nav-item" target="_blank">Issue Tracker</a>
+            <a href="mailto:nestorabiawuh@gmail.com" class="nav-item">Contact</a>
+        </div>
+    </nav>
+
+    <main class="main">
+        <div class="page-header">
+            <div class="header-badge"><span class="header-dot"></span>Module Reference</div>
+            <h1>Module Overview</h1>
+            <p class="lead">
+                Otter Streams follows a modular architecture. A core module defines the shared abstractions and
+                contracts; individual engine modules implement them for specific ML frameworks. You include only
+                the engines your pipeline requires, keeping the shaded JAR as small as possible.
+            </p>
+            <div class="header-meta">
+                <span class="meta-pill">Parent artifact <span class="meta-pill-val">com.codedstreams:otter-streams</span></span>
+                <span class="meta-pill">Version <span class="meta-pill-val">1.0.17</span></span>
+            </div>
+        </div>
+
+        <div class="breadcrumb">
+            <a href="index.html">Docs</a>
+            <span class="breadcrumb-sep">/</span>
+            <span class="breadcrumb-current">Modules</span>
+        </div>
+
+        <div class="content-body cf">
+
+            <div class="toc">
+                <div class="toc-title">On this page</div>
+                <ul class="toc-list">
+                    <li><a href="#dependency-graph">Dependency Graph</a></li>
+                    <li><a href="#core">ml-inference-core</a></li>
+                    <li><a href="#sql">otter-stream-sql</a></li>
+                    <li><a href="#onnx">otter-stream-onnx</a></li>
+                    <li><a href="#tensorflow">otter-stream-tensorflow</a></li>
+                    <li><a href="#xgboost">otter-streams-xgboost</a></li>
+                    <li><a href="#pmml">otter-stream-pmml</a></li>
+                    <li><a href="#remote">otter-stream-remote</a></li>
+                </ul>
+            </div>
+
+            <h2 id="dependency-graph">Dependency Graph</h2>
+            <p>
+                All engine modules depend on <code>ml-inference-core</code>. The SQL module depends on
+                <code>ml-inference-core</code> and optionally on whichever engine modules are on the runtime
+                classpath. Flink is always <code>provided</code> scope — it must never be bundled in the shaded JAR.
+            </p>
+
+            <div class="code-block">
+                <div class="code-block-header"><span class="code-lang">Text</span><span class="code-filename">module dependency graph</span></div>
+                <pre>otter-streams (parent pom)
+|
++-- ml-inference-core          &lt;-- InferenceEngine, InferenceResult, ModelCache, metrics
+|
++-- otter-stream-sql           &lt;-- depends on: ml-inference-core
+|
++-- otter-stream-onnx          &lt;-- depends on: ml-inference-core, onnxruntime
++-- otter-stream-tensorflow    &lt;-- depends on: ml-inference-core, tensorflow-core-platform
++-- otter-streams-xgboost      &lt;-- depends on: ml-inference-core, xgboost4j
++-- otter-stream-pmml          &lt;-- depends on: ml-inference-core, jpmml-evaluator
++-- otter-stream-pytorch       &lt;-- depends on: ml-inference-core, djl-pytorch-engine
++-- otter-stream-remote        &lt;-- depends on: ml-inference-core, okhttp, aws-sdk
+|
++-- otter-stream-examples      (not published)</pre>
+            </div>
+
+            <!-- ── ml-inference-core ── -->
+            <h2 id="core">ml-inference-core</h2>
+            <p>
+                The foundation of the library. Every other module declares a compile dependency on this artifact.
+                It contains no ML framework code — only the contracts, configuration objects, caching layer,
+                and Flink async function wiring that all engines share.
+            </p>
+
+            <h3>Key classes</h3>
+            <div class="table-wrap"><table>
+                <thead><tr><th>Class / Interface</th><th>Package</th><th>Purpose</th></tr></thead>
+                <tbody>
+                <tr><td><code>InferenceEngine&lt;C&gt;</code></td><td><code>...inference.engine</code></td><td>Top-level contract all engines implement. Typed on a config record.</td></tr>
+                <tr><td><code>InferenceResult</code></td><td><code>...inference.model</code></td><td>Holds output tensors, latency, and success flag.</td></tr>
+                <tr><td><code>InferenceException</code></td><td><code>...inference.exception</code></td><td>Checked exception thrown by <code>engine.infer()</code>.</td></tr>
+                <tr><td><code>ModelCache</code></td><td><code>...sql.loader</code></td><td>Caffeine-backed LRU singleton keyed by model name.</td></tr>
+                <tr><td><code>InferenceConfig</code></td><td><code>...inference.config</code></td><td>Builder for batch size, timeouts, retries, caching, metrics.</td></tr>
+                <tr><td><code>AsyncModelInferenceFunction</code></td><td><code>...inference.function</code></td><td>Flink <code>AsyncFunction</code> wrapper for use in DataStream pipelines.</td></tr>
+                </tbody>
+            </table></div>
+
+            <h3>Maven</h3>
+            <div class="code-block">
+                <div class="code-block-header"><span class="code-lang">XML</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+                <pre>&lt;dependency&gt;
+  &lt;groupId&gt;com.codedstreams&lt;/groupId&gt;
+  &lt;artifactId&gt;ml-inference-core&lt;/artifactId&gt;
+  &lt;version&gt;1.0.17&lt;/version&gt;
+&lt;/dependency&gt;</pre>
+            </div>
+
+            <!-- ── otter-stream-sql ── -->
+            <h2 id="sql">otter-stream-sql</h2>
+            <p>
+                Provides everything needed to use Otter Streams from Flink SQL without writing Java operators.
+                The module registers a scalar UDF, a lookup table function, and a full dynamic table connector
+                (<code>ml-inference</code>) that the Flink planner discovers via Java SPI.
+            </p>
+
+            <h3>Key classes</h3>
+            <div class="table-wrap"><table>
+                <thead><tr><th>Class</th><th>Type</th><th>SQL usage</th></tr></thead>
+                <tbody>
+                <tr><td><code>MLInferenceFunction</code></td><td>ScalarFunction</td><td><code>ml_score(features, 'model-name')</code></td></tr>
+                <tr><td><code>MLInferenceLookupFunction</code></td><td>TableFunction</td><td>Temporal join source</td></tr>
+                <tr><td><code>MLInferenceDynamicTableFactory</code></td><td>DynamicTableSourceFactory</td><td><code>'connector' = 'ml-inference'</code></td></tr>
+                <tr><td><code>MLInferenceDynamicTableSource</code></td><td>LookupTableSource</td><td>Lookup join runtime provider</td></tr>
+                <tr><td><code>SqlInferenceConfig</code></td><td>Config record</td><td>Parses DDL <code>WITH</code> options</td></tr>
+                </tbody>
+            </table></div>
+
+            <div class="callout callout-warn">
+                <span class="callout-icon">!</span>
+                <div><strong>Shaded JAR required.</strong> When deploying to Flink SQL Gateway, build the
+                    <code>*-flink-udf</code> classifier artifact so that <code>ml-inference-core</code> and all
+                    transitive runtime deps are bundled. See the <a href="index.html#shaded-jar">Shaded JAR Build</a> section.</div>
+            </div>
+
+            <h3>Maven</h3>
+            <div class="code-block">
+                <div class="code-block-header"><span class="code-lang">XML</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+                <pre>&lt;dependency&gt;
+  &lt;groupId&gt;com.codedstreams&lt;/groupId&gt;
+  &lt;artifactId&gt;otter-stream-sql&lt;/artifactId&gt;
+  &lt;version&gt;1.0.17&lt;/version&gt;
+&lt;/dependency&gt;</pre>
+            </div>
+
+            <!-- ── onnx ── -->
+            <h2 id="onnx">otter-stream-onnx</h2>
+            <p>
+                Wraps Microsoft's ONNX Runtime Java API. Supports CPU, CUDA, and TensorRT execution providers
+                with automatic provider fallback. Input tensors are constructed from <code>Map&lt;String, Object&gt;</code>
+                with automatic float32 / int64 conversion.
+            </p>
+
+            <h3>Supported execution providers</h3>
+            <div class="table-wrap"><table>
+                <thead><tr><th>Provider</th><th>Hardware</th><th>Requires</th></tr></thead>
+                <tbody>
+                <tr><td><code>CPUExecutionProvider</code></td><td>Any CPU</td><td>Default — no extra dependencies</td></tr>
+                <tr><td><code>CUDAExecutionProvider</code></td><td>NVIDIA GPU</td><td>CUDA 11.x + cuDNN</td></tr>
+                <tr><td><code>TensorRTExecutionProvider</code></td><td>NVIDIA GPU</td><td>TensorRT 8+</td></tr>
+                </tbody>
+            </table></div>
+
+            <h3>Maven</h3>
+            <div class="code-block">
+                <div class="code-block-header"><span class="code-lang">XML</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+                <pre>&lt;dependency&gt;
+  &lt;groupId&gt;com.codedstreams&lt;/groupId&gt;
+  &lt;artifactId&gt;otter-stream-onnx&lt;/artifactId&gt;
+  &lt;version&gt;1.0.17&lt;/version&gt;
+&lt;/dependency&gt;</pre>
+            </div>
+
+            <!-- ── tensorflow ── -->
+            <h2 id="tensorflow">otter-stream-tensorflow</h2>
+            <p>
+                Loads TensorFlow SavedModel directories and performs inference via the official TensorFlow Java API.
+                Signature names and tensor names are discovered automatically from the model's <code>saved_model.pb</code>.
+            </p>
+
+            <div class="callout callout-note">
+                <span class="callout-icon">i</span>
+                <div><code>tensorflow-core-platform</code> includes native shared libraries (~400 MB per platform).
+                    Use the <code>-linux-x86_64</code> or <code>-linux-gpu-x86_64</code> classifiers in production
+                    to avoid bundling all platforms in the shaded JAR.</div>
+            </div>
+
+            <h3>Maven</h3>
+            <div class="code-block">
+                <div class="code-block-header"><span class="code-lang">XML</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+                <pre>&lt;dependency&gt;
+  &lt;groupId&gt;com.codedstreams&lt;/groupId&gt;
+  &lt;artifactId&gt;otter-stream-tensorflow&lt;/artifactId&gt;
+  &lt;version&gt;1.0.17&lt;/version&gt;
+&lt;/dependency&gt;</pre>
+            </div>
+
+            <!-- ── xgboost ── -->
+            <h2 id="xgboost">otter-streams-xgboost</h2>
+            <p>
+                Loads XGBoost models using XGBoost4J. Converts feature maps to a <code>DMatrix</code> and invokes
+                <code>Booster.predict()</code>. Thread-safe via per-call DMatrix construction. Supports binary
+                classification (<code>binary:logistic</code>), multi-class, and regression objectives.
+            </p>
+
+            <h3>Supported file formats</h3>
+            <div class="table-wrap"><table>
+                <thead><tr><th>Format</th><th>Extension</th><th>Notes</th></tr></thead>
+                <tbody>
+                <tr><td>Binary</td><td><code>.bin</code>, <code>.model</code></td><td>Fastest load time; not human-readable</td></tr>
+                <tr><td>JSON</td><td><code>.json</code></td><td>Portable; readable; XGBoost &ge; 1.0</td></tr>
+                <tr><td>UBJSON</td><td><code>.ubj</code></td><td>Compact binary JSON; XGBoost &ge; 1.7</td></tr>
+                </tbody>
+            </table></div>
+
+            <h3>Maven</h3>
+            <div class="code-block">
+                <div class="code-block-header"><span class="code-lang">XML</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+                <pre>&lt;dependency&gt;
+  &lt;groupId&gt;com.codedstreams&lt;/groupId&gt;
+  &lt;artifactId&gt;otter-streams-xgboost&lt;/artifactId&gt;
+  &lt;version&gt;1.0.17&lt;/version&gt;
+&lt;/dependency&gt;</pre>
+            </div>
+
+            <!-- ── pmml ── -->
+            <h2 id="pmml">otter-stream-pmml</h2>
+            <p>
+                Evaluates PMML 4.x documents using the JPMML-Evaluator library. Supports logistic regression,
+                decision trees, random forests, gradient boosted trees, neural networks, and naïve Bayes.
+                Preprocessing transformations defined inside the PMML document are applied automatically.
+            </p>
+
+            <h3>Maven</h3>
+            <div class="code-block">
+                <div class="code-block-header"><span class="code-lang">XML</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+                <pre>&lt;dependency&gt;
+  &lt;groupId&gt;com.codedstreams&lt;/groupId&gt;
+  &lt;artifactId&gt;otter-stream-pmml&lt;/artifactId&gt;
+  &lt;version&gt;1.0.17&lt;/version&gt;
+&lt;/dependency&gt;</pre>
+            </div>
+
+            <!-- ── remote ── -->
+            <h2 id="remote">otter-stream-remote</h2>
+            <p>
+                Routes inference calls to external endpoints: REST APIs, AWS SageMaker, GCP Vertex AI, and
+                Azure ML. Uses OkHttp for HTTP/1.1 and gRPC for binary protocol communication. Includes
+                configurable retry, timeout, and circuit-breaker policies. Useful when the model is too large
+                to embed in the Flink JAR or when a dedicated model server is preferred.
+            </p>
+
+            <h3>Maven</h3>
+            <div class="code-block">
+                <div class="code-block-header"><span class="code-lang">XML</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+                <pre>&lt;dependency&gt;
+  &lt;groupId&gt;com.codedstreams&lt;/groupId&gt;
+  &lt;artifactId&gt;otter-stream-remote&lt;/artifactId&gt;
+  &lt;version&gt;1.0.17&lt;/version&gt;
+&lt;/dependency&gt;</pre>
+            </div>
+
+        </div><!-- /content-body -->
+
+        <div class="doc-footer">
+            <span>Otter Streams v1.0.17 &mdash; Apache License 2.0 &mdash; CodedStreams</span>
+            <div class="footer-links">
+                <a href="https://github.com/martourez21/otter-streams" target="_blank">GitHub</a>
+                <a href="releases.html">Releases</a>
+                <a href="mailto:nestorabiawuh@gmail.com">Contact</a>
+            </div>
+        </div>
+    </main>
+</div>
+
+<script>
+    function copyCode(btn) {
+        const pre = btn.closest('.code-block').querySelector('pre');
+        navigator.clipboard.writeText(pre.textContent.trim()).then(() => {
+            const orig = btn.textContent; btn.textContent = 'Copied'; btn.classList.add('ok');
+            setTimeout(() => { btn.textContent = orig; btn.classList.remove('ok'); }, 1800);
+        });
+    }
+</script>
+</body>
+</html>

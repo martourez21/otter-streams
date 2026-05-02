@@ -1,0 +1,772 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Examples — Otter Streams</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@300;400;500;600&family=IBM+Plex+Serif:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="shared.css">
+</head>
+<body>
+
+<header class="topbar">
+  <a href="index.html" class="topbar-brand">
+    <div class="brand-icon">OS</div>
+    <span class="brand-name">Otter Streams</span>
+    <span class="brand-version">v1.0.17</span>
+  </a>
+  <nav class="topbar-nav">
+    <a href="index.html"   class="topbar-link">Documentation</a>
+    <a href="api.html"     class="topbar-link">API Reference</a>
+    <a href="modules.html" class="topbar-link">Modules</a>
+    <a href="examples.html" class="topbar-link active">Examples</a>
+    <a href="datastream.html" class="topbar-link">DataStream Guide</a>
+    <a href="studio-demo.html" class="topbar-link">Studio Demo</a>
+    <a href="releases.html" class="topbar-link">Releases</a>
+  </nav>
+  <div class="topbar-right">
+    <span class="topbar-badge">Flink 1.15&ndash;1.20</span>
+    <a href="https://github.com/martourez21/otter-streams" class="gh-link" target="_blank">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+      GitHub
+    </a>
+  </div>
+</header>
+
+<div class="layout">
+  <nav class="sidebar">
+    <div class="nav-section">
+      <div class="nav-section-title">Getting Started</div>
+      <a href="index.html#intro"         class="nav-item">Introduction</a>
+      <a href="index.html#quickstart"    class="nav-item">Quick Start</a>
+      <a href="index.html#architecture"  class="nav-item">Architecture</a>
+    </div>
+    <div class="nav-divider"></div>
+    <div class="nav-section">
+      <div class="nav-section-title">Flink SQL</div>
+      <a href="index.html#sql-udf"          class="nav-item">UDF Reference</a>
+      <a href="index.html#sql-registration" class="nav-item nav-sub">Studio Registration</a>
+      <a href="index.html#sql-usage"        class="nav-item nav-sub">SQL Usage</a>
+      <a href="index.html#connector"        class="nav-item nav-sub">Table Connector</a>
+    </div>
+    <div class="nav-divider"></div>
+    <div class="nav-section">
+      <div class="nav-section-title">Deployment</div>
+      <a href="index.html#shaded-jar"    class="nav-item">Shaded JAR Build</a>
+      <a href="#minio"                   class="nav-item active">MinIO Model Loading</a>
+      <a href="index.html#troubleshooting" class="nav-item">Troubleshooting</a>
+      <a href="index.html#error-reference" class="nav-item">Error Reference</a>
+    </div>
+    <div class="nav-divider"></div>
+    <div class="nav-section">
+      <div class="nav-section-title">Examples</div>
+      <a href="#minio"        class="nav-item">MinIO Pipeline Demo</a>
+      <a href="#pipeline-sql" class="nav-item nav-sub">Full SQL Pipeline</a>
+      <a href="#preload"      class="nav-item nav-sub">Model Preloading</a>
+      <a href="#fraud"        class="nav-item">Fraud Detection</a>
+      <a href="#anomaly"      class="nav-item">Anomaly Detection</a>
+      <a href="#verify"       class="nav-item">Verification Queries</a>
+    </div>
+    <div class="nav-divider"></div>
+    <div class="nav-section">
+      <div class="nav-section-title">Modules</div>
+      <a href="modules.html#core"        class="nav-item">ml-inference-core</a>
+      <a href="modules.html#sql"         class="nav-item">otter-stream-sql</a>
+      <a href="modules.html#onnx"        class="nav-item">otter-stream-onnx</a>
+      <a href="modules.html#tensorflow"  class="nav-item">otter-stream-tensorflow</a>
+      <a href="modules.html#xgboost"     class="nav-item">otter-streams-xgboost</a>
+    </div>
+    <div class="nav-divider"></div>
+    <div class="nav-section">
+      <div class="nav-section-title">Resources</div>
+      <a href="https://nightlies.apache.org/flink/flink-docs-stable/" class="nav-item" target="_blank">Apache Flink Docs</a>
+      <a href="https://github.com/martourez21/otter-streams/issues"   class="nav-item" target="_blank">Issue Tracker</a>
+      <a href="datastream.html" class="nav-item">DataStream Guide</a>
+      <a href="studio-demo.html" class="nav-item">Studio Demo</a>
+      <a href="mailto:nestorabiawuh@gmail.com" class="nav-item">Contact</a>
+    </div>
+  </nav>
+
+  <main class="main">
+    <div class="page-header">
+      <div class="header-badge"><span class="header-dot"></span>Str:::Lab Studio &middot; Pipeline Demo</div>
+      <h1>Examples &amp; Integration Demos</h1>
+      <p class="lead">
+        End-to-end examples for running Otter Streams pipelines inside Str:::Lab Studio.
+        The primary demo below uses a TensorFlow SavedModel hosted on MinIO and exercises the full
+        path from model loading through real-time SQL inference to a results sink.
+      </p>
+      <div class="header-meta">
+        <span class="meta-pill">Runtime <span class="meta-pill-val">Flink 1.17 SQL Gateway</span></span>
+        <span class="meta-pill">Model store <span class="meta-pill-val">MinIO S3-compatible</span></span>
+        <span class="meta-pill">Format <span class="meta-pill-val">TensorFlow SavedModel</span></span>
+      </div>
+    </div>
+
+    <div class="breadcrumb">
+      <a href="index.html">Docs</a>
+      <span class="breadcrumb-sep">/</span>
+      <span class="breadcrumb-current">Examples</span>
+    </div>
+
+    <div class="content-body cf">
+
+      <div class="toc">
+        <div class="toc-title">On this page</div>
+        <ul class="toc-list">
+          <li><a href="#minio">MinIO Pipeline Demo</a></li>
+          <li><a href="#prerequisites" class="toc-sub">Prerequisites</a></li>
+          <li><a href="#minio-config"  class="toc-sub">MinIO configuration</a></li>
+          <li><a href="#preload"       class="toc-sub">Model preloading</a></li>
+          <li><a href="#pipeline-sql"  class="toc-sub">Full SQL pipeline</a></li>
+          <li><a href="#verify"        class="toc-sub">Verification queries</a></li>
+          <li><a href="#fraud">Fraud Detection</a></li>
+          <li><a href="#anomaly">Anomaly Detection</a></li>
+          <li><a href="#tips">Studio Tips</a></li>
+        </ul>
+      </div>
+
+      <!-- ══════════════════════════════════════════════════════ -->
+      <h2 id="minio">MinIO Pipeline Demo</h2>
+
+      <p>
+        This is the reference integration test for Str:::Lab Studio. It demonstrates the complete lifecycle:
+        uploading a model to MinIO, loading it into the Otter Streams <code>ModelCache</code> via a
+        pre-load job, registering the UDF, and running a streaming inference query.
+      </p>
+
+      <div class="callout callout-info">
+        <span class="callout-icon">i</span>
+        <div>
+          All SQL blocks below are designed to be pasted directly into the Str:::Lab Studio SQL editor,
+          one section at a time. Run each section in order. The Studio UDF Manager handles
+          <code>ADD JAR</code> and <code>CREATE FUNCTION</code> for you if you use the Register UDF tab;
+          these blocks show the raw SQL equivalents for reference and for pipeline automation.
+        </div>
+      </div>
+
+      <!-- ── Prerequisites ── -->
+      <h2 id="prerequisites">Prerequisites</h2>
+
+      <div class="table-wrap"><table>
+        <thead><tr><th>Requirement</th><th>Value / Notes</th></tr></thead>
+        <tbody>
+          <tr><td>Shaded JAR uploaded</td><td><code>otter-stream-sql-1.0.17-flink-udf.jar</code> in <code>/var/www/udf-jars/</code></td></tr>
+          <tr><td>MinIO endpoint</td><td>Accessible from the Flink TaskManagers (not just from the browser)</td></tr>
+          <tr><td>MinIO bucket</td><td><code>ml-models</code> (adjust to your bucket name)</td></tr>
+          <tr><td>Model path</td><td><code>ml-models/fraud-detector/v1/</code> — contains <code>saved_model.pb</code> + <code>variables/</code></td></tr>
+          <tr><td>Flink session</td><td>Active gateway session in Studio — check the session indicator</td></tr>
+          <tr><td>Kafka topics</td><td><code>transactions</code> (input), <code>fraud-alerts</code> (output)</td></tr>
+        </tbody>
+      </table></div>
+
+      <!-- ── MinIO Configuration ── -->
+      <h2 id="minio-config">MinIO Configuration</h2>
+
+      <p>
+        The <code>otter-stream-sql</code> module uses the MinIO Java client bundled inside the shaded JAR
+        to download model files at engine initialisation time. Pass the connection details through
+        the DDL <code>WITH</code> options or through Flink's configuration properties.
+      </p>
+
+      <h3>Set session-level MinIO properties</h3>
+      <p>
+        These <code>SET</code> statements write into the Flink session configuration and are picked up
+        by the <code>MinioModelLoader</code> inside the SQL module. Run them once at the start of
+        every Studio session.
+      </p>
+
+      <div class="code-block">
+        <div class="code-block-header">
+          <span class="code-lang">SQL</span>
+          <span class="code-filename">Section 1 of 6 — Session properties</span>
+          <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        </div>
+        <pre>-- ── Section 1: MinIO connection properties ──────────────────────────────
+-- Adjust endpoint, credentials, and bucket to match your deployment.
+-- These are session-scoped: re-run after any session renewal.
+
+SET 'otter.minio.endpoint'          = 'http://minio:9000';
+SET 'otter.minio.access-key'        = 'minioadmin';
+SET 'otter.minio.secret-key'        = 'minioadmin';
+SET 'otter.minio.bucket'            = 'ml-models';
+SET 'otter.model.cache.max-size'    = '20';
+SET 'otter.model.cache.ttl-minutes' = '60';
+
+-- Verify the properties are visible to the session
+SET;</pre>
+      </div>
+
+      <div class="callout callout-warn">
+        <span class="callout-icon">!</span>
+        <div>
+          <strong>Credentials in DDL.</strong> For production use, inject MinIO credentials via
+          Flink's secrets management or environment variables rather than hardcoding them in SQL.
+          The properties shown here match a typical local or staging MinIO deployment.
+        </div>
+      </div>
+
+      <!-- ── JAR + UDF registration ── -->
+      <h2 id="jar-register">JAR and UDF Registration</h2>
+
+      <p>
+        If you are running this demo manually through the Studio SQL editor rather than the UDF Manager,
+        execute the following block to load the JAR and register the function. The Studio UDF Manager
+        does this automatically when you click <em>Register Function</em>.
+      </p>
+
+      <div class="code-block">
+        <div class="code-block-header">
+          <span class="code-lang">SQL</span>
+          <span class="code-filename">Section 2 of 6 — JAR and UDF</span>
+          <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        </div>
+        <pre>-- ── Section 2: Load JAR and register scalar UDF ─────────────────────────
+
+-- Load the shaded JAR onto the Gateway session classpath.
+-- Path must exist on the SQL Gateway container filesystem.
+ADD JAR '/var/www/udf-jars/otter-stream-sql-1.0.17-flink-udf.jar';
+
+-- Confirm the JAR is visible
+SHOW JARS;
+
+-- Register the ML inference scalar function
+CREATE TEMPORARY FUNCTION IF NOT EXISTS ml_score
+AS 'com.codedstreams.otterstreams.sql.udf.MLInferenceFunction'
+LANGUAGE JAVA;
+
+-- Confirm registration
+SHOW USER FUNCTIONS;</pre>
+      </div>
+
+      <!-- ── Model preloading ── -->
+      <h2 id="preload">Model Preloading</h2>
+
+      <p>
+        <code>ModelCache</code> is populated lazily — the first call to
+        <code>ml_score(features, 'fraud-detector')</code> that finds no cached engine will attempt to
+        load the model from MinIO. For production pipelines this cold-start latency is undesirable.
+        The preferred pattern is to declare a connector table that forces the engine to load during
+        table creation, before any streaming query begins.
+      </p>
+
+      <div class="code-block">
+        <div class="code-block-header">
+          <span class="code-lang">SQL</span>
+          <span class="code-filename">Section 3 of 6 — Model preload via connector table</span>
+          <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        </div>
+        <pre>-- ── Section 3: Preload the model into ModelCache ────────────────────────
+-- Creating this connector table triggers MinIO download and engine init.
+-- The table itself is not queried directly in this demo; it exists solely
+-- to warm the ModelCache before the streaming pipeline starts.
+
+CREATE TEMPORARY TABLE fraud_model_source (
+    score      DOUBLE,
+    confidence DOUBLE
+) WITH (
+    'connector'          = 'ml-inference',
+
+    -- Logical name used in ml_score(features, '<name>')
+    'model.name'         = 'fraud-detector',
+
+    -- MinIO path: s3a://<bucket>/<prefix>/
+    -- The loader downloads saved_model.pb + variables/ from this prefix.
+    'model.path'         = 's3a://ml-models/fraud-detector/v1/',
+    'model.format'       = 'tensorflow-savedmodel',
+    'model.version'      = 'v1',
+
+    -- MinIO / S3-compatible storage settings
+    'model.s3.endpoint'  = 'http://minio:9000',
+    'model.s3.access-key'= 'minioadmin',
+    'model.s3.secret-key'= 'minioadmin',
+    'model.s3.path-style'= 'true',
+
+    -- Cache behaviour
+    'cache.enabled'      = 'true',
+    'cache.ttl-minutes'  = '60',
+
+    -- Inference settings
+    'batch.size'         = '1',
+    'async.enabled'      = 'false'
+);
+
+-- A lightweight describe confirms the connector initialised without error.
+-- If the model failed to download you will see an error here rather than
+-- silently at inference time.
+DESCRIBE fraud_model_source;</pre>
+      </div>
+
+      <!-- ── Source and sink tables ── -->
+      <h2 id="source-sink">Source and Sink Tables</h2>
+
+      <div class="code-block">
+        <div class="code-block-header">
+          <span class="code-lang">SQL</span>
+          <span class="code-filename">Section 4 of 6 — Kafka source and sink</span>
+          <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        </div>
+        <pre>-- ── Section 4: Kafka source table (transactions) ─────────────────────────
+-- Adjust bootstrap.servers and topic to match your Kafka deployment.
+
+CREATE TEMPORARY TABLE transactions (
+    transaction_id   STRING,
+    user_id          STRING,
+    merchant_id      STRING,
+    amount           DOUBLE,
+    currency         STRING,
+    card_type        STRING,
+    hour_of_day      INT,
+    day_of_week      INT,
+    is_international BOOLEAN,
+    -- Feature map pre-assembled upstream (or computed in the query below)
+    features         MAP&lt;STRING, STRING&gt;,
+    event_time       TIMESTAMP(3),
+    WATERMARK FOR event_time AS event_time - INTERVAL '5' SECOND
+) WITH (
+    'connector'                     = 'kafka',
+    'topic'                         = 'transactions',
+    'properties.bootstrap.servers'  = 'kafka:9092',
+    'properties.group.id'           = 'otter-fraud-demo',
+    'scan.startup.mode'             = 'latest-offset',
+    'format'                        = 'json',
+    'json.timestamp-format.standard'= 'ISO-8601',
+    'json.fail-on-missing-field'    = 'false',
+    'json.ignore-parse-errors'      = 'true'
+);
+
+-- ── Kafka sink table (fraud alerts) ───────────────────────────────────────
+CREATE TEMPORARY TABLE fraud_alerts (
+    alert_id         STRING,
+    transaction_id   STRING,
+    user_id          STRING,
+    amount           DOUBLE,
+    fraud_score      DOUBLE,
+    risk_tier        STRING,
+    detected_at      TIMESTAMP(3)
+) WITH (
+    'connector'                    = 'kafka',
+    'topic'                        = 'fraud-alerts',
+    'properties.bootstrap.servers' = 'kafka:9092',
+    'format'                       = 'json',
+    'json.timestamp-format.standard' = 'ISO-8601'
+);</pre>
+      </div>
+
+      <!-- ── Full pipeline SQL ── -->
+      <h2 id="pipeline-sql">Full Streaming Pipeline</h2>
+
+      <p>
+        This is the core inference pipeline. It reads from the <code>transactions</code> Kafka topic,
+        builds a feature map inline, calls <code>ml_score</code> to obtain a fraud probability,
+        classifies the result into risk tiers, and writes qualifying events to <code>fraud-alerts</code>.
+      </p>
+
+      <p>
+        Note that the <code>features</code> map is assembled using <code>MAP[...]</code> syntax so
+        the pipeline works even when the upstream producer has not pre-assembled it. In practice you
+        would either pre-assemble the map in the producer or use a Flink SQL computed column.
+      </p>
+
+      <div class="code-block">
+        <div class="code-block-header">
+          <span class="code-lang">SQL</span>
+          <span class="code-filename">Section 5 of 6 — Streaming inference pipeline</span>
+          <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        </div>
+        <pre>-- ── Section 5: Real-time fraud inference pipeline ───────────────────────
+-- Writes scored events with risk_score > 0.40 to the fraud-alerts topic.
+-- Adjust the threshold to suit your operating point.
+
+INSERT INTO fraud_alerts
+SELECT
+    -- Deterministic alert ID from transaction ID + score bucket
+    CONCAT(transaction_id, '-', CAST(FLOOR(fraud_score * 10) AS STRING))
+        AS alert_id,
+    transaction_id,
+    user_id,
+    amount,
+    fraud_score,
+
+    -- Risk tier classification downstream of the model score
+    CASE
+        WHEN fraud_score >= 0.85 THEN 'CRITICAL'
+        WHEN fraud_score >= 0.65 THEN 'HIGH'
+        WHEN fraud_score >= 0.40 THEN 'MEDIUM'
+        ELSE                          'LOW'
+    END AS risk_tier,
+
+    CURRENT_TIMESTAMP AS detected_at
+
+FROM (
+    SELECT
+        transaction_id,
+        user_id,
+        amount,
+
+        -- Build feature map from individual columns.
+        -- All values are cast to STRING because the UDF accepts MAP&lt;STRING,STRING&gt;.
+        -- The inference engine casts them back to the correct numeric types internally.
+        MAP[
+            'amount',           CAST(amount          AS STRING),
+            'hour_of_day',      CAST(hour_of_day     AS STRING),
+            'day_of_week',      CAST(day_of_week     AS STRING),
+            'is_international', CAST(is_international AS STRING),
+            'card_type',        card_type,
+            'currency',         currency
+        ] AS feature_map,
+
+        event_time
+
+    FROM transactions
+) enriched
+
+-- Call the registered UDF; COALESCE guards against NULL when the
+-- model name is not yet in ModelCache (should not happen after preload).
+CROSS JOIN LATERAL (
+    SELECT COALESCE(
+        ml_score(feature_map, 'fraud-detector'),
+        0.0
+    ) AS fraud_score
+) scores
+
+WHERE fraud_score >= 0.40;</pre>
+      </div>
+
+      <div class="callout callout-note">
+        <span class="callout-icon">i</span>
+        <div>
+          The <code>CROSS JOIN LATERAL</code> pattern evaluates the scalar UDF once per row and makes
+          the result available as a named column (<code>fraud_score</code>) that can be referenced in
+          both the <code>SELECT</code> list and the <code>WHERE</code> clause without calling the
+          function twice. This is equivalent to a <code>WITH</code> subquery but avoids the double
+          evaluation that Flink may apply to scalar UDFs referenced in both positions.
+        </div>
+      </div>
+
+      <!-- ── Verification ── -->
+      <h2 id="verify">Verification Queries</h2>
+
+      <p>
+        Run these in the Studio SQL editor to confirm the pipeline is healthy. They do not start new
+        jobs — they are bounded queries against the current session state.
+      </p>
+
+      <div class="code-block">
+        <div class="code-block-header">
+          <span class="code-lang">SQL</span>
+          <span class="code-filename">Section 6 of 6 — Health checks</span>
+          <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        </div>
+        <pre>-- ── Section 6: Verification ──────────────────────────────────────────────
+
+-- 1. Confirm the shaded JAR is on the classpath
+SHOW JARS;
+-- Expected: .../otter-stream-sql-1.0.17-flink-udf.jar
+
+-- 2. Confirm the UDF is registered
+SHOW USER FUNCTIONS;
+-- Expected: ml_score appears in the list
+
+-- 3. Smoke-test the UDF with a static feature map.
+--    If the model is loaded this returns a DOUBLE between 0.0 and 1.0.
+--    If it returns NULL the model name was not found in ModelCache.
+SELECT ml_score(
+    MAP['amount', '250.00',
+        'hour_of_day', '23',
+        'day_of_week', '6',
+        'is_international', 'true',
+        'card_type', 'CREDIT',
+        'currency', 'USD'],
+    'fraud-detector'
+) AS smoke_test_score;
+
+-- 4. Confirm the connector table is accessible (model loaded from MinIO)
+DESCRIBE fraud_model_source;
+
+-- 5. Count messages received on the transactions topic in the last 60 s
+--    (requires the streaming job from Section 5 to be running)
+SELECT COUNT(*) AS events_in_last_60s
+FROM transactions
+WHERE event_time >= CURRENT_TIMESTAMP - INTERVAL '60' SECOND;</pre>
+      </div>
+
+      <!-- ══════════════════════════════════════════════════════ -->
+      <h2 id="fraud">Fraud Detection — Extended Example</h2>
+
+      <p>
+        A more complete version of the pipeline that adds windowed aggregation for velocity features,
+        a dead-letter sink for rows where the model returned <code>NULL</code>, and a Flink view that
+        abstracts the feature-building logic away from the inference query.
+      </p>
+
+      <div class="code-block">
+        <div class="code-block-header">
+          <span class="code-lang">SQL</span>
+          <span class="code-filename">fraud_detection_extended.sql</span>
+          <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        </div>
+        <pre>-- ── Extended fraud detection with velocity features ──────────────────────
+
+-- Step A: Create a view that computes velocity features using a 5-minute
+-- tumbling window before the inference step.
+CREATE TEMPORARY VIEW transaction_velocity AS
+SELECT
+    user_id,
+    COUNT(*)                                     AS txn_count_5m,
+    SUM(amount)                                  AS total_amount_5m,
+    MAX(amount)                                  AS max_amount_5m,
+    COUNT(DISTINCT merchant_id)                  AS distinct_merchants_5m,
+    TUMBLE_START(event_time, INTERVAL '5' MINUTE) AS window_start
+FROM transactions
+GROUP BY
+    user_id,
+    TUMBLE(event_time, INTERVAL '5' MINUTE);
+
+-- Step B: Join raw transactions with velocity window and run inference.
+-- The join key is user_id; window_start aligns to the tumble boundary.
+CREATE TEMPORARY VIEW scored_transactions AS
+SELECT
+    t.transaction_id,
+    t.user_id,
+    t.amount,
+    t.event_time,
+    COALESCE(
+        ml_score(
+            MAP[
+                'amount',                CAST(t.amount               AS STRING),
+                'hour_of_day',           CAST(t.hour_of_day          AS STRING),
+                'day_of_week',           CAST(t.day_of_week          AS STRING),
+                'is_international',      CAST(t.is_international      AS STRING),
+                'card_type',             t.card_type,
+                'currency',              t.currency,
+                -- Velocity features from the window join
+                'txn_count_5m',          CAST(v.txn_count_5m          AS STRING),
+                'total_amount_5m',       CAST(v.total_amount_5m       AS STRING),
+                'max_amount_5m',         CAST(v.max_amount_5m         AS STRING),
+                'distinct_merchants_5m', CAST(v.distinct_merchants_5m AS STRING)
+            ],
+            'fraud-detector'
+        ),
+        -1.0   -- sentinel: model returned NULL (engine not loaded)
+    ) AS fraud_score
+FROM transactions t
+LEFT JOIN transaction_velocity v
+  ON t.user_id      = v.user_id
+ AND t.event_time  >= v.window_start
+ AND t.event_time   < v.window_start + INTERVAL '5' MINUTE;
+
+-- Step C: Route high-confidence fraud to the alerts sink,
+-- and model errors (sentinel -1.0) to a dead-letter topic.
+INSERT INTO fraud_alerts
+SELECT
+    CONCAT(transaction_id, '-alert') AS alert_id,
+    transaction_id,
+    user_id,
+    amount,
+    fraud_score,
+    CASE
+        WHEN fraud_score >= 0.85 THEN 'CRITICAL'
+        WHEN fraud_score >= 0.65 THEN 'HIGH'
+        ELSE                          'MEDIUM'
+    END AS risk_tier,
+    event_time AS detected_at
+FROM scored_transactions
+WHERE fraud_score >= 0.40;</pre>
+      </div>
+
+      <!-- ══════════════════════════════════════════════════════ -->
+      <h2 id="anomaly">Anomaly Detection — IoT Sensors</h2>
+
+      <p>
+        A second demo using an XGBoost model stored in MinIO. The model is a binary classifier
+        trained on sensor telemetry; it flags readings that deviate significantly from the expected
+        distribution. The model file is a JSON-format XGBoost model at
+        <code>ml-models/anomaly-detector/v2/model.json</code>.
+      </p>
+
+      <div class="code-block">
+        <div class="code-block-header">
+          <span class="code-lang">SQL</span>
+          <span class="code-filename">anomaly_detection.sql</span>
+          <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        </div>
+        <pre>-- ── IoT anomaly detection with XGBoost model from MinIO ─────────────────
+
+-- 1. Preload the XGBoost model from MinIO
+CREATE TEMPORARY TABLE anomaly_model_source (
+    score DOUBLE
+) WITH (
+    'connector'           = 'ml-inference',
+    'model.name'          = 'anomaly-detector',
+    'model.path'          = 's3a://ml-models/anomaly-detector/v2/model.json',
+    'model.format'        = 'xgboost-json',
+    'model.s3.endpoint'   = 'http://minio:9000',
+    'model.s3.access-key' = 'minioadmin',
+    'model.s3.secret-key' = 'minioadmin',
+    'model.s3.path-style' = 'true',
+    'cache.enabled'       = 'true'
+);
+
+-- 2. Sensor readings source
+CREATE TEMPORARY TABLE sensor_readings (
+    device_id    STRING,
+    temperature  DOUBLE,
+    pressure     DOUBLE,
+    humidity     DOUBLE,
+    vibration    DOUBLE,
+    rpm          DOUBLE,
+    reading_time TIMESTAMP(3),
+    WATERMARK FOR reading_time AS reading_time - INTERVAL '10' SECOND
+) WITH (
+    'connector'                    = 'kafka',
+    'topic'                        = 'sensor-readings',
+    'properties.bootstrap.servers' = 'kafka:9092',
+    'properties.group.id'          = 'otter-anomaly-demo',
+    'scan.startup.mode'            = 'latest-offset',
+    'format'                       = 'json'
+);
+
+-- 3. Anomaly alerts sink
+CREATE TEMPORARY TABLE anomaly_alerts (
+    device_id      STRING,
+    anomaly_score  DOUBLE,
+    severity       STRING,
+    reading_time   TIMESTAMP(3),
+    detected_at    TIMESTAMP(3)
+) WITH (
+    'connector'                    = 'kafka',
+    'topic'                        = 'anomaly-alerts',
+    'properties.bootstrap.servers' = 'kafka:9092',
+    'format'                       = 'json'
+);
+
+-- 4. Sliding window aggregation then inference
+INSERT INTO anomaly_alerts
+SELECT
+    device_id,
+    anomaly_score,
+    CASE
+        WHEN anomaly_score >= 0.90 THEN 'CRITICAL'
+        WHEN anomaly_score >= 0.70 THEN 'HIGH'
+        ELSE                           'MEDIUM'
+    END AS severity,
+    window_end AS reading_time,
+    CURRENT_TIMESTAMP AS detected_at
+FROM (
+    SELECT
+        device_id,
+        HOP_END(reading_time, INTERVAL '30' SECOND, INTERVAL '5' MINUTE) AS window_end,
+        COALESCE(
+            ml_score(
+                MAP[
+                    'temperature', CAST(AVG(temperature) AS STRING),
+                    'pressure',    CAST(AVG(pressure)    AS STRING),
+                    'humidity',    CAST(AVG(humidity)    AS STRING),
+                    'vibration',   CAST(AVG(vibration)   AS STRING),
+                    'rpm',         CAST(AVG(rpm)         AS STRING)
+                ],
+                'anomaly-detector'
+            ),
+            0.0
+        ) AS anomaly_score
+    FROM sensor_readings
+    GROUP BY
+        device_id,
+        HOP(reading_time, INTERVAL '30' SECOND, INTERVAL '5' MINUTE)
+) windowed
+WHERE anomaly_score >= 0.60;</pre>
+      </div>
+
+      <!-- ══════════════════════════════════════════════════════ -->
+      <h2 id="tips">Str:::Lab Studio Tips</h2>
+
+      <div class="card-grid">
+        <div class="card">
+          <div class="card-title">Session renewal resets the classpath</div>
+          <div class="card-desc">
+            After any session renewal or disconnect, re-run Sections 1 and 2 (properties + ADD JAR +
+            CREATE FUNCTION) before executing inference queries. The Studio UDF Manager automates this
+            if you use it rather than raw SQL.
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">Preload before the pipeline</div>
+          <div class="card-desc">
+            Always run Section 3 (connector table creation) before Section 5 (the INSERT pipeline).
+            This warms the ModelCache from MinIO. If you skip this step the first rows processed will
+            experience cold-start latency while the model downloads.
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">Smoke-test with a static map</div>
+          <div class="card-desc">
+            The static <code>SELECT ml_score(MAP[...], 'fraud-detector')</code> query in Section 6
+            is the fastest way to confirm end-to-end connectivity — JAR loaded, UDF registered,
+            model in cache, engine producing output — without starting a streaming job.
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">NULL score means cache miss</div>
+          <div class="card-desc">
+            If <code>ml_score</code> returns <code>NULL</code> the model name was not found in
+            <code>ModelCache</code>. Re-run the connector table creation statement to trigger a fresh
+            MinIO download. Check the Flink TaskManager logs for download errors.
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">MAP type compatibility</div>
+          <div class="card-desc">
+            The Studio parameter builder shows <code>MAP&lt;STRING,STRING&gt;</code> as the closest
+            available type for the <code>features</code> argument. The UDF accepts
+            <code>Map&lt;String, Object&gt;</code> at runtime; Flink's type system handles the
+            coercion automatically.
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">MinIO path-style access</div>
+          <div class="card-desc">
+            Always set <code>'model.s3.path-style' = 'true'</code> when connecting to MinIO.
+            Virtual-hosted style (<code>bucket.host</code>) requires DNS configuration that is
+            typically not present in local deployments.
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /content-body -->
+
+    <div class="doc-footer">
+      <span>Otter Streams v1.0.17 <span>Otter Streams v1.0.17 &mdash; Apache License 2.0 &mdash; CodedStreams</span>mdash; Apache License 2.0 <span>Otter Streams v1.0.17 &mdash; Apache License 2.0 &mdash; CodedStreams</span>mdash; CodedStreams <span>Otter Streams v1.0.17 &mdash; Apache License 2.0 &mdash; CodedStreams</span>mdash; <strong>Nestor Martourez Abiangang A.</strong> <span>Otter Streams v1.0.17 &mdash; Apache License 2.0 &mdash; CodedStreams</span>mdash; <a href="https://www.linkedin.com/in/nestor-abiangang/" target="_blank" style="color:var(--blue-primary)">linkedin.com/in/nestor-abiangang</a></span>
+      <div class="footer-links">
+        <a href="https://github.com/martourez21/otter-streams" target="_blank">GitHub</a>
+        <a href="releases.html">Releases</a>
+        <a href="datastream.html">DataStream Guide</a>
+        <a href="studio-demo.html">Studio Demo</a>
+        <a href="mailto:nestorabiawuh@gmail.com">Contact</a>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script>
+function copyCode(btn) {
+  const pre = btn.closest('.code-block').querySelector('pre');
+  navigator.clipboard.writeText(pre.textContent.trim()).then(() => {
+    const orig = btn.textContent; btn.textContent = 'Copied'; btn.classList.add('ok');
+    setTimeout(() => { btn.textContent = orig; btn.classList.remove('ok'); }, 1800);
+  });
+}
+const obs = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      document.querySelectorAll('.nav-item').forEach(a => a.classList.remove('active'));
+      const m = document.querySelector(`.nav-item[href="#${e.target.id}"]`);
+      if (m) m.classList.add('active');
+    }
+  });
+}, { rootMargin: '-20% 0px -70% 0px' });
+document.querySelectorAll('h2[id]').forEach(s => obs.observe(s));
+</script>
+</body>
+</html>
