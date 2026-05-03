@@ -217,26 +217,25 @@ jobs:
               -Dmaven.javadoc.failOnWarnings=false
           fi
 
-      # Publish the aggregated Javadoc to  /javadoc/<version>/  on gh-pages
+      # Publish the aggregated Javadoc to  /docs/javadoc/<version>/  on gh-pages.
+      # Both outputs live inside docs/ so the entire site is rooted there.
       - name: Deploy Javadoc to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./target/site/apidocs
-          destination_dir: javadoc/${{ steps.version.outputs.VERSION }}
+          destination_dir: docs/javadoc/${{ steps.version.outputs.VERSION }}
           keep_files: true
         continue-on-error: true
 
-      # Also publish the HTML documentation site to  /docs/  on gh-pages.
-      # The site lives in docs/otter-docs/ in the repo (see directory structure
-      # below).  keep_files: true ensures the Javadoc published above is not
-      # overwritten by this second deploy step.
+      # Publish the HTML documentation site to  /docs/otter-docs/  on gh-pages.
+      # keep_files: true ensures the Javadoc deployed above is not overwritten.
       - name: Deploy HTML documentation site to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./docs/otter-docs
-          destination_dir: docs
+          destination_dir: docs/otter-docs
           keep_files: true
         continue-on-error: true
 

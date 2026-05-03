@@ -40,21 +40,21 @@ Models are stored externally (MinIO, AWS S3, or any S3-compatible store) and loa
 <dependency>
     <groupId>com.codedstreams</groupId>
     <artifactId>ml-inference-core</artifactId>
-    <version>1.0.18</version>
+    <version>1.0.17</version>
 </dependency>
 
         <!-- Pick the engine module(s) you need -->
 <dependency>
 <groupId>com.codedstreams</groupId>
 <artifactId>otter-stream-onnx</artifactId>
-<version>1.0.18</version>
+<version>1.0.17</version>
 </dependency>
 
         <!-- Flink SQL / Table API integration (optional) -->
 <dependency>
 <groupId>com.codedstreams</groupId>
 <artifactId>otter-stream-sql</artifactId>
-<version>1.0.18</version>
+<version>1.0.17</version>
 </dependency>
 ```
 
@@ -63,37 +63,37 @@ Models are stored externally (MinIO, AWS S3, or any S3-compatible store) and loa
 ```java
 // Configure the model
 ModelConfig modelConfig = ModelConfig.builder()
-        .modelId("fraud-detector")
-        .modelPath("s3a://ml-models/fraud-detector/v1/fraud.onnx")
-        .format(ModelFormat.ONNX)
-        .modelVersion("v1")
-        .build();
+    .modelId("fraud-detector")
+    .modelPath("s3a://ml-models/fraud-detector/v1/fraud.onnx")
+    .format(ModelFormat.ONNX)
+    .modelVersion("v1")
+    .build();
 
 InferenceConfig inferenceConfig = InferenceConfig.builder()
-        .modelConfig(modelConfig)
-        .batchSize(32)
-        .timeout(Duration.ofSeconds(5))
-        .enableCaching(true)
-        .enableMetrics(true)
-        .build();
+    .modelConfig(modelConfig)
+    .batchSize(32)
+    .timeout(Duration.ofSeconds(5))
+    .enableCaching(true)
+    .enableMetrics(true)
+    .build();
 
 // Wrap in an async Flink function
 AsyncModelInferenceFunction<Transaction, ScoredTransaction> fn =
-        new AsyncModelInferenceFunction<>(
-                inferenceConfig,
-                cfg -> new OnnxInferenceEngine(),
-                tx  -> Map.of(
-                        "amount",      (float) tx.getAmount(),
-                        "hour_of_day", (float) tx.getHourOfDay()
-                ),
-                result -> new ScoredTransaction(
-                        tx, ((float[]) result.getOutputs().get("output"))[0]
-                )
-        );
+    new AsyncModelInferenceFunction<>(
+        inferenceConfig,
+        cfg -> new OnnxInferenceEngine(),
+        tx  -> Map.of(
+            "amount",      (float) tx.getAmount(),
+            "hour_of_day", (float) tx.getHourOfDay()
+        ),
+        result -> new ScoredTransaction(
+            tx, ((float[]) result.getOutputs().get("output"))[0]
+        )
+    );
 
 // Apply to the stream
 DataStream<ScoredTransaction> scored = AsyncDataStream.unorderedWait(
-        transactionStream, fn, 5_000L, TimeUnit.MILLISECONDS, 100
+    transactionStream, fn, 5_000L, TimeUnit.MILLISECONDS, 100
 );
 ```
 
@@ -101,7 +101,7 @@ DataStream<ScoredTransaction> scored = AsyncDataStream.unorderedWait(
 
 ```sql
 -- Load the shaded JAR and register the scalar UDF
-ADD JAR '/var/www/udf-jars/otter-stream-sql-1.0.18-flink-udf.jar';
+ADD JAR '/var/www/udf-jars/otter-stream-sql-1.0.17-flink-udf.jar';
 
 CREATE TEMPORARY FUNCTION IF NOT EXISTS ml_score
 AS 'com.codedstreams.otterstreams.sql.udf.MLInferenceFunction'
@@ -130,17 +130,17 @@ SELECT
         WHEN fraud_score >= 0.85 THEN 'CRITICAL'
         WHEN fraud_score >= 0.65 THEN 'HIGH'
         ELSE                          'MEDIUM'
-        END AS risk_tier
+    END AS risk_tier
 FROM transactions
-         CROSS JOIN LATERAL (
+CROSS JOIN LATERAL (
     SELECT COALESCE(
-                   ml_score(
-                           MAP['amount',      CAST(amount      AS STRING),
-                           'hour_of_day', CAST(hour_of_day AS STRING)],
-                           'fraud-detector'
-                   ), 0.0
-           ) AS fraud_score
-        ) scores
+        ml_score(
+            MAP['amount',      CAST(amount      AS STRING),
+                'hour_of_day', CAST(hour_of_day AS STRING)],
+            'fraud-detector'
+        ), 0.0
+    ) AS fraud_score
+) scores
 WHERE fraud_score >= 0.40;
 ```
 
@@ -150,14 +150,14 @@ WHERE fraud_score >= 0.40;
 
 | Page | Description |
 |------|-------------|
-| [Documentation](https://martourez21.github.io/otter-streams/docs/index.html) | Introduction, Quick Start, Architecture, UDF Reference, Shaded JAR, Troubleshooting |
-| [DataStream API Guide](https://martourez21.github.io/otter-streams/docs/datastream.html) | Complete Java code for every engine module — ONNX, TensorFlow, PyTorch, XGBoost, PMML, Remote |
-| [SQL Examples](https://martourez21.github.io/otter-streams/docs/examples.html) | MinIO pipeline demo (6 SQL sections), fraud detection, IoT anomaly detection |
-| [Studio Demo](https://martourez21.github.io/otter-streams/docs/studio-demo.html) | Str:::Lab Studio Feature Engineering Manager + Inference Manager walkthrough |
-| [API Reference](https://martourez21.github.io/otter-streams/docs/api.html) | InferenceEngine, InferenceResult, ModelCache, MLInferenceFunction, connector DDL options |
-| [Modules](https://martourez21.github.io/otter-streams/docs/modules.html) | Dependency graph + per-module docs for all 7 modules |
-| [Releases](https://martourez21.github.io/otter-streams/docs/releases.html) | Changelog, compatibility matrix, upgrade notes |
-| [Javadoc](https://martourez21.github.io/otter-streams/javadoc/) | Full generated API documentation |
+| [Documentation](https://martourez21.github.io/otter-streams/docs/otter-docs/index.html) | Introduction, Quick Start, Architecture, UDF Reference, Shaded JAR, Troubleshooting |
+| [DataStream API Guide](https://martourez21.github.io/otter-streams/docs/otter-docs/datastream.html) | Complete Java code for every engine module — ONNX, TensorFlow, PyTorch, XGBoost, PMML, Remote |
+| [SQL Examples](https://martourez21.github.io/otter-streams/docs/otter-docs/examples.html) | MinIO pipeline demo (6 SQL sections), fraud detection, IoT anomaly detection |
+| [Studio Demo](https://martourez21.github.io/otter-streams/docs/otter-docs/studio-demo.html) | Str:::Lab Studio Feature Engineering Manager + Inference Manager walkthrough |
+| [API Reference](https://martourez21.github.io/otter-streams/docs/otter-docs/api.html) | InferenceEngine, InferenceResult, ModelCache, MLInferenceFunction, connector DDL options |
+| [Modules](https://martourez21.github.io/otter-streams/docs/otter-docs/modules.html) | Dependency graph + per-module docs for all 7 modules |
+| [Releases](https://martourez21.github.io/otter-streams/docs/otter-docs/releases.html) | Changelog, compatibility matrix, upgrade notes |
+| [Javadoc](https://martourez21.github.io/otter-streams/docs/javadoc/1.0.18/) | Full generated API documentation |
 
 ---
 
@@ -252,7 +252,7 @@ cd otter-stream-sql
 mvn clean package -DskipTests
 
 # Use this file — note the -flink-udf classifier:
-ls target/otter-stream-sql-1.0.18-flink-udf.jar
+ls target/otter-stream-sql-1.0.17-flink-udf.jar
 ```
 
 The shaded JAR bundles `ml-inference-core` and all other runtime dependencies except Flink and SLF4J. Without it, the Flink SQL Gateway raises `NoClassDefFoundError: InferenceException` when it reflects over the `eval()` method signature during UDF registration.
@@ -263,7 +263,7 @@ The shaded JAR bundles `ml-inference-core` and all other runtime dependencies ex
 
 | Otter Streams | Flink | Java | ONNX Runtime | TensorFlow Java |
 |---------------|-------|------|--------------|-----------------|
-| **1.0.18** | 1.17 – 1.20 | 11, 17 | 1.23.2 | 0.5.0 |
+| **1.0.17** | 1.17 – 1.20 | 11, 17 | 1.23.2 | 0.5.0 |
 | 1.0.15 | 1.17 – 1.18 | 11, 17 | 1.23.2 | 0.5.0 |
 | 1.0.0 | 1.16 | 11 | 1.14.0 | 0.4.2 |
 
@@ -309,9 +309,9 @@ Special thanks to the Apache Flink community and all open-source ML framework ma
 
 <div align="center">
 
-[Documentation](https://martourez21.github.io/otter-streams/docs/index.html) &nbsp;·&nbsp;
-[DataStream Guide](https://martourez21.github.io/otter-streams/docs/datastream.html) &nbsp;·&nbsp;
-[Studio Demo](https://martourez21.github.io/otter-streams/docs/studio-demo.html) &nbsp;·&nbsp;
+[Documentation](https://martourez21.github.io/otter-streams/docs/otter-docs/index.html) &nbsp;·&nbsp;
+[DataStream Guide](https://martourez21.github.io/otter-streams/docs/otter-docs/datastream.html) &nbsp;·&nbsp;
+[Studio Demo](https://martourez21.github.io/otter-streams/docs/otter-docs/studio-demo.html) &nbsp;·&nbsp;
 [Discussions](https://github.com/martourez21/otter-streams/discussions) &nbsp;·&nbsp;
 [Star the project](https://github.com/martourez21/otter-streams/stargazers)
 
