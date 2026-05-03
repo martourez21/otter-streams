@@ -15,12 +15,17 @@ on:
         default: 'false'
 
 jobs:
+
+  # ────────────────────────────────────────────────────────────────────────────
+  # BUILD — compile and test on JDK 11 and JDK 17
+  # ────────────────────────────────────────────────────────────────────────────
   build:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        java: [11, 17]
+        java: [ 11, 17 ]
       fail-fast: false
+
     steps:
       - uses: actions/checkout@v4
 
@@ -31,22 +36,30 @@ jobs:
           distribution: temurin
           cache: maven
 
-      # Install modules excluding PyTorch unless workflow input is true
       - name: Install modules
         run: |
-          if [ "${{ github.event.inputs.include_pytorch }}" == "true" ]; then
+          if [ "${{ github.event.inputs.include_pytorch || 'false' }}" == "true" ]; then
             mvn -B clean install -DskipTests
           else
-            mvn -B clean install -DskipTests -pl \!otter-stream-pytorch
+            # --also-make ensures the parent POM and all upstream dependencies
+            # are installed into the local cache before the selected modules are
+            # built. Without it, Maven cannot resolve the parent locally and
+            # falls back to remote repositories, causing a resolution failure.
+            mvn -B clean install -DskipTests \
+                -pl '!otter-stream-pytorch' \
+                --also-make
           fi
 
-      # Run tests
       - name: Run tests
         run: |
-          if [ "${{ github.event.inputs.include_pytorch }}" == "true" ]; then
+          if [ "${{ github.event.inputs.include_pytorch || 'false' }}" == "true" ]; then
             mvn -B test -DskipTests=false -Dmaven.test.failure.ignore=true
           else
-            mvn -B test -pl \!otter-stream-pytorch -DskipTests=false -Dmaven.test.failure.ignore=true
+            mvn -B test \
+                -pl '!otter-stream-pytorch' \
+                --also-make \
+                -DskipTests=false \
+                -Dmaven.test.failure.ignore=true
           fi
         continue-on-error: true
 
@@ -64,11 +77,16 @@ jobs:
             **/target/site/
           if-no-files-found: warn
 
+  # ────────────────────────────────────────────────────────────────────────────
+  # CODE QUALITY — verify + optional Checkstyle
+  # ────────────────────────────────────────────────────────────────────────────
   code-quality:
     runs-on: ubuntu-latest
     needs: build
+
     steps:
       - uses: actions/checkout@v4
+
       - name: Set up JDK 11
         uses: actions/setup-java@v4
         with:
@@ -78,38 +96,49 @@ jobs:
 
       - name: Install modules
         run: |
-          if [ "${{ github.event.inputs.include_pytorch }}" == "true" ]; then
+          if [ "${{ github.event.inputs.include_pytorch || 'false' }}" == "true" ]; then
             mvn -B clean install -DskipTests
           else
-            mvn -B clean install -DskipTests -pl \!otter-stream-pytorch
+            mvn -B clean install -DskipTests \
+                -pl '!otter-stream-pytorch' \
+                --also-make
           fi
 
       - name: Run Maven verify
         run: |
-          if [ "${{ github.event.inputs.include_pytorch }}" == "true" ]; then
+          if [ "${{ github.event.inputs.include_pytorch || 'false' }}" == "true" ]; then
             mvn -B verify -DskipTests
           else
-            mvn -B verify -DskipTests -pl \!otter-stream-pytorch
+            mvn -B verify -DskipTests \
+                -pl '!otter-stream-pytorch' \
+                --also-make
           fi
 
       - name: Checkstyle (optional)
         run: |
           if grep -q "maven-checkstyle-plugin" pom.xml; then
-            if [ "${{ github.event.inputs.include_pytorch }}" == "true" ]; then
+            if [ "${{ github.event.inputs.include_pytorch || 'false' }}" == "true" ]; then
               mvn checkstyle:check
             else
-              mvn checkstyle:check -pl \!otter-stream-pytorch
+              mvn checkstyle:check \
+                  -pl '!otter-stream-pytorch' \
+                  --also-make
             fi
           else
             echo "Checkstyle not configured, skipping"
           fi
         continue-on-error: true
 
+  # ────────────────────────────────────────────────────────────────────────────
+  # PACKAGE — produce and upload JARs
+  # ────────────────────────────────────────────────────────────────────────────
   package:
     runs-on: ubuntu-latest
     needs: build
+
     steps:
       - uses: actions/checkout@v4
+
       - name: Set up JDK 11
         uses: actions/setup-java@v4
         with:
@@ -119,10 +148,12 @@ jobs:
 
       - name: Install and package artifacts
         run: |
-          if [ "${{ github.event.inputs.include_pytorch }}" == "true" ]; then
+          if [ "${{ github.event.inputs.include_pytorch || 'false' }}" == "true" ]; then
             mvn -B clean install -DskipTests
           else
-            mvn -B clean install -DskipTests -pl \!otter-stream-pytorch
+            mvn -B clean install -DskipTests \
+                -pl '!otter-stream-pytorch' \
+                --also-make
           fi
 
       - name: Upload build artifacts
@@ -135,11 +166,23 @@ jobs:
             !**/target/*-tests.jar
           retention-days: 7
 
+  # ────────────────────────────────────────────────────────────────────────────
+  # DEPLOY JAVADOC + DOCS SITE → GitHub Pages
+  # ────────────────────────────────────────────────────────────────────────────
   deploy-javadoc:
     runs-on: ubuntu-latest
     needs: package
+    # Only publish from main branch or on a release event
+    if: >
+      github.event_name == 'release' ||
+      (github.event_name == 'push' && github.ref == 'refs/heads/main')
+
+    permissions:
+      contents: write   # required by peaceiris/actions-gh-pages
+
     steps:
       - uses: actions/checkout@v4
+
       - name: Set up JDK 11
         uses: actions/setup-java@v4
         with:
@@ -147,20 +190,34 @@ jobs:
           distribution: temurin
           cache: maven
 
+      # Use mvn help:evaluate instead of grep — always picks up the correct
+      # <version> from the POM regardless of how the file is structured.
       - name: Get project version
         id: version
         run: |
-          VERSION=$(grep -oP '(?<=<version>)[^<]+' pom.xml | head -1)
+          VERSION=$(mvn help:evaluate \
+            -Dexpression=project.version \
+            -q -DforceStdout)
           echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
+          echo "Resolved version: $VERSION"
 
-      - name: Generate Javadoc
+      - name: Generate aggregated Javadoc
         run: |
-          if [ "${{ github.event.inputs.include_pytorch }}" == "true" ]; then
-            mvn -B clean compile javadoc:aggregate -DskipTests -Dmaven.javadoc.failOnError=false -Dmaven.javadoc.failOnWarnings=false
+          if [ "${{ github.event.inputs.include_pytorch || 'false' }}" == "true" ]; then
+            mvn -B clean compile javadoc:aggregate \
+              -DskipTests \
+              -Dmaven.javadoc.failOnError=false \
+              -Dmaven.javadoc.failOnWarnings=false
           else
-            mvn -B clean compile javadoc:aggregate -DskipTests -pl \!otter-stream-pytorch -Dmaven.javadoc.failOnError=false -Dmaven.javadoc.failOnWarnings=false
+            mvn -B clean compile javadoc:aggregate \
+              -DskipTests \
+              -pl '!otter-stream-pytorch' \
+              --also-make \
+              -Dmaven.javadoc.failOnError=false \
+              -Dmaven.javadoc.failOnWarnings=false
           fi
 
+      # Publish the aggregated Javadoc to  /javadoc/<version>/  on gh-pages
       - name: Deploy Javadoc to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
@@ -170,14 +227,33 @@ jobs:
           keep_files: true
         continue-on-error: true
 
-  # NEW JOB: Deploy to GitHub Packages on main/develop pushes
+      # Also publish the HTML documentation site to  /docs/  on gh-pages.
+      # The site lives in docs/otter-docs/ in the repo (see directory structure
+      # below).  keep_files: true ensures the Javadoc published above is not
+      # overwritten by this second deploy step.
+      - name: Deploy HTML documentation site to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./docs/otter-docs
+          destination_dir: docs
+          keep_files: true
+        continue-on-error: true
+
+  # ────────────────────────────────────────────────────────────────────────────
+  # DEPLOY SNAPSHOTS → GitHub Packages  (push to main or develop only)
+  # ────────────────────────────────────────────────────────────────────────────
   deploy-to-github-packages:
     runs-on: ubuntu-latest
-    needs: [package, code-quality]
-    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop')
+    needs: [ package, code-quality ]
+    if: >
+      github.event_name == 'push' &&
+      (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop')
+
     permissions:
       contents: read
       packages: write
+
     steps:
       - uses: actions/checkout@v4
 
@@ -188,7 +264,7 @@ jobs:
           distribution: temurin
           cache: maven
 
-      - name: Configure Maven for GitHub Packages
+      - name: Configure Maven settings for GitHub Packages
         run: |
           mkdir -p ~/.m2
           cat > ~/.m2/settings.xml <<EOF
@@ -205,33 +281,42 @@ jobs:
 
       - name: Deploy to GitHub Packages
         run: |
-          if [ "${{ github.event.inputs.include_pytorch }}" == "true" ]; then
-            mvn -B clean deploy -DskipTests \
-                -Dmaven.javadoc.skip=false \
-                -Dmaven.source.skip=false \
-                -Dmaven.test.skip=true \
-                -DaltDeploymentRepository=github::default::https://maven.pkg.github.com/${{ github.repository }}
+          if [ "${{ github.event.inputs.include_pytorch || 'false' }}" == "true" ]; then
+            mvn -B clean deploy \
+              -DskipTests \
+              -Dmaven.javadoc.skip=false \
+              -Dmaven.source.skip=false \
+              -Dmaven.test.skip=true \
+              -DaltDeploymentRepository=github::default::https://maven.pkg.github.com/${{ github.repository }}
           else
-            mvn -B clean deploy -DskipTests \
-                -Dmaven.javadoc.skip=false \
-                -Dmaven.source.skip=false \
-                -Dmaven.test.skip=true \
-                -DaltDeploymentRepository=github::default::https://maven.pkg.github.com/${{ github.repository }} \
-                -pl \!otter-stream-pytorch
+            mvn -B clean deploy \
+              -DskipTests \
+              -Dmaven.javadoc.skip=false \
+              -Dmaven.source.skip=false \
+              -Dmaven.test.skip=true \
+              -DaltDeploymentRepository=github::default::https://maven.pkg.github.com/${{ github.repository }} \
+              -pl '!otter-stream-pytorch' \
+              --also-make
           fi
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+  # ────────────────────────────────────────────────────────────────────────────
+  # PUBLISH RELEASE → GitHub Packages  (triggered by a published release only)
+  # ────────────────────────────────────────────────────────────────────────────
   publish-release:
     runs-on: ubuntu-latest
     if: github.event_name == 'release' && github.event.action == 'published'
+
     permissions:
       contents: write
       packages: write
       pages: write
       id-token: write
+
     steps:
       - uses: actions/checkout@v4
+
       - name: Set up JDK 11
         uses: actions/setup-java@v4
         with:
@@ -239,7 +324,7 @@ jobs:
           distribution: temurin
           cache: maven
 
-      - name: Configure Maven for GitHub Packages
+      - name: Configure Maven settings for GitHub Packages
         run: |
           mkdir -p ~/.m2
           cat > ~/.m2/settings.xml <<EOF
@@ -254,29 +339,40 @@ jobs:
           </settings>
           EOF
 
-      - name: Build release artifacts
+      - name: Build release artifacts (JAR + Javadoc JAR + sources JAR)
         run: |
-          if [ "${{ github.event.inputs.include_pytorch }}" == "true" ]; then
-            mvn -B clean install javadoc:jar source:jar -DskipTests -Dmaven.javadoc.failOnError=false -Dmaven.javadoc.failOnWarnings=false
+          if [ "${{ github.event.inputs.include_pytorch || 'false' }}" == "true" ]; then
+            mvn -B clean install javadoc:jar source:jar \
+              -DskipTests \
+              -Dmaven.javadoc.failOnError=false \
+              -Dmaven.javadoc.failOnWarnings=false
           else
-            mvn -B clean install javadoc:jar source:jar -DskipTests -pl \!otter-stream-pytorch -Dmaven.javadoc.failOnError=false -Dmaven.javadoc.failOnWarnings=false
+            mvn -B clean install javadoc:jar source:jar \
+              -DskipTests \
+              -pl '!otter-stream-pytorch' \
+              --also-make \
+              -Dmaven.javadoc.failOnError=false \
+              -Dmaven.javadoc.failOnWarnings=false
           fi
 
       - name: Deploy release to GitHub Packages
         run: |
-          if [ "${{ github.event.inputs.include_pytorch }}" == "true" ]; then
-            mvn -B deploy -DskipTests \
-                -Dmaven.javadoc.skip=false \
-                -Dmaven.source.skip=false \
-                -Dmaven.test.skip=true \
-                -DaltDeploymentRepository=github::default::https://maven.pkg.github.com/${{ github.repository }}
+          if [ "${{ github.event.inputs.include_pytorch || 'false' }}" == "true" ]; then
+            mvn -B deploy \
+              -DskipTests \
+              -Dmaven.javadoc.skip=false \
+              -Dmaven.source.skip=false \
+              -Dmaven.test.skip=true \
+              -DaltDeploymentRepository=github::default::https://maven.pkg.github.com/${{ github.repository }}
           else
-            mvn -B deploy -DskipTests \
-                -Dmaven.javadoc.skip=false \
-                -Dmaven.source.skip=false \
-                -Dmaven.test.skip=true \
-                -DaltDeploymentRepository=github::default::https://maven.pkg.github.com/${{ github.repository }} \
-                -pl \!otter-stream-pytorch
+            mvn -B deploy \
+              -DskipTests \
+              -Dmaven.javadoc.skip=false \
+              -Dmaven.source.skip=false \
+              -Dmaven.test.skip=true \
+              -DaltDeploymentRepository=github::default::https://maven.pkg.github.com/${{ github.repository }} \
+              -pl '!otter-stream-pytorch' \
+              --also-make
           fi
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
