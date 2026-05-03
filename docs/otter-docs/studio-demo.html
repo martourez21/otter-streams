@@ -1,0 +1,895 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Str:::Lab Studio Demo — Otter Streams</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@300;400;500;600&family=IBM+Plex+Serif:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="shared.css">
+<style>
+/* ── Studio-specific extras ── */
+.studio-badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 10px; font-family: var(--font-mono);
+  background: rgba(0,145,213,0.12); color: var(--blue-primary);
+  border: 1px solid rgba(0,145,213,0.3);
+  padding: 3px 10px; border-radius: 2px; margin-bottom: 6px;
+  letter-spacing: 0.6px; text-transform: uppercase;
+}
+.studio-step {
+  counter-increment: studio-step;
+  position: relative; padding: 20px 22px 20px 56px;
+  border: 1px solid var(--rule); border-radius: 4px;
+  margin-bottom: 14px; background: var(--off-white);
+}
+.studio-step::before {
+  content: counter(studio-step);
+  position: absolute; left: 16px; top: 18px;
+  width: 26px; height: 26px; border-radius: 50%;
+  background: var(--blue-primary); color: white;
+  font-size: 11px; font-weight: 600; font-family: var(--font-mono);
+  display: flex; align-items: center; justify-content: center;
+}
+.studio-steps { counter-reset: studio-step; }
+.studio-step-title { font-size: 13px; font-weight: 600; color: var(--ink-1); margin-bottom: 6px; }
+.studio-step p  { font-size: 13px; color: var(--ink-3); margin-bottom: 8px; }
+.studio-step .code-block { margin: 8px 0 0; }
+.section-label {
+  display: inline-block; font-size: 10px; font-family: var(--font-mono);
+  text-transform: uppercase; letter-spacing: 1px;
+  color: var(--blue-primary); border-bottom: 1px solid var(--blue-mid);
+  padding-bottom: 2px; margin-bottom: 12px;
+}
+.panel-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 14px 0 20px; }
+.panel-box {
+  border: 1px solid var(--rule); border-radius: 4px;
+  padding: 14px 16px; background: var(--off-white);
+}
+.panel-box-title {
+  font-size: 11px; font-family: var(--font-mono); font-weight: 500;
+  color: var(--ink-4); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;
+}
+.panel-box ul { list-style: none; padding: 0; margin: 0; }
+.panel-box li { font-size: 12px; color: var(--ink-3); padding: 4px 0; border-bottom: 1px solid var(--rule); }
+.panel-box li:last-child { border-bottom: none; }
+.panel-box li code { font-size: 11px; }
+@media (max-width: 700px) { .panel-grid { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <a href="index.html" class="topbar-brand">
+    <div class="brand-icon">OS</div>
+    <span class="brand-name">Otter Streams</span>
+    <span class="brand-version">v1.0.17</span>
+  </a>
+  <nav class="topbar-nav">
+    <a href="index.html" class="topbar-link">Documentation</a>
+    <a href="api.html" class="topbar-link">API Reference</a>
+    <a href="modules.html" class="topbar-link">Modules</a>
+    <a href="examples.html" class="topbar-link">Examples</a>
+    <a href="datastream.html" class="topbar-link">DataStream Guide</a>
+    <a href="studio-demo.html" class="topbar-link active">Studio Demo</a>
+    <a href="releases.html" class="topbar-link">Releases</a>
+  </nav>
+  <div class="topbar-right">
+    <span class="topbar-badge">Str:::Lab Studio</span>
+    <a href="https://github.com/martourez21/otter-streams" class="gh-link" target="_blank">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+      GitHub
+    </a>
+  </div>
+</header>
+
+<div class="layout">
+  <nav class="sidebar">
+    <div class="nav-section">
+      <div class="nav-section-title">Studio Demo</div>
+      <a href="#overview"          class="nav-item active">Overview</a>
+      <a href="#feature-manager"   class="nav-item">Feature Engineering Manager</a>
+      <a href="#inference-manager" class="nav-item">Inference Manager</a>
+      <a href="#connector-demo"    class="nav-item">SQL Connector Demo</a>
+      <a href="#table-api"         class="nav-item">Table API / Non-Studio</a>
+      <a href="#e2e"               class="nav-item">End-to-End Walkthrough</a>
+      <a href="#tips"              class="nav-item">Studio Tips</a>
+    </div>
+    <div class="nav-divider"></div>
+    <div class="nav-section">
+      <div class="nav-section-title">Navigation</div>
+      <a href="index.html" class="nav-item">Documentation</a>
+      <a href="examples.html" class="nav-item">SQL Examples</a>
+      <a href="datastream.html" class="nav-item">DataStream Guide</a>
+      <a href="api.html" class="nav-item">API Reference</a>
+    </div>
+    <div class="nav-divider"></div>
+    <div class="nav-section">
+      <div class="nav-section-title">Resources</div>
+      <a href="https://github.com/martourez21/otter-streams/issues" class="nav-item" target="_blank">Issue Tracker</a>
+      <a href="https://www.linkedin.com/in/nestor-abiangang/"        class="nav-item" target="_blank">Author LinkedIn</a>
+      <a href="mailto:nestorabiawuh@gmail.com"                       class="nav-item">Contact</a>
+    </div>
+  </nav>
+
+  <main class="main">
+    <div class="page-header">
+      <div class="header-badge"><span class="header-dot"></span>Str:::Lab Studio &middot; Integration Demo</div>
+      <h1>Studio Demo &mdash; Feature Engineering &amp; Inference Manager</h1>
+      <p class="lead">
+        A complete walkthrough of the <strong>otter-stream-sql</strong> connector using Str:::Lab
+        Studio's Feature Engineering Manager and Inference Manager panels, followed by the
+        equivalent raw SQL for any platform running the Flink Table / SQL API.
+      </p>
+      <div class="header-meta">
+        <span class="meta-pill">Platform <span class="meta-pill-val">Str:::Lab Studio</span></span>
+        <span class="meta-pill">Connector <span class="meta-pill-val">ml-inference</span></span>
+        <span class="meta-pill">Model store <span class="meta-pill-val">MinIO S3</span></span>
+      </div>
+    </div>
+
+    <div class="breadcrumb">
+      <a href="index.html">Docs</a>
+      <span class="breadcrumb-sep">/</span>
+      <span class="breadcrumb-current">Studio Demo</span>
+    </div>
+
+    <div class="content-body cf">
+
+      <div class="toc">
+        <div class="toc-title">On this page</div>
+        <ul class="toc-list">
+          <li><a href="#overview">Overview</a></li>
+          <li><a href="#feature-manager">Feature Engineering Manager</a></li>
+          <li><a href="#inference-manager">Inference Manager</a></li>
+          <li><a href="#connector-demo">SQL Connector Demo</a></li>
+          <li><a href="#table-api">Table API / Non-Studio</a></li>
+          <li><a href="#e2e">End-to-End Walkthrough</a></li>
+          <li><a href="#tips">Studio Tips</a></li>
+        </ul>
+      </div>
+
+      <!-- ══ Overview ══ -->
+      <h2 id="overview">Overview</h2>
+
+      <p>
+        Str:::Lab Studio provides two dedicated UI panels that sit above the raw SQL editor
+        and make working with the <code>ml-inference</code> connector ergonomic:
+      </p>
+
+      <div class="panel-grid">
+        <div class="panel-box">
+          <div class="panel-box-title">Feature Engineering Manager</div>
+          <ul>
+            <li>Define and name feature columns from stream fields</li>
+            <li>Apply built-in transforms (cast, normalise, encode)</li>
+            <li>Generate the <code>MAP[key, CAST(col AS STRING), ...]</code> SQL expression</li>
+            <li>Preview feature map with sample data</li>
+            <li>Save feature sets as reusable templates</li>
+          </ul>
+        </div>
+        <div class="panel-box">
+          <div class="panel-box-title">Inference Manager</div>
+          <ul>
+            <li>Register the shaded JAR and create the UDF in one click</li>
+            <li>Define connector tables (model preload from MinIO)</li>
+            <li>Set score threshold and risk tier labels</li>
+            <li>Generate the full inference SQL with CROSS JOIN LATERAL</li>
+            <li>Monitor live inference latency and error rate</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="callout callout-note">
+        <span class="callout-icon">i</span>
+        <div>
+          Both panels generate standard Flink SQL. Everything shown here can also be run by
+          pasting the generated SQL directly into the Studio SQL editor, or into any other
+          Flink SQL Gateway session. See the <a href="#table-api">Table API / Non-Studio</a>
+          section for the raw Java Table API equivalent.
+        </div>
+      </div>
+
+      <!-- ══ Feature Engineering Manager ══ -->
+      <h2 id="feature-manager">Feature Engineering Manager</h2>
+
+      <p>
+        The Feature Engineering Manager lets you build the feature map that will be passed to
+        <code>ml_score()</code> without writing the <code>MAP[...]</code> SQL by hand. Open it
+        from the Studio top bar: <strong>Studio &rarr; Feature Engineering</strong>.
+      </p>
+
+      <h3>Step-by-step: building a fraud detection feature set</h3>
+      <div class="studio-steps">
+        <div class="studio-step">
+          <div class="studio-step-title">Select the source table</div>
+          <p>
+            In the <em>Source Table</em> dropdown choose <code>transactions</code> (the Kafka
+            source table you created). The manager reads the table schema and lists all available
+            columns on the left panel.
+          </p>
+        </div>
+
+        <div class="studio-step">
+          <div class="studio-step-title">Add features from the column list</div>
+          <p>
+            Drag or click the columns you want to include. For each column the manager creates
+            a feature entry with three fields: <em>Feature Name</em>, <em>Source Column</em>,
+            and <em>Transform</em>.
+          </p>
+          <div class="table-wrap"><table>
+            <thead><tr><th>Feature name</th><th>Source column</th><th>Transform</th><th>Notes</th></tr></thead>
+            <tbody>
+              <tr><td><code>amount</code></td><td><code>amount</code></td><td>CAST to STRING</td><td>Engine casts back to float internally</td></tr>
+              <tr><td><code>hour_of_day</code></td><td><code>hour_of_day</code></td><td>CAST to STRING</td><td></td></tr>
+              <tr><td><code>day_of_week</code></td><td><code>day_of_week</code></td><td>CAST to STRING</td><td></td></tr>
+              <tr><td><code>is_international</code></td><td><code>is_international</code></td><td>CAST to STRING</td><td>Boolean → 'true'/'false'</td></tr>
+              <tr><td><code>card_type</code></td><td><code>card_type</code></td><td>None (already STRING)</td><td></td></tr>
+              <tr><td><code>currency</code></td><td><code>currency</code></td><td>None (already STRING)</td><td></td></tr>
+            </tbody>
+          </table></div>
+        </div>
+
+        <div class="studio-step">
+          <div class="studio-step-title">Name and save the feature set</div>
+          <p>
+            Give the feature set a name: <strong>fraud_features_v1</strong>. Click
+            <em>Save Template</em>. The manager stores it as a session-level named expression
+            you can reference in future queries.
+          </p>
+        </div>
+
+        <div class="studio-step">
+          <div class="studio-step-title">Copy the generated MAP expression</div>
+          <p>
+            Click <em>Copy SQL</em>. The manager outputs the following ready-to-paste expression:
+          </p>
+          <div class="code-block">
+            <div class="code-block-header"><span class="code-lang">SQL</span><span class="code-filename">Generated by Feature Engineering Manager</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+            <pre>-- Feature set: fraud_features_v1
+-- Generated by Str:::Lab Studio Feature Engineering Manager
+MAP[
+    'amount',           CAST(amount           AS STRING),
+    'hour_of_day',      CAST(hour_of_day      AS STRING),
+    'day_of_week',      CAST(day_of_week      AS STRING),
+    'is_international', CAST(is_international AS STRING),
+    'card_type',        card_type,
+    'currency',         currency
+] AS fraud_features</pre>
+          </div>
+        </div>
+
+        <div class="studio-step">
+          <div class="studio-step-title">Preview with sample data</div>
+          <p>
+            Click <em>Preview Features</em>. The manager runs a bounded SELECT against the
+            table and shows a sample of the feature maps produced by the expression, so you
+            can verify the values before running the pipeline.
+          </p>
+          <div class="callout callout-warn" style="margin-top:8px;">
+            <span class="callout-icon">!</span>
+            <div>
+              String encoding of booleans produces <code>'true'</code> / <code>'false'</code>
+              in Flink SQL. If your model was trained expecting <code>'1'</code> / <code>'0'</code>
+              use <code>CASE WHEN is_international THEN '1' ELSE '0' END</code> in the transform
+              field instead.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══ Inference Manager ══ -->
+      <h2 id="inference-manager">Inference Manager</h2>
+
+      <p>
+        The Inference Manager handles the model-side setup: JAR registration, UDF creation, MinIO
+        connector table, and pipeline query generation. Open it from:
+        <strong>Studio &rarr; Inference Manager</strong>.
+      </p>
+
+      <h3>Step-by-step: registering the fraud model</h3>
+      <div class="studio-steps">
+        <div class="studio-step">
+          <div class="studio-step-title">Upload the shaded JAR</div>
+          <p>
+            In the <em>JAR Management</em> tab click <em>Upload JAR</em> and select
+            <code>otter-stream-sql-1.0.17-flink-udf.jar</code>. The Studio copies it to
+            <code>/var/www/udf-jars/</code> on the Gateway container and runs
+            <code>ADD JAR</code> automatically.
+          </p>
+          <div class="callout callout-warn" style="margin-top:8px;">
+            <span class="callout-icon">!</span>
+            <div>
+              You must upload the <strong>shaded</strong> classifier JAR
+              (<code>*-flink-udf.jar</code>), not the plain thin JAR. The shaded artifact
+              bundles <code>ml-inference-core</code> so that <code>InferenceException</code>
+              is on the Gateway classpath at registration time.
+            </div>
+          </div>
+        </div>
+
+        <div class="studio-step">
+          <div class="studio-step-title">Register the UDF</div>
+          <p>
+            Switch to the <em>Register UDF</em> tab. Fill in these three fields and click
+            <em>Register Function</em>:
+          </p>
+          <div class="artifact-table">
+            <div class="artifact-row">
+              <div class="artifact-key">Function Name</div>
+              <div class="artifact-val"><code>ml_score</code></div>
+            </div>
+            <div class="artifact-row">
+              <div class="artifact-key">Language</div>
+              <div class="artifact-val"><code>JAVA</code></div>
+            </div>
+            <div class="artifact-row">
+              <div class="artifact-key">Class Path</div>
+              <div class="artifact-val"><code>com.codedstreams.otterstreams.sql.udf.MLInferenceFunction</code></div>
+            </div>
+          </div>
+          <p style="margin-top:8px;">
+            The Studio generates and executes this DDL in the active session:
+          </p>
+          <div class="code-block">
+            <div class="code-block-header"><span class="code-lang">SQL</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+            <pre>CREATE TEMPORARY FUNCTION IF NOT EXISTS ml_score
+AS 'com.codedstreams.otterstreams.sql.udf.MLInferenceFunction'
+LANGUAGE JAVA;</pre>
+          </div>
+        </div>
+
+        <div class="studio-step">
+          <div class="studio-step-title">Configure the MinIO model source</div>
+          <p>
+            In the <em>Model Sources</em> tab click <em>Add Model</em> and fill in the form:
+          </p>
+          <div class="table-wrap"><table>
+            <thead><tr><th>Field</th><th>Value</th></tr></thead>
+            <tbody>
+              <tr><td>Model Name</td><td><code>fraud-detector</code></td></tr>
+              <tr><td>Model Path</td><td><code>s3a://ml-models/fraud-detector/v1/</code></td></tr>
+              <tr><td>Format</td><td><code>tensorflow-savedmodel</code></td></tr>
+              <tr><td>MinIO Endpoint</td><td><code>http://minio:9000</code></td></tr>
+              <tr><td>Access Key</td><td><code>minioadmin</code></td></tr>
+              <tr><td>Secret Key</td><td><code>minioadmin</code> (stored in session config — not persisted to disk)</td></tr>
+              <tr><td>Path Style</td><td><code>true</code> (required for MinIO)</td></tr>
+              <tr><td>Cache TTL</td><td><code>60</code> minutes</td></tr>
+            </tbody>
+          </table></div>
+          <p>Click <em>Load Model</em>. The Studio creates the connector table and verifies the MinIO download:</p>
+          <div class="code-block">
+            <div class="code-block-header"><span class="code-lang">SQL</span><span class="code-filename">Generated by Inference Manager — Model Source</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+            <pre>CREATE TEMPORARY TABLE fraud_model_source (
+    score      DOUBLE,
+    confidence DOUBLE
+) WITH (
+    'connector'           = 'ml-inference',
+    'model.name'          = 'fraud-detector',
+    'model.path'          = 's3a://ml-models/fraud-detector/v1/',
+    'model.format'        = 'tensorflow-savedmodel',
+    'model.s3.endpoint'   = 'http://minio:9000',
+    'model.s3.access-key' = 'minioadmin',
+    'model.s3.secret-key' = 'minioadmin',
+    'model.s3.path-style' = 'true',
+    'cache.enabled'       = 'true',
+    'cache.ttl-minutes'   = '60'
+);
+
+DESCRIBE fraud_model_source;</pre>
+          </div>
+          <p>
+            A green status indicator confirms the model was downloaded from MinIO and is
+            resident in <code>ModelCache</code>. A red indicator means the download failed —
+            check the TaskManager logs linked from the status tooltip.
+          </p>
+        </div>
+
+        <div class="studio-step">
+          <div class="studio-step-title">Configure the inference pipeline</div>
+          <p>
+            In the <em>Pipeline Builder</em> tab:
+          </p>
+          <ul>
+            <li>Select <strong>Source Table</strong>: <code>transactions</code></li>
+            <li>Select <strong>Feature Set</strong>: <code>fraud_features_v1</code> (from the Feature Engineering Manager)</li>
+            <li>Select <strong>Model</strong>: <code>fraud-detector</code></li>
+            <li>Set <strong>Score Column Name</strong>: <code>fraud_score</code></li>
+            <li>Set <strong>Score Threshold</strong>: <code>0.40</code></li>
+            <li>Configure <strong>Risk Tiers</strong>: CRITICAL &ge; 0.85, HIGH &ge; 0.65, MEDIUM &ge; 0.40</li>
+            <li>Select <strong>Sink Table</strong>: <code>fraud_alerts</code></li>
+          </ul>
+          <p>Click <em>Generate SQL</em>. The Inference Manager produces the complete pipeline query shown in the next section.</p>
+        </div>
+
+        <div class="studio-step">
+          <div class="studio-step-title">Run and monitor</div>
+          <p>
+            Click <em>Execute Pipeline</em>. The Studio submits the INSERT job to the Flink
+            cluster. The <em>Metrics</em> panel in the Inference Manager shows live inference
+            latency (P50, P95, P99), requests/sec, cache hit rate, and error rate — all
+            sourced from the Micrometer metrics emitted by <code>ml-inference-core</code>.
+          </p>
+        </div>
+      </div>
+
+      <!-- ══ SQL Connector Demo ══ -->
+      <h2 id="connector-demo">SQL Connector Demo — Full Generated SQL</h2>
+
+      <p>
+        Below is the complete SQL that the Str:::Lab Studio Inference Manager generates and
+        executes. You can paste this directly into any Flink SQL Gateway session or Studio
+        SQL editor to reproduce the end-to-end pipeline without using the UI panels.
+      </p>
+
+      <div class="studio-badge">Section 1 — Session Properties</div>
+      <div class="code-block">
+        <div class="code-block-header"><span class="code-lang">SQL</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+        <pre>-- ── SESSION PROPERTIES ────────────────────────────────────────────────────
+-- Set MinIO credentials for the model loader.
+-- Re-run after any session renewal.
+SET 'otter.minio.endpoint'          = 'http://minio:9000';
+SET 'otter.minio.access-key'        = 'minioadmin';
+SET 'otter.minio.secret-key'        = 'minioadmin';
+SET 'otter.model.cache.max-size'    = '20';
+SET 'otter.model.cache.ttl-minutes' = '60';
+
+SET;</pre>
+      </div>
+
+      <div class="studio-badge">Section 2 — JAR + UDF Registration</div>
+      <div class="code-block">
+        <div class="code-block-header"><span class="code-lang">SQL</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+        <pre>-- ── JAR AND UDF ────────────────────────────────────────────────────────────
+ADD JAR '/var/www/udf-jars/otter-stream-sql-1.0.17-flink-udf.jar';
+
+CREATE TEMPORARY FUNCTION IF NOT EXISTS ml_score
+AS 'com.codedstreams.otterstreams.sql.udf.MLInferenceFunction'
+LANGUAGE JAVA;
+
+SHOW JARS;
+SHOW USER FUNCTIONS;</pre>
+      </div>
+
+      <div class="studio-badge">Section 3 — Model Preload (MinIO connector table)</div>
+      <div class="code-block">
+        <div class="code-block-header"><span class="code-lang">SQL</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+        <pre>-- ── MODEL PRELOAD ──────────────────────────────────────────────────────────
+-- Creating this table triggers the MinIO download and populates ModelCache.
+-- Run this BEFORE starting the streaming pipeline to avoid cold-start latency.
+CREATE TEMPORARY TABLE fraud_model_source (
+    score      DOUBLE,
+    confidence DOUBLE
+) WITH (
+    'connector'           = 'ml-inference',
+    'model.name'          = 'fraud-detector',
+    'model.path'          = 's3a://ml-models/fraud-detector/v1/',
+    'model.format'        = 'tensorflow-savedmodel',
+    'model.version'       = 'v1',
+    'model.s3.endpoint'   = 'http://minio:9000',
+    'model.s3.access-key' = 'minioadmin',
+    'model.s3.secret-key' = 'minioadmin',
+    'model.s3.path-style' = 'true',
+    'cache.enabled'       = 'true',
+    'cache.ttl-minutes'   = '60',
+    'batch.size'          = '1',
+    'async.enabled'       = 'false'
+);
+
+-- Confirm the connector initialised (model loaded from MinIO)
+DESCRIBE fraud_model_source;</pre>
+      </div>
+
+      <div class="studio-badge">Section 4 — Source and Sink Tables</div>
+      <div class="code-block">
+        <div class="code-block-header"><span class="code-lang">SQL</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+        <pre>-- ── KAFKA SOURCE: transactions ─────────────────────────────────────────────
+CREATE TEMPORARY TABLE transactions (
+    transaction_id   STRING,
+    user_id          STRING,
+    merchant_id      STRING,
+    amount           DOUBLE,
+    currency         STRING,
+    card_type        STRING,
+    hour_of_day      INT,
+    day_of_week      INT,
+    is_international BOOLEAN,
+    event_time       TIMESTAMP(3),
+    WATERMARK FOR event_time AS event_time - INTERVAL '5' SECOND
+) WITH (
+    'connector'                      = 'kafka',
+    'topic'                          = 'transactions',
+    'properties.bootstrap.servers'   = 'kafka:9092',
+    'properties.group.id'            = 'otter-fraud-demo',
+    'scan.startup.mode'              = 'latest-offset',
+    'format'                         = 'json',
+    'json.timestamp-format.standard' = 'ISO-8601',
+    'json.fail-on-missing-field'     = 'false',
+    'json.ignore-parse-errors'       = 'true'
+);
+
+-- ── KAFKA SINK: fraud alerts ────────────────────────────────────────────────
+CREATE TEMPORARY TABLE fraud_alerts (
+    alert_id       STRING,
+    transaction_id STRING,
+    user_id        STRING,
+    amount         DOUBLE,
+    fraud_score    DOUBLE,
+    risk_tier      STRING,
+    detected_at    TIMESTAMP(3)
+) WITH (
+    'connector'                    = 'kafka',
+    'topic'                        = 'fraud-alerts',
+    'properties.bootstrap.servers' = 'kafka:9092',
+    'format'                       = 'json',
+    'json.timestamp-format.standard' = 'ISO-8601'
+);</pre>
+      </div>
+
+      <div class="studio-badge">Section 5 — Feature Engineering View</div>
+      <div class="code-block">
+        <div class="code-block-header"><span class="code-lang">SQL</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+        <pre>-- ── FEATURE ENGINEERING VIEW ──────────────────────────────────────────────
+-- This view encapsulates the feature map construction generated by the
+-- Str:::Lab Studio Feature Engineering Manager (feature set: fraud_features_v1).
+-- Separating feature engineering into a view makes the inference query cleaner
+-- and lets you reuse or version the feature set independently.
+
+CREATE TEMPORARY VIEW fraud_feature_view AS
+SELECT
+    transaction_id,
+    user_id,
+    amount,
+    event_time,
+    -- Feature map: all values cast to STRING for the UDF
+    -- The inference engine coerces them back to the correct numeric types
+    MAP[
+        'amount',           CAST(amount           AS STRING),
+        'hour_of_day',      CAST(hour_of_day      AS STRING),
+        'day_of_week',      CAST(day_of_week      AS STRING),
+        'is_international', CAST(is_international AS STRING),
+        'card_type',        card_type,
+        'currency',         currency
+    ] AS fraud_features
+FROM transactions;</pre>
+      </div>
+
+      <div class="studio-badge">Section 6 — Streaming Inference Pipeline</div>
+      <div class="code-block">
+        <div class="code-block-header"><span class="code-lang">SQL</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+        <pre>-- ── STREAMING INFERENCE PIPELINE ──────────────────────────────────────────
+-- Reads from the feature view, calls ml_score once per row via CROSS JOIN
+-- LATERAL (prevents double evaluation), applies risk tiering, and writes
+-- qualifying events to the fraud_alerts Kafka topic.
+
+INSERT INTO fraud_alerts
+SELECT
+    -- Deterministic alert ID: transaction_id + score bucket
+    CONCAT(transaction_id, '-', CAST(FLOOR(fraud_score * 10) AS STRING)) AS alert_id,
+    transaction_id,
+    user_id,
+    amount,
+    fraud_score,
+    CASE
+        WHEN fraud_score >= 0.85 THEN 'CRITICAL'
+        WHEN fraud_score >= 0.65 THEN 'HIGH'
+        WHEN fraud_score >= 0.40 THEN 'MEDIUM'
+        ELSE                          'LOW'
+    END AS risk_tier,
+    CURRENT_TIMESTAMP AS detected_at
+FROM fraud_feature_view
+-- CROSS JOIN LATERAL evaluates the UDF once and names the result,
+-- so we can reference fraud_score in both SELECT and WHERE without
+-- calling the function twice per row.
+CROSS JOIN LATERAL (
+    SELECT COALESCE(
+        ml_score(fraud_features, 'fraud-detector'),
+        0.0
+    ) AS fraud_score
+) scores
+WHERE fraud_score >= 0.40;</pre>
+      </div>
+
+      <div class="studio-badge">Section 7 — Verification</div>
+      <div class="code-block">
+        <div class="code-block-header"><span class="code-lang">SQL</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+        <pre>-- ── VERIFICATION ──────────────────────────────────────────────────────────
+
+-- 1. Confirm JAR is loaded
+SHOW JARS;
+-- Expected: otter-stream-sql-1.0.17-flink-udf.jar
+
+-- 2. Confirm UDF is registered
+SHOW USER FUNCTIONS;
+-- Expected: ml_score appears in the list
+
+-- 3. Smoke-test: static feature map — should return a DOUBLE in [0.0, 1.0]
+--    A NULL result means the model is NOT in ModelCache (re-run Section 3)
+SELECT ml_score(
+    MAP[
+        'amount',           '350.00',
+        'hour_of_day',      '23',
+        'day_of_week',      '6',
+        'is_international', 'true',
+        'card_type',        'CREDIT',
+        'currency',         'USD'
+    ],
+    'fraud-detector'
+) AS smoke_test_score;
+
+-- 4. Confirm the connector table is healthy (model loaded from MinIO)
+DESCRIBE fraud_model_source;
+
+-- 5. Count rows produced to the alert topic in the last 60 s
+--    (requires the INSERT pipeline from Section 6 to be running)
+SELECT COUNT(*) AS alerts_in_last_60s
+FROM fraud_alerts
+WHERE detected_at >= CURRENT_TIMESTAMP - INTERVAL '60' SECOND;</pre>
+      </div>
+
+      <!-- ══ Table API / Non-Studio ══ -->
+      <h2 id="table-api">Table API / Non-Studio Platforms</h2>
+
+      <p>
+        The <code>ml-inference</code> connector works on any platform that runs the Flink
+        Table / SQL API — not just Str:::Lab Studio. Here is how to use it programmatically
+        via the Java Table API, for platforms that do not have a Studio UI.
+      </p>
+
+      <div class="code-block">
+        <div class="code-block-header"><span class="code-lang">Java</span><span class="code-filename">TableApiFraudPipeline.java</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+        <pre>import org.apache.flink.table.api.*;
+import org.apache.flink.table.api.bridge.java.StreamTableEnvironment;
+import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
+
+public class TableApiFraudPipeline {
+
+    public static void main(String[] args) throws Exception {
+
+        StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
+        StreamTableEnvironment tEnv    = StreamTableEnvironment.create(env);
+
+        // ── 1. Register the JAR on the classpath ────────────────────────────
+        //    On non-Studio platforms, add the JAR to the Flink classpath at
+        //    job submission time, or use the SQL ADD JAR statement.
+        tEnv.executeSql(
+            "ADD JAR '/opt/flink/usrlib/otter-stream-sql-1.0.17-flink-udf.jar'"
+        );
+
+        // ── 2. Register the UDF ─────────────────────────────────────────────
+        tEnv.executeSql(
+            "CREATE TEMPORARY FUNCTION IF NOT EXISTS ml_score " +
+            "AS 'com.codedstreams.otterstreams.sql.udf.MLInferenceFunction' " +
+            "LANGUAGE JAVA"
+        );
+
+        // ── 3. Preload the model via connector table ─────────────────────────
+        tEnv.executeSql(
+            "CREATE TEMPORARY TABLE fraud_model_source (score DOUBLE) WITH (" +
+            "  'connector'           = 'ml-inference',"           +
+            "  'model.name'          = 'fraud-detector',"         +
+            "  'model.path'          = 's3a://ml-models/fraud-detector/v1/'," +
+            "  'model.format'        = 'tensorflow-savedmodel',"  +
+            "  'model.s3.endpoint'   = 'http://minio:9000',"      +
+            "  'model.s3.access-key' = 'minioadmin',"             +
+            "  'model.s3.secret-key' = 'minioadmin',"             +
+            "  'model.s3.path-style' = 'true',"                   +
+            "  'cache.enabled'       = 'true',"                   +
+            "  'cache.ttl-minutes'   = '60'"                      +
+            ")"
+        );
+
+        // ── 4. Source table ─────────────────────────────────────────────────
+        tEnv.executeSql(
+            "CREATE TEMPORARY TABLE transactions (" +
+            "  transaction_id   STRING,"  +
+            "  user_id          STRING,"  +
+            "  amount           DOUBLE,"  +
+            "  hour_of_day      INT,"     +
+            "  is_international BOOLEAN," +
+            "  card_type        STRING,"  +
+            "  currency         STRING,"  +
+            "  event_time       TIMESTAMP(3)," +
+            "  WATERMARK FOR event_time AS event_time - INTERVAL '5' SECOND" +
+            ") WITH (" +
+            "  'connector' = 'kafka',"                                    +
+            "  'topic'     = 'transactions',"                             +
+            "  'properties.bootstrap.servers' = 'kafka:9092',"           +
+            "  'scan.startup.mode' = 'latest-offset',"                   +
+            "  'format' = 'json'"                                         +
+            ")"
+        );
+
+        // ── 5. Run inference via Table API expression ────────────────────────
+        Table scored = tEnv.sqlQuery(
+            "SELECT " +
+            "  transaction_id," +
+            "  user_id," +
+            "  amount," +
+            "  fraud_score," +
+            "  CASE " +
+            "    WHEN fraud_score >= 0.85 THEN 'CRITICAL' " +
+            "    WHEN fraud_score >= 0.65 THEN 'HIGH' " +
+            "    ELSE 'MEDIUM' " +
+            "  END AS risk_tier " +
+            "FROM transactions " +
+            "CROSS JOIN LATERAL (" +
+            "  SELECT COALESCE(ml_score(" +
+            "    MAP['amount', CAST(amount AS STRING)," +
+            "        'hour_of_day', CAST(hour_of_day AS STRING)," +
+            "        'is_international', CAST(is_international AS STRING)," +
+            "        'card_type', card_type," +
+            "        'currency', currency]," +
+            "    'fraud-detector'" +
+            "  ), 0.0) AS fraud_score" +
+            ") scores " +
+            "WHERE fraud_score >= 0.40"
+        );
+
+        // ── 6. Write to Kafka sink ───────────────────────────────────────────
+        tEnv.executeSql(
+            "CREATE TEMPORARY TABLE fraud_alerts (" +
+            "  transaction_id STRING, user_id STRING," +
+            "  amount DOUBLE, fraud_score DOUBLE, risk_tier STRING" +
+            ") WITH (" +
+            "  'connector' = 'kafka'," +
+            "  'topic'     = 'fraud-alerts'," +
+            "  'properties.bootstrap.servers' = 'kafka:9092'," +
+            "  'format'    = 'json'" +
+            ")"
+        );
+
+        scored.executeInsert("fraud_alerts");
+    }
+}</pre>
+      </div>
+
+      <!-- ══ E2E Walkthrough ══ -->
+      <h2 id="e2e">End-to-End Studio Walkthrough — Quick Reference</h2>
+
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <div class="step-title">Build the shaded JAR (once per version)</div>
+            <p>Run <code>mvn clean package -DskipTests</code> inside <code>otter-stream-sql/</code>. Collect <code>target/otter-stream-sql-1.0.17-flink-udf.jar</code>.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <div class="step-title">Upload the JAR in Studio</div>
+            <p>Studio &rarr; Inference Manager &rarr; JAR Management &rarr; Upload JAR.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <div class="step-title">Define feature set</div>
+            <p>Studio &rarr; Feature Engineering &rarr; add columns, set transforms, name and save as <code>fraud_features_v1</code>.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">4</div>
+          <div class="step-body">
+            <div class="step-title">Register the UDF</div>
+            <p>Studio &rarr; Inference Manager &rarr; Register UDF &rarr; fill three fields &rarr; Register Function.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">5</div>
+          <div class="step-body">
+            <div class="step-title">Load the model from MinIO</div>
+            <p>Studio &rarr; Inference Manager &rarr; Model Sources &rarr; Add Model &rarr; fill MinIO details &rarr; Load Model. Wait for green status.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">6</div>
+          <div class="step-body">
+            <div class="step-title">Build and run the pipeline</div>
+            <p>Studio &rarr; Inference Manager &rarr; Pipeline Builder &rarr; select source/feature set/model/sink &rarr; Generate SQL &rarr; Execute Pipeline.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">7</div>
+          <div class="step-body">
+            <div class="step-title">Smoke-test and monitor</div>
+            <p>Run the Section 7 verification queries. Watch the Metrics panel for live inference latency and cache hit rate.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══ Tips ══ -->
+      <h2 id="tips">Studio Tips</h2>
+
+      <div class="card-grid">
+        <div class="card">
+          <div class="card-title">Session renewal resets JAR + UDF</div>
+          <div class="card-desc">
+            After any disconnect or session renewal, re-run Sections 1 and 2 (or use the
+            Inference Manager buttons). The connector table from Section 3 also needs to be
+            recreated — its creation is what triggers the MinIO download.
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">NULL score = cache miss</div>
+          <div class="card-desc">
+            If the smoke test returns NULL the model is not in <code>ModelCache</code>. Re-run
+            the connector table creation (Section 3). Then check TaskManager logs for any
+            MinIO download exception — verify endpoint, credentials, and
+            <code>model.s3.path-style = 'true'</code>.
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">Feature Engineering templates persist in session</div>
+          <div class="card-desc">
+            Feature set templates are stored in the Studio session state. They are lost on
+            session renewal. Export them as SQL views before ending a session so you can
+            recreate them quickly next time.
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">CROSS JOIN LATERAL avoids double evaluation</div>
+          <div class="card-desc">
+            Referencing <code>ml_score(...)</code> in both SELECT and WHERE without LATERAL
+            causes Flink to call the UDF twice per row, doubling inference cost. Always use
+            <code>CROSS JOIN LATERAL (...) scores</code> to name the score once.
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">Feature view separates concerns</div>
+          <div class="card-desc">
+            Creating the feature map as a <code>CREATE TEMPORARY VIEW</code> (Section 5) keeps
+            the inference pipeline query clean and lets you version or A/B test feature sets
+            independently of the model.
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">Use path-style for MinIO</div>
+          <div class="card-desc">
+            Always set <code>'model.s3.path-style' = 'true'</code>. Virtual-hosted style
+            (<code>bucket.host</code>) requires DNS configuration that is typically absent in
+            local and staging MinIO deployments.
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /content-body -->
+
+    <div class="doc-footer">
+      <span>
+        Otter Streams v1.0.17 &mdash; Apache License 2.0 &mdash;
+        <strong>Nestor Martourez Abiangang A.</strong> &mdash;
+        <a href="https://www.linkedin.com/in/nestor-abiangang/" target="_blank" style="color:var(--blue-primary)">linkedin.com/in/nestor-abiangang</a>
+      </span>
+      <div class="footer-links">
+        <a href="https://github.com/martourez21/otter-streams" target="_blank">GitHub</a>
+        <a href="datastream.html">DataStream Guide</a>
+        <a href="examples.html">SQL Examples</a>
+        <a href="releases.html">Releases</a>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script>
+function copyCode(btn) {
+  const pre = btn.closest('.code-block').querySelector('pre');
+  navigator.clipboard.writeText(pre.textContent.trim()).then(() => {
+    const orig = btn.textContent; btn.textContent = 'Copied'; btn.classList.add('ok');
+    setTimeout(() => { btn.textContent = orig; btn.classList.remove('ok'); }, 1800);
+  });
+}
+const obs = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      document.querySelectorAll('.nav-item').forEach(a => a.classList.remove('active'));
+      const m = document.querySelector(`.nav-item[href="#${e.target.id}"]`);
+      if (m) m.classList.add('active');
+    }
+  });
+}, { rootMargin: '-20% 0px -70% 0px' });
+document.querySelectorAll('h2[id]').forEach(s => obs.observe(s));
+</script>
+</body>
+</html>

@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>API Reference — Otter Streams</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@300;400;500;600&family=IBM+Plex+Serif:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="shared.css">
+</head>
+<body>
+
+<header class="topbar">
+  <a href="index.html" class="topbar-brand">
+    <div class="brand-icon">OS</div>
+    <span class="brand-name">Otter Streams</span>
+    <span class="brand-version">v1.0.17</span>
+  </a>
+  <nav class="topbar-nav">
+    <a href="index.html" class="topbar-link">Documentation</a>
+    <a href="api.html"      class="topbar-link active">API Reference</a>
+    <a href="modules.html" class="topbar-link">Modules</a>
+    <a href="examples.html" class="topbar-link">Examples</a>
+    <a href="datastream.html" class="topbar-link">DataStream Guide</a>
+    <a href="studio-demo.html" class="topbar-link">Studio Demo</a>
+    <a href="releases.html" class="topbar-link">Releases</a>
+  </nav>
+  <div class="topbar-right">
+    <span class="topbar-badge">Flink 1.15&ndash;1.20</span>
+    <a href="https://github.com/martourez21/otter-streams" class="gh-link" target="_blank">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+      GitHub
+    </a>
+  </div>
+</header>
+
+<div class="layout">
+  <nav class="sidebar">
+    <div class="nav-section">
+      <div class="nav-section-title">API Reference</div>
+      <a href="#inference-engine"   class="nav-item active">InferenceEngine</a>
+      <a href="#inference-result"   class="nav-item">InferenceResult</a>
+      <a href="#inference-exception" class="nav-item">InferenceException</a>
+      <a href="#model-cache"        class="nav-item">ModelCache</a>
+      <a href="#inference-config"   class="nav-item">InferenceConfig</a>
+      <a href="#model-config"       class="nav-item">ModelConfig</a>
+      <a href="#ml-inference-fn"    class="nav-item">MLInferenceFunction</a>
+      <a href="#lookup-fn"          class="nav-item">MLInferenceLookupFunction</a>
+      <a href="#table-factory"      class="nav-item">MLInferenceDynamicTableFactory</a>
+      <a href="#sql-config"         class="nav-item">SqlInferenceConfig</a>
+      <a href="#connector-options"  class="nav-item">Connector DDL Options</a>
+    </div>
+    <div class="nav-divider"></div>
+    <div class="nav-section">
+      <div class="nav-section-title">Navigation</div>
+      <a href="index.html" class="nav-item">Documentation</a>
+      <a href="modules.html" class="nav-item">Modules</a>
+      <a href="examples.html" class="nav-item">Examples</a>
+      <a href="releases.html" class="nav-item">Releases</a>
+    </div>
+  </nav>
+
+  <main class="main">
+    <div class="page-header">
+      <div class="header-badge"><span class="header-dot"></span>Java API</div>
+      <h1>API Reference</h1>
+      <p class="lead">
+        Reference documentation for the core interfaces, configuration objects, and Flink SQL extension
+        points exposed by Otter Streams. For full Javadoc see the
+        <a href="https://martourez21.github.io/otter-streams/javadoc/" style="color:var(--blue-primary)">generated API docs</a>.
+      </p>
+    </div>
+
+    <div class="breadcrumb">
+      <a href="index.html">Docs</a>
+      <span class="breadcrumb-sep">/</span>
+      <span class="breadcrumb-current">API Reference</span>
+    </div>
+
+    <div class="content-body cf">
+
+      <div class="toc">
+        <div class="toc-title">On this page</div>
+        <ul class="toc-list">
+          <li><a href="#inference-engine">InferenceEngine</a></li>
+          <li><a href="#inference-result">InferenceResult</a></li>
+          <li><a href="#inference-exception">InferenceException</a></li>
+          <li><a href="#model-cache">ModelCache</a></li>
+          <li><a href="#inference-config">InferenceConfig</a></li>
+          <li><a href="#model-config">ModelConfig</a></li>
+          <li><a href="#ml-inference-fn">MLInferenceFunction</a></li>
+          <li><a href="#lookup-fn">MLInferenceLookupFunction</a></li>
+          <li><a href="#table-factory">MLInferenceDynamicTableFactory</a></li>
+          <li><a href="#sql-config">SqlInferenceConfig</a></li>
+          <li><a href="#connector-options">Connector DDL Options</a></li>
+        </ul>
+      </div>
+
+      <!-- InferenceEngine -->
+      <h2 id="inference-engine">InferenceEngine&lt;C&gt;</h2>
+      <p>Package: <code>com.codedstream.otterstream.inference.engine</code></p>
+      <p>
+        The top-level contract that all ML framework adapters implement. Parameterised on a configuration
+        record type <code>C</code> that carries framework-specific settings (e.g., ONNX execution
+        provider, TensorFlow signature name).
+      </p>
+      <div class="table-wrap"><table>
+        <thead><tr><th>Method</th><th>Return</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td><code>initialize(C config)</code></td><td><code>void</code></td><td>Loads the model from the path specified in <code>config</code>. Called once. Throws <code>InferenceException</code> on failure.</td></tr>
+          <tr><td><code>infer(Map&lt;String,Object&gt; inputs)</code></td><td><code>InferenceResult</code></td><td>Runs a single inference pass. Thread-safe in all built-in implementations.</td></tr>
+          <tr><td><code>close()</code></td><td><code>void</code></td><td>Releases native resources (ONNX sessions, TF bundles, etc.).</td></tr>
+        </tbody>
+      </table></div>
+
+      <!-- InferenceResult -->
+      <h2 id="inference-result">InferenceResult</h2>
+      <p>Package: <code>com.codedstream.otterstream.inference.model</code></p>
+      <p>
+        Immutable value object returned by <code>InferenceEngine.infer()</code>. Carries the output
+        tensors as a named map, a success flag, and optional latency metadata.
+      </p>
+      <div class="table-wrap"><table>
+        <thead><tr><th>Method</th><th>Return</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td><code>isSuccess()</code></td><td><code>boolean</code></td><td>False if inference threw internally and the error was swallowed.</td></tr>
+          <tr><td><code>getOutputs()</code></td><td><code>Map&lt;String,Object&gt;</code></td><td>Output tensors keyed by name. Values are arrays (float[], double[], int[]) or scalars.</td></tr>
+          <tr><td><code>getLatencyMs()</code></td><td><code>long</code></td><td>Wall-clock inference time in milliseconds. 0 if not instrumented.</td></tr>
+          <tr><td><code>getErrorMessage()</code></td><td><code>String</code></td><td>Non-null only when <code>isSuccess()</code> is false.</td></tr>
+        </tbody>
+      </table></div>
+
+      <!-- InferenceException -->
+      <h2 id="inference-exception">InferenceException</h2>
+      <p>Package: <code>com.codedstream.otterstream.inference.exception</code></p>
+      <p>
+        Checked exception declared on <code>InferenceEngine.infer()</code> and
+        <code>MLInferenceFunction.eval()</code>. Wraps engine-specific errors (ONNX runtime errors,
+        TensorFlow session errors, network errors for remote engines).
+      </p>
+      <div class="callout callout-warn">
+        <span class="callout-icon">!</span>
+        <div>
+          <strong>This is the class that triggers the <code>NoClassDefFoundError</code>.</strong>
+          Because it appears in the <code>throws</code> clause of <code>eval()</code>, the JVM must
+          be able to resolve it at function-registration time. It must be bundled in the shaded JAR.
+        </div>
+      </div>
+
+      <!-- ModelCache -->
+      <h2 id="model-cache">ModelCache</h2>
+      <p>Package: <code>com.codedstreams.otterstreams.sql.loader</code></p>
+      <p>
+        Thread-safe LRU singleton backed by Caffeine. Keyed by <code>String modelName</code>.
+        Entries expire after a configurable TTL (default 30 minutes). The singleton is initialised
+        on first access via <code>ModelCache.getInstance()</code>, which is called lazily inside
+        <code>MLInferenceFunction.eval()</code>.
+      </p>
+      <div class="table-wrap"><table>
+        <thead><tr><th>Method</th><th>Return</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td><code>getInstance()</code></td><td><code>ModelCache</code></td><td>Returns the process-level singleton. Safe to call from multiple task slots.</td></tr>
+          <tr><td><code>getEngine(String name)</code></td><td><code>InferenceEngine&lt;?&gt;</code></td><td>Returns the cached engine or <code>null</code> if not present.</td></tr>
+          <tr><td><code>putEngine(String name, InferenceEngine&lt;?&gt; engine)</code></td><td><code>void</code></td><td>Registers an initialised engine. Called by the connector during table creation.</td></tr>
+          <tr><td><code>invalidate(String name)</code></td><td><code>void</code></td><td>Removes a single entry, triggering a fresh load on the next access.</td></tr>
+          <tr><td><code>invalidateAll()</code></td><td><code>void</code></td><td>Clears the entire cache. Useful during session renewal.</td></tr>
+        </tbody>
+      </table></div>
+
+      <!-- InferenceConfig -->
+      <h2 id="inference-config">InferenceConfig</h2>
+      <p>Package: <code>com.codedstream.otterstream.inference.config</code></p>
+      <p>
+        Builder-pattern configuration for the async DataStream function wrapper. Not used by the SQL
+        path directly — the SQL path reads config from DDL <code>WITH</code> options via
+        <code>SqlInferenceConfig</code>.
+      </p>
+      <div class="code-block">
+        <div class="code-block-header"><span class="code-lang">Java</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+        <pre>InferenceConfig config = InferenceConfig.builder()
+    .modelConfig(ModelConfig.builder()
+        .modelId("fraud-detector")
+        .modelPath("s3a://ml-models/fraud-detector/v1/")
+        .format(ModelFormat.TENSORFLOW_SAVEDMODEL)
+        .build())
+    .batchSize(32)
+    .timeout(Duration.ofSeconds(5))
+    .maxRetries(3)
+    .enableCaching(true)
+    .cacheSize(10_000)
+    .cacheTtl(Duration.ofMinutes(30))
+    .enableMetrics(true)
+    .metricsPrefix("myapp.ml")
+    .build();</pre>
+      </div>
+
+      <!-- ModelConfig -->
+      <h2 id="model-config">ModelConfig</h2>
+      <p>Package: <code>com.codedstream.otterstream.inference.config</code></p>
+      <div class="table-wrap"><table>
+        <thead><tr><th>Field</th><th>Type</th><th>Required</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td><code>modelId</code></td><td>String</td><td>Yes</td><td>Logical name; used as the <code>ModelCache</code> key.</td></tr>
+          <tr><td><code>modelPath</code></td><td>String</td><td>Yes</td><td>URI: local path, <code>s3a://</code>, <code>http://</code>, <code>hdfs://</code>.</td></tr>
+          <tr><td><code>format</code></td><td>ModelFormat</td><td>Yes</td><td>Enum: <code>ONNX</code>, <code>TENSORFLOW_SAVEDMODEL</code>, <code>XGBOOST_JSON</code>, <code>XGBOOST_BINARY</code>, <code>PMML</code>, <code>PYTORCH_TORCHSCRIPT</code>.</td></tr>
+          <tr><td><code>modelVersion</code></td><td>String</td><td>No</td><td>Informational; included in metrics tags.</td></tr>
+          <tr><td><code>modelOptions</code></td><td>Map&lt;String,Object&gt;</td><td>No</td><td>Framework-specific overrides (e.g., ONNX execution providers).</td></tr>
+        </tbody>
+      </table></div>
+
+      <!-- MLInferenceFunction -->
+      <h2 id="ml-inference-fn">MLInferenceFunction</h2>
+      <p>Package: <code>com.codedstreams.otterstreams.sql.udf</code></p>
+      <p>Extends: <code>org.apache.flink.table.functions.ScalarFunction</code></p>
+      <div class="table-wrap"><table>
+        <thead><tr><th>Aspect</th><th>Detail</th></tr></thead>
+        <tbody>
+          <tr><td>Entry method</td><td><code>Double eval(Map&lt;String,Object&gt; features, String modelName) throws InferenceException</code></td></tr>
+          <tr><td>Serialisation</td><td><code>modelCache</code> field is <code>transient</code>; re-initialised via singleton on first call in each task slot.</td></tr>
+          <tr><td>Null handling</td><td>Returns <code>null</code> when the model is absent from cache, inference fails, outputs are empty, or the output value is non-numeric.</td></tr>
+          <tr><td>Thread safety</td><td>Safe — <code>ModelCache</code> and all engine implementations are thread-safe.</td></tr>
+          <tr><td>SQL name</td><td>Registered as <code>ml_score</code> by convention (configurable in <code>CREATE FUNCTION</code>).</td></tr>
+        </tbody>
+      </table></div>
+
+      <!-- MLInferenceLookupFunction -->
+      <h2 id="lookup-fn">MLInferenceLookupFunction</h2>
+      <p>Package: <code>com.codedstreams.otterstreams.sql.connector</code></p>
+      <p>Extends: <code>org.apache.flink.table.functions.TableFunction&lt;RowData&gt;</code></p>
+      <p>
+        Used as the runtime provider for the <code>ml-inference</code> connector in lookup join mode.
+        The <code>eval(Object... keys)</code> method converts positional lookup keys to a feature map,
+        runs inference, and calls <code>collect()</code> with a two-field row containing
+        <code>score</code> (DOUBLE) and <code>confidence</code> (DOUBLE).
+      </p>
+
+      <!-- MLInferenceDynamicTableFactory -->
+      <h2 id="table-factory">MLInferenceDynamicTableFactory</h2>
+      <p>Package: <code>com.codedstreams.otterstreams.sql.connector</code></p>
+      <p>Implements: <code>org.apache.flink.table.factories.DynamicTableSourceFactory</code></p>
+      <p>
+        Discovered via Java SPI from <code>META-INF/services/org.apache.flink.table.factories.Factory</code>.
+        Factory identifier: <code>ml-inference</code>. Creates <code>MLInferenceDynamicTableSource</code>
+        instances and triggers model loading from the configured source (MinIO, S3, HTTP, local) during
+        table creation.
+      </p>
+
+      <!-- SqlInferenceConfig -->
+      <h2 id="sql-config">SqlInferenceConfig</h2>
+      <p>Package: <code>com.codedstreams.otterstreams.sql.config</code></p>
+      <p>
+        Parses Flink DDL <code>WITH</code> options into a typed configuration record. Created by
+        <code>SqlInferenceConfig.fromOptions(Map&lt;String,String&gt; options)</code>.
+      </p>
+      <div class="table-wrap"><table>
+        <thead><tr><th>DDL option</th><th>Java field</th><th>Default</th></tr></thead>
+        <tbody>
+          <tr><td><code>model.name</code></td><td><code>modelName</code></td><td>required</td></tr>
+          <tr><td><code>model.path</code></td><td><code>modelPath</code></td><td>required</td></tr>
+          <tr><td><code>model.format</code></td><td><code>modelFormat</code></td><td><code>tensorflow-savedmodel</code></td></tr>
+          <tr><td><code>model.version</code></td><td><code>modelVersion</code></td><td><code>latest</code></td></tr>
+          <tr><td><code>model.s3.endpoint</code></td><td><code>s3Endpoint</code></td><td><code>null</code></td></tr>
+          <tr><td><code>model.s3.access-key</code></td><td><code>s3AccessKey</code></td><td><code>null</code></td></tr>
+          <tr><td><code>model.s3.secret-key</code></td><td><code>s3SecretKey</code></td><td><code>null</code></td></tr>
+          <tr><td><code>model.s3.path-style</code></td><td><code>s3PathStyle</code></td><td><code>true</code></td></tr>
+          <tr><td><code>cache.enabled</code></td><td><code>cacheEnabled</code></td><td><code>true</code></td></tr>
+          <tr><td><code>cache.ttl-minutes</code></td><td><code>cacheTtlMinutes</code></td><td><code>30</code></td></tr>
+          <tr><td><code>batch.size</code></td><td><code>batchSize</code></td><td><code>1</code></td></tr>
+          <tr><td><code>async.enabled</code></td><td><code>asyncEnabled</code></td><td><code>false</code></td></tr>
+          <tr><td><code>retry.max-attempts</code></td><td><code>maxRetries</code></td><td><code>3</code></td></tr>
+        </tbody>
+      </table></div>
+
+      <!-- Connector DDL Options -->
+      <h2 id="connector-options">Connector DDL Options — ml-inference</h2>
+      <p>
+        Complete reference for the <code>'connector' = 'ml-inference'</code> DDL options used in
+        <code>CREATE TABLE</code> statements.
+      </p>
+      <div class="table-wrap"><table>
+        <thead><tr><th>Option</th><th>Required</th><th>Example value</th><th>Notes</th></tr></thead>
+        <tbody>
+          <tr><td><code>connector</code></td><td><span class="tag tag-red">required</span></td><td><code>'ml-inference'</code></td><td>Must be exactly this string.</td></tr>
+          <tr><td><code>model.name</code></td><td><span class="tag tag-red">required</span></td><td><code>'fraud-detector'</code></td><td>Key used in <code>ml_score(..., 'fraud-detector')</code>.</td></tr>
+          <tr><td><code>model.path</code></td><td><span class="tag tag-red">required</span></td><td><code>'s3a://ml-models/fraud/v1/'</code></td><td>URI; supports <code>s3a://</code>, <code>http://</code>, <code>file://</code>.</td></tr>
+          <tr><td><code>model.format</code></td><td><span class="tag tag-amber">optional</span></td><td><code>'tensorflow-savedmodel'</code></td><td>Also: <code>onnx</code>, <code>xgboost-json</code>, <code>xgboost-binary</code>, <code>pmml</code>.</td></tr>
+          <tr><td><code>model.version</code></td><td><span class="tag tag-amber">optional</span></td><td><code>'v1'</code></td><td>Informational; included in log output.</td></tr>
+          <tr><td><code>model.s3.endpoint</code></td><td><span class="tag tag-amber">optional</span></td><td><code>'http://minio:9000'</code></td><td>Required when using MinIO or non-AWS S3.</td></tr>
+          <tr><td><code>model.s3.access-key</code></td><td><span class="tag tag-amber">optional</span></td><td><code>'minioadmin'</code></td><td>S3 access key ID.</td></tr>
+          <tr><td><code>model.s3.secret-key</code></td><td><span class="tag tag-amber">optional</span></td><td><code>'minioadmin'</code></td><td>S3 secret access key.</td></tr>
+          <tr><td><code>model.s3.path-style</code></td><td><span class="tag tag-amber">optional</span></td><td><code>'true'</code></td><td>Set <code>true</code> for MinIO.</td></tr>
+          <tr><td><code>cache.enabled</code></td><td><span class="tag tag-amber">optional</span></td><td><code>'true'</code></td><td>Default <code>true</code>.</td></tr>
+          <tr><td><code>cache.ttl-minutes</code></td><td><span class="tag tag-amber">optional</span></td><td><code>'60'</code></td><td>Cache entry TTL. Default 30.</td></tr>
+          <tr><td><code>batch.size</code></td><td><span class="tag tag-amber">optional</span></td><td><code>'32'</code></td><td>Inference batch size. Default 1.</td></tr>
+          <tr><td><code>async.enabled</code></td><td><span class="tag tag-amber">optional</span></td><td><code>'true'</code></td><td>Enables non-blocking inference. Default false.</td></tr>
+          <tr><td><code>retry.max-attempts</code></td><td><span class="tag tag-amber">optional</span></td><td><code>'3'</code></td><td>Max retries on transient errors.</td></tr>
+        </tbody>
+      </table></div>
+
+    </div><!-- /content-body -->
+
+    <div class="doc-footer">
+      <span>Otter Streams v1.0.17 <span>Otter Streams v1.0.17 &mdash; Apache License 2.0 &mdash; CodedStreams</span>mdash; Apache License 2.0 <span>Otter Streams v1.0.17 &mdash; Apache License 2.0 &mdash; CodedStreams</span>mdash; CodedStreams <span>Otter Streams v1.0.17 &mdash; Apache License 2.0 &mdash; CodedStreams</span>mdash; <strong>Nestor Martourez Abiangang A.</strong> <span>Otter Streams v1.0.17 &mdash; Apache License 2.0 &mdash; CodedStreams</span>mdash; <a href="https://www.linkedin.com/in/nestor-abiangang/" target="_blank" style="color:var(--blue-primary)">linkedin.com/in/nestor-abiangang</a></span>
+      <div class="footer-links">
+        <a href="https://github.com/martourez21/otter-streams" target="_blank">GitHub</a>
+        <a href="releases.html">Releases</a>
+        <a href="datastream.html">DataStream Guide</a>
+        <a href="studio-demo.html">Studio Demo</a>
+        <a href="mailto:nestorabiawuh@gmail.com">Contact</a>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script>
+function copyCode(btn) {
+  const pre = btn.closest('.code-block').querySelector('pre');
+  navigator.clipboard.writeText(pre.textContent.trim()).then(() => {
+    const orig = btn.textContent; btn.textContent = 'Copied'; btn.classList.add('ok');
+    setTimeout(() => { btn.textContent = orig; btn.classList.remove('ok'); }, 1800);
+  });
+}
+</script>
+</body>
+</html>

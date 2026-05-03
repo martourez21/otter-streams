@@ -1,0 +1,1030 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DataStream API Guide — Otter Streams</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@300;400;500;600&family=IBM+Plex+Serif:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="shared.css">
+</head>
+<body>
+
+<header class="topbar">
+  <a href="index.html" class="topbar-brand">
+    <div class="brand-icon">OS</div>
+    <span class="brand-name">Otter Streams</span>
+    <span class="brand-version">v1.0.17</span>
+  </a>
+  <nav class="topbar-nav">
+    <a href="index.html" class="topbar-link">Documentation</a>
+    <a href="api.html" class="topbar-link">API Reference</a>
+    <a href="modules.html" class="topbar-link">Modules</a>
+    <a href="examples.html" class="topbar-link">Examples</a>
+    <a href="datastream.html" class="topbar-link active">DataStream Guide</a>
+    <a href="studio-demo.html" class="topbar-link">Studio Demo</a>
+    <a href="releases.html" class="topbar-link">Releases</a>
+  </nav>
+  <div class="topbar-right">
+    <span class="topbar-badge">Flink 1.15&ndash;1.20</span>
+    <a href="https://github.com/martourez21/otter-streams" class="gh-link" target="_blank">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+      GitHub
+    </a>
+  </div>
+</header>
+
+<div class="layout">
+  <nav class="sidebar">
+    <div class="nav-section">
+      <div class="nav-section-title">DataStream Guide</div>
+      <a href="#overview"          class="nav-item active">Overview</a>
+      <a href="#async-function"    class="nav-item">AsyncModelInferenceFunction</a>
+      <a href="#onnx"              class="nav-item">ONNX Engine</a>
+      <a href="#tensorflow"        class="nav-item">TensorFlow Engine</a>
+      <a href="#pytorch"           class="nav-item">PyTorch Engine</a>
+      <a href="#xgboost"           class="nav-item">XGBoost Engine</a>
+      <a href="#pmml"              class="nav-item">PMML Engine</a>
+      <a href="#remote"            class="nav-item">Remote Engine</a>
+      <a href="#model-cache"       class="nav-item">ModelCache Integration</a>
+      <a href="#minio-datastream"  class="nav-item">MinIO Model Loading</a>
+      <a href="#full-pipeline"     class="nav-item">Full Pipeline Example</a>
+    </div>
+    <div class="nav-divider"></div>
+    <div class="nav-section">
+      <div class="nav-section-title">Navigation</div>
+      <a href="index.html" class="nav-item">Documentation</a>
+      <a href="examples.html" class="nav-item">SQL Examples</a>
+      <a href="studio-demo.html" class="nav-item">Studio Demo</a>
+      <a href="api.html" class="nav-item">API Reference</a>
+      <a href="modules.html" class="nav-item">Modules</a>
+    </div>
+    <div class="nav-divider"></div>
+    <div class="nav-section">
+      <div class="nav-section-title">Resources</div>
+      <a href="https://nightlies.apache.org/flink/flink-docs-stable/" class="nav-item" target="_blank">Flink Docs</a>
+      <a href="https://github.com/martourez21/otter-streams/issues"   class="nav-item" target="_blank">Issue Tracker</a>
+      <a href="https://www.linkedin.com/in/nestor-abiangang/"         class="nav-item" target="_blank">Author LinkedIn</a>
+    </div>
+  </nav>
+
+  <main class="main">
+    <div class="page-header">
+      <div class="header-badge"><span class="header-dot"></span>DataStream API &middot; Java</div>
+      <h1>DataStream API Guide</h1>
+      <p class="lead">
+        Otter Streams was built first and foremost as a <strong>DataStream API</strong> library.
+        This guide covers every engine module with complete, runnable Java code examples —
+        from model configuration to async inference on a live Flink stream. The SQL layer sits
+        on top; the DataStream layer is the foundation.
+      </p>
+      <div class="header-meta">
+        <span class="meta-pill">API <span class="meta-pill-val">DataStream / AsyncFunction</span></span>
+        <span class="meta-pill">Java <span class="meta-pill-val">11+</span></span>
+        <span class="meta-pill">Flink <span class="meta-pill-val">1.15 &ndash; 1.20</span></span>
+      </div>
+    </div>
+
+    <div class="breadcrumb">
+      <a href="index.html">Docs</a>
+      <span class="breadcrumb-sep">/</span>
+      <span class="breadcrumb-current">DataStream API Guide</span>
+    </div>
+
+    <div class="content-body cf">
+
+      <div class="toc">
+        <div class="toc-title">On this page</div>
+        <ul class="toc-list">
+          <li><a href="#overview">Overview</a></li>
+          <li><a href="#async-function">AsyncModelInferenceFunction</a></li>
+          <li><a href="#onnx">ONNX Engine</a></li>
+          <li><a href="#tensorflow">TensorFlow Engine</a></li>
+          <li><a href="#pytorch">PyTorch Engine</a></li>
+          <li><a href="#xgboost">XGBoost Engine</a></li>
+          <li><a href="#pmml">PMML Engine</a></li>
+          <li><a href="#remote">Remote Engine</a></li>
+          <li><a href="#model-cache">ModelCache Integration</a></li>
+          <li><a href="#minio-datastream">MinIO Model Loading</a></li>
+          <li><a href="#full-pipeline">Full Pipeline Example</a></li>
+        </ul>
+      </div>
+
+      <!-- ══ Overview ══ -->
+      <h2 id="overview">Overview</h2>
+      <p>
+        Otter Streams integrates with Flink's <code>AsyncDataStream</code> API. You wrap a
+        configured <code>InferenceEngine</code> inside <code>AsyncModelInferenceFunction</code> and
+        hand it to Flink, which handles the thread pool, back-pressure, timeout, and ordered /
+        unordered result delivery. Your code only needs to supply the engine and the feature
+        extraction logic.
+      </p>
+
+      <div class="code-block">
+        <div class="code-block-header"><span class="code-lang">Text</span><span class="code-filename">DataStream inference flow</span></div>
+        <pre>DataStream&lt;T&gt; input
+  │
+  ├─ feature extraction  (you supply a MapFunction or inline lambda)
+  │
+  └─▶ AsyncDataStream.unorderedWait(
+          inputStream,
+          AsyncModelInferenceFunction,   ← Otter Streams
+          timeoutMs,
+          TimeUnit.MILLISECONDS,
+          maxConcurrentRequests
+      )
+          │
+          └─▶ DataStream&lt;InferenceResult&gt;
+                  │
+                  └─▶ your downstream operators (filter, map, sink, …)</pre>
+      </div>
+
+      <div class="callout callout-info">
+        <span class="callout-icon">i</span>
+        <div>
+          <strong>Same engine, two APIs.</strong> The <code>InferenceEngine</code> instances loaded
+          via the DataStream path are stored in the same <code>ModelCache</code> singleton as those
+          loaded by the SQL connector. If both paths are active in the same JVM process they share
+          the cache — models are loaded only once.
+        </div>
+      </div>
+
+      <!-- ══ AsyncModelInferenceFunction ══ -->
+      <h2 id="async-function">AsyncModelInferenceFunction</h2>
+      <p>
+        <code>AsyncModelInferenceFunction&lt;IN, OUT&gt;</code> extends Flink's
+        <code>RichAsyncFunction&lt;IN, OUT&gt;</code>. It manages the engine lifecycle — calling
+        <code>initialize()</code> in <code>open()</code> and <code>close()</code> in
+        <code>close()</code> — so you never need to handle that manually.
+      </p>
+
+      <h3>Constructor signature</h3>
+      <div class="code-block">
+        <div class="code-block-header"><span class="code-lang">Java</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+        <pre>// Generic constructor — supply the engine factory lambda
+AsyncModelInferenceFunction&lt;IN, OUT&gt; fn = new AsyncModelInferenceFunction&lt;&gt;(
+    InferenceConfig config,                           // model + runtime settings
+    Function&lt;InferenceConfig, InferenceEngine&lt;?&gt;&gt; engineFactory,  // engine factory
+    Function&lt;IN, Map&lt;String, Object&gt;&gt; featureExtractor,   // input → feature map
+    Function&lt;InferenceResult, OUT&gt; resultTransformer        // result → output type
+);</pre>
+      </div>
+
+      <h3>Applying to a stream</h3>
+      <div class="code-block">
+        <div class="code-block-header"><span class="code-lang">Java</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+        <pre>DataStream&lt;MyOutput&gt; predictions = AsyncDataStream.unorderedWait(
+    inputStream,
+    inferenceFunction,
+    5_000L,                     // per-record timeout in milliseconds
+    TimeUnit.MILLISECONDS,
+    100                         // max records in flight concurrently
+);</pre>
+      </div>
+
+      <p>
+        Use <code>orderedWait</code> instead of <code>unorderedWait</code> if downstream operators
+        require records to arrive in input order. Ordered mode has slightly lower throughput because
+        it must buffer completed futures until any earlier in-flight records also complete.
+      </p>
+
+      <!-- ══ ONNX ══ -->
+      <h2 id="onnx">ONNX Engine — <code>OnnxInferenceEngine</code></h2>
+      <p>
+        The ONNX engine wraps Microsoft ONNX Runtime 1.23.2. It supports CPU, CUDA, and TensorRT
+        execution providers and handles float32 / int64 tensor construction automatically from a
+        <code>Map&lt;String, Object&gt;</code>.
+      </p>
+
+      <h3>Maven dependency</h3>
+      <div class="code-block">
+        <div class="code-block-header"><span class="code-lang">XML</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+        <pre>&lt;dependency&gt;
+  &lt;groupId&gt;com.codedstreams&lt;/groupId&gt;
+  &lt;artifactId&gt;otter-stream-onnx&lt;/artifactId&gt;
+  &lt;version&gt;1.0.17&lt;/version&gt;
+&lt;/dependency&gt;</pre>
+      </div>
+
+      <h3>Complete DataStream example</h3>
+      <div class="code-block">
+        <div class="code-block-header"><span class="code-lang">Java</span><span class="code-filename">OnnxFraudDetectionJob.java</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+        <pre>import com.codedstreams.otterstream.inference.config.InferenceConfig;
+import com.codedstreams.otterstream.inference.config.ModelConfig;
+import com.codedstreams.otterstream.inference.config.ModelFormat;
+import com.codedstreams.otterstream.inference.function.AsyncModelInferenceFunction;
+import com.codedstreams.otterstream.inference.model.InferenceResult;
+import com.codedstreams.otterstream.onnx.OnnxInferenceEngine;
+import org.apache.flink.streaming.api.datastream.AsyncDataStream;
+import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
+import java.time.Duration;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
+
+public class OnnxFraudDetectionJob {
+
+    public static void main(String[] args) throws Exception {
+
+        StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
+        env.setParallelism(4);
+
+        // ── 1. Model configuration ───────────────────────────────────────────
+        ModelConfig modelConfig = ModelConfig.builder()
+            .modelId("fraud-detector")
+            .modelPath("s3a://ml-models/fraud-detector/v1/fraud.onnx")
+            // Execution providers tried in order; falls back to CPU automatically
+            .modelOption("providers", "CUDAExecutionProvider,CPUExecutionProvider")
+            .modelOption("intra_op_num_threads", "4")
+            .format(ModelFormat.ONNX)
+            .modelVersion("v1")
+            .build();
+
+        // ── 2. Runtime / inference configuration ─────────────────────────────
+        InferenceConfig inferenceConfig = InferenceConfig.builder()
+            .modelConfig(modelConfig)
+            .batchSize(32)
+            .timeout(Duration.ofSeconds(5))
+            .maxRetries(3)
+            .enableCaching(true)
+            .cacheSize(50_000)
+            .cacheTtl(Duration.ofMinutes(60))
+            .enableMetrics(true)
+            .metricsPrefix("fraud.onnx")
+            .build();
+
+        // ── 3. Build the async inference function ─────────────────────────────
+        AsyncModelInferenceFunction&lt;Transaction, ScoredTransaction&gt; fn =
+            new AsyncModelInferenceFunction&lt;&gt;(
+                inferenceConfig,
+
+                // Engine factory — called once per task slot in open()
+                cfg -&gt; new OnnxInferenceEngine(),
+
+                // Feature extractor — Transaction → Map&lt;String, Object&gt;
+                tx -&gt; Map.of(
+                    "amount",           (float) tx.getAmount(),
+                    "hour_of_day",      (float) tx.getHourOfDay(),
+                    "day_of_week",      (float) tx.getDayOfWeek(),
+                    "is_international", tx.isInternational() ? 1.0f : 0.0f,
+                    "card_type_enc",    (float) tx.getCardTypeEncoded()
+                ),
+
+                // Result transformer — InferenceResult → ScoredTransaction
+                result -&gt; {
+                    float score = ((float[]) result.getOutputs().get("output"))[0];
+                    return new ScoredTransaction(
+                        tx.getTransactionId(),
+                        score,
+                        score &gt;= 0.85 ? "CRITICAL"
+                      : score &gt;= 0.65 ? "HIGH"
+                      : score &gt;= 0.40 ? "MEDIUM" : "LOW"
+                    );
+                }
+            );
+
+        // ── 4. Source → async inference → sink ───────────────────────────────
+        DataStream&lt;Transaction&gt; transactions = env
+            .addSource(new KafkaTransactionSource())
+            .name("kafka-transactions");
+
+        DataStream&lt;ScoredTransaction&gt; scored = AsyncDataStream.unorderedWait(
+            transactions,
+            fn,
+            5_000L,
+            TimeUnit.MILLISECONDS,
+            100   // max concurrent async inference calls
+        ).name("onnx-inference");
+
+        scored
+            .filter(s -&gt; s.getFraudScore() &gt;= 0.40f)
+            .addSink(new KafkaFraudAlertSink())
+            .name("fraud-alerts-sink");
+
+        env.execute("ONNX Fraud Detection Pipeline");
+    }
+}</pre>
+      </div>
+
+      <!-- ══ TensorFlow ══ -->
+      <h2 id="tensorflow">TensorFlow Engine — <code>TensorFlowInferenceEngine</code></h2>
+      <p>
+        Loads a TensorFlow 2.x <code>SavedModel</code> directory. Signature names and tensor
+        names are discovered automatically from <code>saved_model.pb</code> at initialisation time.
+        GPU acceleration is available when the GPU-flavour TensorFlow native library is present on
+        the classpath.
+      </p>
+
+      <h3>Maven dependency</h3>
+      <div class="code-block">
+        <div class="code-block-header"><span class="code-lang">XML</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+        <pre>&lt;dependency&gt;
+  &lt;groupId&gt;com.codedstreams&lt;/groupId&gt;
+  &lt;artifactId&gt;otter-stream-tensorflow&lt;/artifactId&gt;
+  &lt;version&gt;1.0.17&lt;/version&gt;
+&lt;/dependency&gt;</pre>
+      </div>
+
+      <h3>DataStream example</h3>
+      <div class="code-block">
+        <div class="code-block-header"><span class="code-lang">Java</span><span class="code-filename">TensorFlowInferenceJob.java</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+        <pre>import com.codedstreams.otterstream.tensorflow.TensorFlowInferenceEngine;
+
+ModelConfig tfConfig = ModelConfig.builder()
+    .modelId("image-classifier")
+    // Path to the SavedModel DIRECTORY (not the .pb file directly)
+    .modelPath("/mnt/models/resnet50/saved_model/")
+    .format(ModelFormat.TENSORFLOW_SAVEDMODEL)
+    // Optional: specify the serving signature name (default: "serving_default")
+    .modelOption("signature_name", "serving_default")
+    .modelVersion("v2")
+    .build();
+
+InferenceConfig tfInferenceConfig = InferenceConfig.builder()
+    .modelConfig(tfConfig)
+    .batchSize(16)
+    .timeout(Duration.ofSeconds(10))
+    .enableMetrics(true)
+    .metricsPrefix("image.tf")
+    .build();
+
+AsyncModelInferenceFunction&lt;ImageEvent, ClassificationResult&gt; tfFn =
+    new AsyncModelInferenceFunction&lt;&gt;(
+        tfInferenceConfig,
+
+        // Engine factory
+        cfg -&gt; {
+            TensorFlowInferenceEngine engine = new TensorFlowInferenceEngine();
+            // Optionally read cached tensor names after init
+            // List&lt;String&gt; inputs  = engine.getCachedInputNames();
+            // List&lt;String&gt; outputs = engine.getCachedOutputNames();
+            return engine;
+        },
+
+        // Feature extractor: flatten image pixels to float[]
+        img -&gt; Map.of(
+            "input_1", img.getPixelsAsFloat32()   // float[224*224*3]
+        ),
+
+        // Result transformer
+        result -&gt; {
+            float[] logits = (float[]) result.getOutputs().get("predictions");
+            int classIndex = argmax(logits);
+            return new ClassificationResult(img.getId(), classIndex, logits[classIndex]);
+        }
+    );
+
+DataStream&lt;ClassificationResult&gt; classified = AsyncDataStream.unorderedWait(
+    imageStream, tfFn, 10_000L, TimeUnit.MILLISECONDS, 50
+).name("tf-image-classification");
+
+// Downstream: write top-k classifications to Elasticsearch
+classified
+    .filter(r -&gt; r.getConfidence() &gt;= 0.80f)
+    .addSink(new ElasticsearchClassificationSink());</pre>
+      </div>
+
+      <div class="callout callout-note">
+        <span class="callout-icon">i</span>
+        <div>
+          TensorFlow native libraries are large (~400 MB per platform). In production, declare the
+          platform-specific classifier to avoid bundling all platforms:
+          <code>tensorflow-core-platform-linux-x86_64</code> or
+          <code>tensorflow-core-platform-linux-gpu-x86_64</code>.
+        </div>
+      </div>
+
+      <!-- ══ PyTorch ══ -->
+      <h2 id="pytorch">PyTorch Engine — <code>TorchScriptInferenceEngine</code></h2>
+      <p>
+        Loads TorchScript models (<code>torch.jit.trace</code> / <code>torch.jit.script</code>)
+        via Deep Java Library 0.25.0. Automatic GPU detection via CUDA. Tensor memory is managed
+        through DJL <code>NDManager</code> scopes that are closed after each inference call.
+      </p>
+
+      <h3>Maven dependency</h3>
+      <div class="code-block">
+        <div class="code-block-header"><span class="code-lang">XML</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+        <pre>&lt;dependency&gt;
+  &lt;groupId&gt;com.codedstreams&lt;/groupId&gt;
+  &lt;artifactId&gt;otter-stream-pytorch&lt;/artifactId&gt;
+  &lt;version&gt;1.0.17&lt;/version&gt;
+&lt;/dependency&gt;</pre>
+      </div>
+
+      <h3>Export model in Python first</h3>
+      <div class="code-block">
+        <div class="code-block-header"><span class="code-lang">Python</span><span class="code-filename">export_torchscript.py</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+        <pre>import torch
+
+model.eval()
+
+# Tracing — use for models with static control flow
+example = torch.randn(1, 128)          # batch=1, features=128
+traced  = torch.jit.trace(model, example)
+traced.save("sentiment.pt")
+
+# Scripting — use for models with dynamic control flow (if/for)
+scripted = torch.jit.script(model)
+scripted.save("sentiment_scripted.pt")</pre>
+      </div>
+
+      <h3>DataStream example</h3>
+      <div class="code-block">
+        <div class="code-block-header"><span class="code-lang">Java</span><span class="code-filename">PyTorchSentimentJob.java</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+        <pre>import com.codedstreams.otterstream.pytorch.TorchScriptInferenceEngine;
+
+ModelConfig ptConfig = ModelConfig.builder()
+    .modelId("sentiment-classifier")
+    .modelPath("s3a://ml-models/nlp/sentiment.pt")
+    .format(ModelFormat.PYTORCH_TORCHSCRIPT)
+    // DJL engine auto-detects CUDA; override with "cpu" if needed
+    .modelOption("device", "auto")
+    .build();
+
+InferenceConfig ptInferenceConfig = InferenceConfig.builder()
+    .modelConfig(ptConfig)
+    .batchSize(64)
+    .timeout(Duration.ofSeconds(8))
+    .enableMetrics(true)
+    .metricsPrefix("sentiment.pytorch")
+    .build();
+
+AsyncModelInferenceFunction&lt;ReviewEvent, SentimentResult&gt; ptFn =
+    new AsyncModelInferenceFunction&lt;&gt;(
+        ptInferenceConfig,
+
+        // Engine factory — TorchScript engine via DJL
+        cfg -&gt; new TorchScriptInferenceEngine(),
+
+        // Feature extractor — tokenised review → float[] embedding
+        review -&gt; Map.of(
+            "input_ids",      review.getTokenIds(),        // int[]
+            "attention_mask", review.getAttentionMask()    // int[]
+        ),
+
+        // Result transformer — logits[2]: [neg, pos]
+        result -&gt; {
+            float[] logits  = (float[]) result.getOutputs().get("logits");
+            float   posScore = softmax(logits)[1];
+            return new SentimentResult(
+                review.getReviewId(),
+                posScore &gt;= 0.5f ? "POSITIVE" : "NEGATIVE",
+                posScore
+            );
+        }
+    );
+
+DataStream&lt;SentimentResult&gt; sentiments = AsyncDataStream.unorderedWait(
+    reviewStream, ptFn, 8_000L, TimeUnit.MILLISECONDS, 80
+).name("pytorch-sentiment");
+
+sentiments.addSink(new BigQuerySentimentSink());</pre>
+      </div>
+
+      <!-- ══ XGBoost ══ -->
+      <h2 id="xgboost">XGBoost Engine — <code>XGBoostInferenceEngine</code></h2>
+      <p>
+        Wraps XGBoost4J 3.1.1. Converts the feature map to a <code>DMatrix</code> per call;
+        thread-safe because <code>Booster.predict()</code> is re-entrant in XGBoost4J.
+        Supports binary classification, multi-class, and regression objectives.
+      </p>
+
+      <h3>Maven dependency</h3>
+      <div class="code-block">
+        <div class="code-block-header"><span class="code-lang">XML</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+        <pre>&lt;dependency&gt;
+  &lt;groupId&gt;com.codedstreams&lt;/groupId&gt;
+  &lt;artifactId&gt;otter-streams-xgboost&lt;/artifactId&gt;
+  &lt;version&gt;1.0.17&lt;/version&gt;
+&lt;/dependency&gt;</pre>
+      </div>
+
+      <h3>DataStream example</h3>
+      <div class="code-block">
+        <div class="code-block-header"><span class="code-lang">Java</span><span class="code-filename">XGBoostCreditScoringJob.java</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+        <pre>import com.codedstreams.otterstream.xgboost.XGBoostInferenceEngine;
+
+// ── Model supports three file formats ───────────────────────────────────────
+// ModelFormat.XGBOOST_BINARY  →  .bin / .model  (fastest loading)
+// ModelFormat.XGBOOST_JSON    →  .json           (portable, readable)
+// ModelFormat.XGBOOST_UBJSON  →  .ubj            (compact binary JSON)
+
+ModelConfig xgbConfig = ModelConfig.builder()
+    .modelId("credit-scorer")
+    .modelPath("s3a://ml-models/credit/credit_v3.json")
+    .format(ModelFormat.XGBOOST_JSON)
+    .modelVersion("v3")
+    .build();
+
+InferenceConfig xgbInferenceConfig = InferenceConfig.builder()
+    .modelConfig(xgbConfig)
+    .batchSize(128)          // XGBoost handles large batches efficiently
+    .timeout(Duration.ofSeconds(3))
+    .enableCaching(true)
+    .cacheSize(100_000)
+    .cacheTtl(Duration.ofMinutes(30))
+    .enableMetrics(true)
+    .metricsPrefix("credit.xgboost")
+    .build();
+
+AsyncModelInferenceFunction&lt;CreditApplication, CreditDecision&gt; xgbFn =
+    new AsyncModelInferenceFunction&lt;&gt;(
+        xgbInferenceConfig,
+
+        // Engine factory
+        cfg -&gt; new XGBoostInferenceEngine(),
+
+        // Feature extractor — tabular features as float values
+        // XGBoost expects all features in a flat float array;
+        // the engine maps feature names to column positions using the model's
+        // feature_names metadata. Use Float.NaN for missing values.
+        app -&gt; Map.of(
+            "age",              (float) app.getAge(),
+            "annual_income",    (float) app.getAnnualIncome(),
+            "credit_score",     (float) app.getCreditScore(),
+            "debt_to_income",   (float) app.getDebtToIncomeRatio(),
+            "employment_years", (float) app.getEmploymentYears(),
+            "num_open_accounts",(float) app.getNumOpenAccounts(),
+            // Missing value → Float.NaN; XGBoost handles natively
+            "previous_defaults", app.hasPreviousDefault() ? 1.0f : 0.0f
+        ),
+
+        // Result transformer — binary:logistic output is a single float [0, 1]
+        result -&gt; {
+            float probability = ((float[]) result.getOutputs().get("prediction"))[0];
+            String decision = probability &gt;= 0.70f ? "DECLINE"
+                            : probability &gt;= 0.40f ? "REVIEW"
+                            : "APPROVE";
+            return new CreditDecision(
+                app.getApplicationId(), decision, probability
+            );
+        }
+    );
+
+DataStream&lt;CreditDecision&gt; decisions = AsyncDataStream.unorderedWait(
+    applicationStream, xgbFn, 3_000L, TimeUnit.MILLISECONDS, 200
+).name("xgboost-credit-scoring");
+
+decisions
+    .keyBy(CreditDecision::getDecision)
+    .addSink(new DatabaseDecisionSink());</pre>
+      </div>
+
+      <!-- ══ PMML ══ -->
+      <h2 id="pmml">PMML Engine — <code>PmmlInferenceEngine</code></h2>
+      <p>
+        Evaluates PMML 4.x documents via JPMML-Evaluator 1.5.16. All built-in PMML pre-processing
+        transforms (normalization, discretization, outlier treatment) are applied automatically.
+        Thread-safe via immutable <code>Evaluator</code> instances.
+      </p>
+
+      <h3>Maven dependency</h3>
+      <div class="code-block">
+        <div class="code-block-header"><span class="code-lang">XML</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+        <pre>&lt;dependency&gt;
+  &lt;groupId&gt;com.codedstreams&lt;/groupId&gt;
+  &lt;artifactId&gt;otter-stream-pmml&lt;/artifactId&gt;
+  &lt;version&gt;1.0.17&lt;/version&gt;
+&lt;/dependency&gt;</pre>
+      </div>
+
+      <h3>DataStream example</h3>
+      <div class="code-block">
+        <div class="code-block-header"><span class="code-lang">Java</span><span class="code-filename">PmmlChurnPredictionJob.java</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+        <pre>import com.codedstreams.otterstream.pmml.PmmlInferenceEngine;
+
+ModelConfig pmmlConfig = ModelConfig.builder()
+    .modelId("churn-predictor")
+    .modelPath("/mnt/models/churn/churn_logistic.pmml")
+    .format(ModelFormat.PMML)
+    .modelVersion("v1")
+    .build();
+
+InferenceConfig pmmlInferenceConfig = InferenceConfig.builder()
+    .modelConfig(pmmlConfig)
+    .batchSize(1)      // PMML evaluator processes one record at a time internally
+    .timeout(Duration.ofSeconds(5))
+    .enableMetrics(true)
+    .metricsPrefix("churn.pmml")
+    .build();
+
+AsyncModelInferenceFunction&lt;CustomerEvent, ChurnPrediction&gt; pmmlFn =
+    new AsyncModelInferenceFunction&lt;&gt;(
+        pmmlInferenceConfig,
+
+        // Engine factory
+        cfg -&gt; new PmmlInferenceEngine(),
+
+        // Feature extractor — PMML uses string-keyed field names matching the
+        // DataDictionary in the .pmml file exactly (case-sensitive).
+        // Values can be String, Integer, Double — PMML handles coercion.
+        customer -&gt; Map.of(
+            "tenure_months",       customer.getTenureMonths(),
+            "monthly_charges",     customer.getMonthlyCharges(),
+            "total_charges",       customer.getTotalCharges(),
+            "contract_type",       customer.getContractType(),    // "Month-to-month"
+            "payment_method",      customer.getPaymentMethod(),   // "Electronic check"
+            "internet_service",    customer.getInternetService(), // "Fiber optic"
+            "num_support_tickets", customer.getSupportTickets()
+        ),
+
+        // Result transformer — PMML outputs a Map of output field names
+        result -&gt; {
+            // PMML typically outputs both the predicted class and probabilities
+            String churnClass   = (String) result.getOutputs().get("predictedChurn");
+            Double churnProb    = (Double) result.getOutputs().get("probability_Yes");
+            return new ChurnPrediction(
+                customer.getCustomerId(),
+                "Yes".equals(churnClass),
+                churnProb != null ? churnProb.floatValue() : 0.0f
+            );
+        }
+    );
+
+DataStream&lt;ChurnPrediction&gt; predictions = AsyncDataStream.unorderedWait(
+    customerStream, pmmlFn, 5_000L, TimeUnit.MILLISECONDS, 50
+).name("pmml-churn-prediction");
+
+predictions
+    .filter(ChurnPrediction::isChurning)
+    .addSink(new CRMRetentionSink());</pre>
+      </div>
+
+      <!-- ══ Remote ══ -->
+      <h2 id="remote">Remote Engine — <code>HttpInferenceEngine</code> / <code>SageMakerInferenceClient</code></h2>
+      <p>
+        Routes inference calls to external endpoints — REST APIs, AWS SageMaker, Google Vertex AI,
+        Azure ML, or any gRPC model server. Uses OkHttp for HTTP and Netty for gRPC. Configurable
+        retry, timeout, and circuit-breaker policies. Ideal when the model is too large to embed
+        in the Flink JAR, or when a dedicated model server is required.
+      </p>
+
+      <h3>Maven dependency</h3>
+      <div class="code-block">
+        <div class="code-block-header"><span class="code-lang">XML</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+        <pre>&lt;dependency&gt;
+  &lt;groupId&gt;com.codedstreams&lt;/groupId&gt;
+  &lt;artifactId&gt;otter-stream-remote&lt;/artifactId&gt;
+  &lt;version&gt;1.0.17&lt;/version&gt;
+&lt;/dependency&gt;</pre>
+      </div>
+
+      <h3>HTTP REST endpoint</h3>
+      <div class="code-block">
+        <div class="code-block-header"><span class="code-lang">Java</span><span class="code-filename">HttpRemoteInferenceJob.java</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+        <pre>import com.codedstreams.otterstream.remote.HttpInferenceEngine;
+import com.codedstreams.otterstream.inference.config.AuthConfig;
+
+ModelConfig httpConfig = ModelConfig.builder()
+    .modelId("external-model")
+    .endpointUrl("https://api.mymodelservice.com/v1/predict")
+    .format(ModelFormat.REMOTE_HTTP)
+    .authConfig(AuthConfig.builder()
+        .addHeader("Authorization", "Bearer " + System.getenv("MODEL_API_TOKEN"))
+        .addHeader("X-Api-Version",  "2024-01")
+        .build())
+    // Request/response content type
+    .modelOption("content_type", "application/json")
+    // Connection pool settings
+    .modelOption("max_connections", "50")
+    .modelOption("connect_timeout_ms", "2000")
+    .build();
+
+InferenceConfig httpInferenceConfig = InferenceConfig.builder()
+    .modelConfig(httpConfig)
+    .timeout(Duration.ofSeconds(8))
+    .maxRetries(3)
+    .retryDelay(Duration.ofMillis(200))
+    .enableMetrics(true)
+    .metricsPrefix("external.http")
+    .build();
+
+AsyncModelInferenceFunction&lt;InputEvent, ScoredEvent&gt; httpFn =
+    new AsyncModelInferenceFunction&lt;&gt;(
+        httpInferenceConfig,
+        cfg -&gt; new HttpInferenceEngine(),
+        event -&gt; Map.of(
+            "feature_a", event.getFeatureA(),
+            "feature_b", event.getFeatureB()
+        ),
+        result -&gt; new ScoredEvent(
+            event.getId(),
+            (Float) result.getOutputs().get("score")
+        )
+    );
+
+DataStream&lt;ScoredEvent&gt; scored = AsyncDataStream.unorderedWait(
+    inputStream, httpFn, 8_000L, TimeUnit.MILLISECONDS, 30
+).name("http-remote-inference");</pre>
+      </div>
+
+      <h3>AWS SageMaker endpoint</h3>
+      <div class="code-block">
+        <div class="code-block-header"><span class="code-lang">Java</span><span class="code-filename">SageMakerInferenceJob.java</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+        <pre>import com.codedstreams.otterstream.remote.SageMakerInferenceClient;
+
+ModelConfig sagemakerConfig = ModelConfig.builder()
+    .modelId("sagemaker-fraud")
+    // SageMaker endpoint name (not the full ARN)
+    .endpointUrl("fraud-detection-prod-endpoint")
+    .format(ModelFormat.SAGEMAKER)
+    .authConfig(AuthConfig.builder()
+        // Access key:secret key pair, or leave null to use instance IAM role
+        .apiKey(System.getenv("AWS_ACCESS_KEY_ID")
+             + ":" + System.getenv("AWS_SECRET_ACCESS_KEY"))
+        .build())
+    .modelOption("region", "us-east-1")
+    .modelOption("content_type", "application/json")
+    .build();
+
+InferenceConfig smInferenceConfig = InferenceConfig.builder()
+    .modelConfig(sagemakerConfig)
+    .timeout(Duration.ofSeconds(10))
+    .maxRetries(3)
+    .enableMetrics(true)
+    .metricsPrefix("fraud.sagemaker")
+    .build();
+
+AsyncModelInferenceFunction&lt;Transaction, ScoredTransaction&gt; smFn =
+    new AsyncModelInferenceFunction&lt;&gt;(
+        smInferenceConfig,
+        cfg -&gt; new SageMakerInferenceClient(),
+        tx -&gt; Map.of("amount", tx.getAmount(), "merchant", tx.getMerchantId()),
+        result -&gt; new ScoredTransaction(tx, (Float) result.getOutputs().get("score"))
+    );
+
+DataStream&lt;ScoredTransaction&gt; smScored = AsyncDataStream.unorderedWait(
+    transactionStream, smFn, 10_000L, TimeUnit.MILLISECONDS, 50
+).name("sagemaker-inference");</pre>
+      </div>
+
+      <!-- ══ ModelCache ══ -->
+      <h2 id="model-cache">ModelCache Integration in DataStream Jobs</h2>
+      <p>
+        For jobs that need to hot-swap models or pre-warm engines before the streaming job starts,
+        you can interact with <code>ModelCache</code> directly. This is optional — the
+        <code>AsyncModelInferenceFunction</code> manages the cache automatically, but direct access
+        is useful for custom model management logic.
+      </p>
+
+      <div class="code-block">
+        <div class="code-block-header"><span class="code-lang">Java</span><span class="code-filename">ModelCacheManagement.java</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+        <pre>import com.codedstreams.otterstreams.sql.loader.ModelCache;
+import com.codedstreams.otterstream.inference.engine.InferenceEngine;
+
+// ── Pre-warm the cache before the streaming job starts ──────────────────────
+ModelCache cache = ModelCache.getInstance();
+
+// Build and initialise an engine, then register it by name
+OnnxInferenceEngine engine = new OnnxInferenceEngine();
+engine.initialize(modelConfig);
+cache.putEngine("fraud-detector", engine);
+
+// ── Check if a model is already loaded ─────────────────────────────────────
+InferenceEngine&lt;?&gt; existing = cache.getEngine("fraud-detector");
+if (existing == null) {
+    // Model not loaded — trigger load
+}
+
+// ── Hot-swap a model version at runtime ────────────────────────────────────
+// 1. Initialise new version engine
+OnnxInferenceEngine v2Engine = new OnnxInferenceEngine();
+v2Engine.initialize(v2Config);
+
+// 2. Atomically replace (ModelCache.putEngine is thread-safe)
+cache.putEngine("fraud-detector", v2Engine);
+
+// Old engine will be garbage-collected; its close() is called on eviction.
+
+// ── Invalidate a model (force reload on next inference) ────────────────────
+cache.invalidate("fraud-detector");
+
+// ── Clear all cached models (e.g., before shutdown) ────────────────────────
+cache.invalidateAll();</pre>
+      </div>
+
+      <!-- ══ MinIO DataStream ══ -->
+      <h2 id="minio-datastream">MinIO Model Loading in DataStream Jobs</h2>
+      <p>
+        In the DataStream path, model loading from MinIO is controlled through the
+        <code>ModelConfig.modelPath</code> URI. When the <code>AsyncModelInferenceFunction</code>
+        calls <code>engine.initialize(config)</code> in <code>open()</code>, the engine
+        calls the <code>MinioModelLoader</code> internally to download the model file into a
+        local temp directory before loading it into memory. Set the MinIO credentials as Flink
+        configuration properties or as environment variables.
+      </p>
+
+      <div class="code-block">
+        <div class="code-block-header"><span class="code-lang">Java</span><span class="code-filename">MinioDataStreamJob.java</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+        <pre>// ── Pass MinIO credentials via Flink configuration ─────────────────────────
+Configuration flinkConf = new Configuration();
+flinkConf.setString("otter.minio.endpoint",   "http://minio:9000");
+flinkConf.setString("otter.minio.access-key", System.getenv("MINIO_ACCESS_KEY"));
+flinkConf.setString("otter.minio.secret-key", System.getenv("MINIO_SECRET_KEY"));
+// path-style is always required for MinIO (virtual-hosted style needs DNS config)
+flinkConf.setString("otter.minio.path-style", "true");
+
+StreamExecutionEnvironment env =
+    StreamExecutionEnvironment.getExecutionEnvironment(flinkConf);
+
+// ── ModelConfig references the s3a:// URI directly ─────────────────────────
+ModelConfig minioConfig = ModelConfig.builder()
+    .modelId("iot-anomaly-detector")
+    // The loader strips s3a:// and uses the Minio endpoint from Flink config
+    .modelPath("s3a://ml-models/anomaly-detector/v2/model.json")
+    .format(ModelFormat.XGBOOST_JSON)
+    .modelVersion("v2")
+    .build();
+
+InferenceConfig minioInferenceConfig = InferenceConfig.builder()
+    .modelConfig(minioConfig)
+    .batchSize(64)
+    .timeout(Duration.ofSeconds(5))
+    .enableCaching(true)
+    .cacheTtl(Duration.ofMinutes(60))
+    .enableMetrics(true)
+    .metricsPrefix("iot.xgboost.minio")
+    .build();
+
+AsyncModelInferenceFunction&lt;SensorReading, AnomalyScore&gt; fn =
+    new AsyncModelInferenceFunction&lt;&gt;(
+        minioInferenceConfig,
+        cfg -&gt; new XGBoostInferenceEngine(),   // MinIO download happens inside initialize()
+        reading -&gt; Map.of(
+            "temperature", (float) reading.getTemperature(),
+            "pressure",    (float) reading.getPressure(),
+            "vibration",   (float) reading.getVibration(),
+            "rpm",         (float) reading.getRpm()
+        ),
+        result -&gt; new AnomalyScore(
+            reading.getDeviceId(),
+            ((float[]) result.getOutputs().get("prediction"))[0]
+        )
+    );
+
+DataStream&lt;AnomalyScore&gt; anomalies = AsyncDataStream.unorderedWait(
+    sensorStream, fn, 5_000L, TimeUnit.MILLISECONDS, 100
+).name("xgboost-minio-anomaly");</pre>
+      </div>
+
+      <!-- ══ Full Pipeline ══ -->
+      <h2 id="full-pipeline">Full DataStream Pipeline Example</h2>
+      <p>
+        A complete, self-contained Flink job showing real-world patterns: multi-source Kafka
+        ingestion, feature engineering window, ONNX inference, risk tiering, dual sinks, and
+        dead-letter handling.
+      </p>
+
+      <div class="code-block">
+        <div class="code-block-header"><span class="code-lang">Java</span><span class="code-filename">FullFraudPipelineJob.java</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+        <pre>import org.apache.flink.api.common.eventtime.WatermarkStrategy;
+import org.apache.flink.streaming.api.datastream.*;
+import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
+import org.apache.flink.streaming.api.windowing.assigners.TumblingEventTimeWindows;
+import org.apache.flink.streaming.api.windowing.time.Time;
+import java.time.Duration;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
+
+public class FullFraudPipelineJob {
+
+    public static void main(String[] args) throws Exception {
+
+        StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
+        env.setParallelism(8);
+        env.enableCheckpointing(30_000L);   // checkpoint every 30 s
+
+        // ── 1. Source: raw transactions from Kafka ───────────────────────────
+        DataStream&lt;Transaction&gt; rawTxns = env
+            .fromSource(kafkaSource, WatermarkStrategy
+                .&lt;Transaction&gt;forBoundedOutOfOrderness(Duration.ofSeconds(5))
+                .withTimestampAssigner((tx, ts) -&gt; tx.getEventTimeMs()),
+                "kafka-transactions")
+            .name("kafka-source");
+
+        // ── 2. Feature engineering: compute 5-min velocity per user ──────────
+        DataStream&lt;EnrichedTransaction&gt; enriched = rawTxns
+            .keyBy(Transaction::getUserId)
+            .window(TumblingEventTimeWindows.of(Time.minutes(5)))
+            .process(new VelocityFeatureProcess())  // adds txn_count, total_amount_5m
+            .name("velocity-features");
+
+        // ── 3. ONNX async inference ──────────────────────────────────────────
+        ModelConfig modelConfig = ModelConfig.builder()
+            .modelId("fraud-v3")
+            .modelPath("s3a://ml-models/fraud/v3/fraud.onnx")
+            .format(ModelFormat.ONNX)
+            .modelOption("providers", "CUDAExecutionProvider,CPUExecutionProvider")
+            .build();
+
+        InferenceConfig inferenceConfig = InferenceConfig.builder()
+            .modelConfig(modelConfig)
+            .batchSize(32)
+            .timeout(Duration.ofSeconds(5))
+            .maxRetries(2)
+            .enableCaching(true)
+            .cacheSize(50_000)
+            .cacheTtl(Duration.ofMinutes(60))
+            .enableMetrics(true)
+            .metricsPrefix("fraud.v3.onnx")
+            .build();
+
+        AsyncModelInferenceFunction&lt;EnrichedTransaction, ScoredTransaction&gt; fn =
+            new AsyncModelInferenceFunction&lt;&gt;(
+                inferenceConfig,
+                cfg -&gt; new OnnxInferenceEngine(),
+                tx -&gt; Map.of(
+                    "amount",           (float) tx.getAmount(),
+                    "hour_of_day",      (float) tx.getHourOfDay(),
+                    "txn_count_5m",     (float) tx.getTxnCount5m(),
+                    "total_amount_5m",  (float) tx.getTotalAmount5m(),
+                    "is_international", tx.isInternational() ? 1.0f : 0.0f
+                ),
+                result -&gt; {
+                    if (!result.isSuccess()) {
+                        // Propagate failed inference as a sentinel score of -1
+                        return ScoredTransaction.failed(tx);
+                    }
+                    float score = ((float[]) result.getOutputs().get("output"))[0];
+                    return ScoredTransaction.of(tx, score);
+                }
+            );
+
+        DataStream&lt;ScoredTransaction&gt; scored = AsyncDataStream.unorderedWait(
+            enriched, fn, 5_000L, TimeUnit.MILLISECONDS, 100
+        ).name("onnx-inference");
+
+        // ── 4. Split: alerts vs dead-letters (failed inference) ──────────────
+        OutputTag&lt;ScoredTransaction&gt; deadLetterTag =
+            new OutputTag&lt;&gt;("dead-letter"){};
+
+        SingleOutputStreamOperator&lt;ScoredTransaction&gt; alerts = scored
+            .process(new ProcessFunction&lt;ScoredTransaction, ScoredTransaction&gt;() {
+                @Override
+                public void processElement(ScoredTransaction s,
+                                           Context ctx,
+                                           Collector&lt;ScoredTransaction&gt; out) {
+                    if (s.isFailed()) {
+                        ctx.output(deadLetterTag, s);
+                    } else if (s.getFraudScore() &gt;= 0.40f) {
+                        out.collect(s);
+                    }
+                }
+            }).name("fraud-router");
+
+        DataStream&lt;ScoredTransaction&gt; deadLetters = alerts.getSideOutput(deadLetterTag);
+
+        // ── 5. Sinks ─────────────────────────────────────────────────────────
+        alerts
+            .map(s -&gt; FraudAlert.fromScored(s))
+            .addSink(new KafkaFraudAlertSink())
+            .name("fraud-alert-kafka-sink");
+
+        deadLetters
+            .addSink(new S3DeadLetterSink("s3://fraud-dead-letters/"))
+            .name("dead-letter-s3-sink");
+
+        env.execute("Otter Streams — Full Fraud Detection DataStream Pipeline");
+    }
+}</pre>
+      </div>
+
+    </div><!-- /content-body -->
+
+    <div class="doc-footer">
+      <span>
+        Otter Streams v1.0.17 &mdash; Apache License 2.0 &mdash;
+        <strong>Nestor Martourez Abiangang A.</strong> &mdash;
+        <a href="https://www.linkedin.com/in/nestor-abiangang/" target="_blank" style="color:var(--blue-primary)">linkedin.com/in/nestor-abiangang</a>
+      </span>
+      <div class="footer-links">
+        <a href="https://github.com/martourez21/otter-streams" target="_blank">GitHub</a>
+        <a href="releases.html">Releases</a>
+        <a href="api.html">API Reference</a>
+        <a href="studio-demo.html">Studio Demo</a>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script>
+function copyCode(btn) {
+  const pre = btn.closest('.code-block').querySelector('pre');
+  navigator.clipboard.writeText(pre.textContent.trim()).then(() => {
+    const orig = btn.textContent; btn.textContent = 'Copied'; btn.classList.add('ok');
+    setTimeout(() => { btn.textContent = orig; btn.classList.remove('ok'); }, 1800);
+  });
+}
+const obs = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      document.querySelectorAll('.nav-item').forEach(a => a.classList.remove('active'));
+      const m = document.querySelector(`.nav-item[href="#${e.target.id}"]`);
+      if (m) m.classList.add('active');
+    }
+  });
+}, { rootMargin: '-20% 0px -70% 0px' });
+document.querySelectorAll('h2[id]').forEach(s => obs.observe(s));
+</script>
+</body>
+</html>
