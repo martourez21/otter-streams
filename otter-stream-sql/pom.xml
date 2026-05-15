@@ -4,7 +4,7 @@
     <parent>
         <groupId>com.codedstreams</groupId>
         <artifactId>otter-streams</artifactId>
-        <version>0.0.2</version>
+        <version>0.0.3</version>
     </parent>
     <artifactId>otter-stream-sql</artifactId>
     <packaging>jar</packaging>
