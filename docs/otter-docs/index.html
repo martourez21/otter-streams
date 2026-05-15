@@ -1,254 +1,328 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Documentation — Otter Streams</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@300;400;500;600&family=IBM+Plex+Serif:wght@400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="shared.css">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.9.0/mermaid.min.js"></script>
-<style>
-/* ── Mermaid diagram container ── */
-.mermaid-wrap {
-  margin: 24px 0 28px;
-  border: 1px solid var(--rule);
-  border-radius: 4px;
-  overflow: hidden;
-  background: var(--ink-0);
-}
-.mermaid-title {
-  font-size: 11px; font-family: var(--font-mono);
-  color: var(--ink-5); background: var(--ink-1);
-  padding: 7px 16px; border-bottom: 1px solid var(--ink-2);
-  letter-spacing: 0.4px;
-}
-.mermaid {
-  padding: 28px 20px;
-  display: flex; justify-content: center; overflow-x: auto;
-}
-.mermaid svg { max-width: 100%; height: auto; }
-.mermaid-caption {
-  font-size: 12px; color: var(--ink-5);
-  padding: 8px 16px; background: var(--ink-1);
-  border-top: 1px solid var(--ink-2);
-  font-style: italic;
-}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Documentation — Otter Streams</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@300;400;500;600&family=IBM+Plex+Serif:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="shared.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.9.0/mermaid.min.js"></script>
+    <style>
+        /* ── Mermaid diagram container ── */
+        .mermaid-wrap {
+            margin: 24px 0 28px;
+            border: 1px solid var(--rule);
+            border-radius: 4px;
+            overflow: hidden;
+            background: var(--ink-0);
+        }
+        .mermaid-title {
+            font-size: 11px; font-family: var(--font-mono);
+            color: var(--ink-5); background: var(--ink-1);
+            padding: 7px 16px; border-bottom: 1px solid var(--ink-2);
+            letter-spacing: 0.4px;
+        }
+        .mermaid {
+            padding: 28px 20px;
+            display: flex; justify-content: center; overflow-x: auto;
+        }
+        .mermaid svg { max-width: 100%; height: auto; }
+        .mermaid-caption {
+            font-size: 12px; color: var(--ink-5);
+            padding: 8px 16px; background: var(--ink-1);
+            border-top: 1px solid var(--ink-2);
+            font-style: italic;
+        }
+        /* Enlarged diagram container with zoom controls */
+        .mermaid-wrap.enlarged {
+            position: relative;
+            background: #0a0d10;
+        }
+        .mermaid-zoom-controls {
+            position: absolute;
+            top: 12px;
+            right: 16px;
+            z-index: 10;
+            display: flex;
+            gap: 8px;
+            background: rgba(0,0,0,0.6);
+            padding: 4px 8px;
+            border-radius: 20px;
+            backdrop-filter: blur(4px);
+        }
+        .mermaid-zoom-btn {
+            background: var(--ink-2);
+            border: none;
+            color: var(--ink-9);
+            font-size: 16px;
+            cursor: pointer;
+            width: 28px;
+            height: 28px;
+            border-radius: 14px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+        .mermaid-zoom-btn:hover {
+            background: var(--blue-primary);
+            color: white;
+        }
+        .mermaid-zoom-reset {
+            font-size: 12px;
+            width: auto;
+            padding: 0 10px;
+        }
+        .mermaid-container {
+            overflow: auto;
+            transition: transform 0.2s ease;
+            transform-origin: top left;
+            cursor: grab;
+        }
+        .mermaid-container:active {
+            cursor: grabbing;
+        }
+        /* Module diagram styling */
+        .module-diagram {
+            background: var(--ink-1);
+            border-radius: 8px;
+            padding: 20px;
+            margin: 24px 0;
+            border: 1px solid var(--ink-3);
+        }
+        .module-diagram pre {
+            margin: 0;
+            font-family: var(--font-mono);
+            font-size: 13px;
+            line-height: 1.5;
+            color: var(--ink-9);
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+    </style>
 </head>
 <body>
 
 <header class="topbar">
-  <a href="index.html" class="topbar-brand">
-    <div class="brand-icon">OS</div>
-    <span class="brand-name">Otter Streams</span>
-    <span class="brand-version">v1.0.17</span>
-  </a>
-  <nav class="topbar-nav">
-    <a href="index.html"    class="topbar-link active">Documentation</a>
-    <a href="api.html" class="topbar-link">API Reference</a>
-    <a href="modules.html" class="topbar-link">Modules</a>
-    <a href="examples.html" class="topbar-link">Examples</a>
-    <a href="releases.html" class="topbar-link">Releases</a>
-  </nav>
-  <div class="topbar-right">
-    <span class="topbar-badge">Flink 1.15&ndash;1.20</span>
-    <a href="https://github.com/martourez21/otter-streams" class="gh-link" target="_blank">
-      <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
-      GitHub
+    <a href="index.html" class="topbar-brand">
+        <div class="brand-icon">OS</div>
+        <span class="brand-name">Otter Streams</span>
+        <span class="brand-version">v0.0.4</span>
     </a>
-  </div>
+    <nav class="topbar-nav">
+        <a href="index.html"    class="topbar-link active">Documentation</a>
+        <a href="api.html" class="topbar-link">API Reference</a>
+        <a href="modules.html" class="topbar-link">Modules</a>
+        <a href="examples.html" class="topbar-link">Examples</a>
+        <a href="releases.html" class="topbar-link">Releases</a>
+        <a href="javadoc.html" class="topbar-link" target="_blank">Javadoc</a>
+    </nav>
+    <div class="topbar-right">
+        <span class="topbar-badge">Flink 2.0+</span>
+        <a href="https://github.com/martourez21/otter-streams" class="gh-link" target="_blank">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+            GitHub
+        </a>
+    </div>
 </header>
 
 <div class="layout">
-  <nav class="sidebar">
-    <div class="nav-section">
-      <div class="nav-section-title">Getting Started</div>
-      <a href="#intro"        class="nav-item">Introduction</a>
-      <a href="#quickstart"   class="nav-item">Quick Start</a>
-      <a href="#architecture" class="nav-item">Architecture</a>
-    </div>
-    <div class="nav-divider"></div>
-    <div class="nav-section">
-      <div class="nav-section-title">Flink SQL</div>
-      <a href="#sql-udf"          class="nav-item">UDF Reference</a>
-      <a href="#sql-registration" class="nav-item nav-sub">Studio Registration</a>
-      <a href="#sql-usage"        class="nav-item nav-sub">SQL Usage</a>
-      <a href="#connector"        class="nav-item nav-sub">Table Connector</a>
-    </div>
-    <div class="nav-divider"></div>
-    <div class="nav-section">
-      <div class="nav-section-title">Deployment</div>
-      <a href="#shaded-jar"          class="nav-item">Shaded JAR Build</a>
-      <a href="examples.html#minio" class="nav-item">MinIO Model Loading</a>
-      <a href="datastream.html" class="nav-item">DataStream API Guide</a>
-      <a href="studio-demo.html" class="nav-item">Studio Demo</a>
-      <a href="#troubleshooting"     class="nav-item">Troubleshooting</a>
-      <a href="#error-reference"     class="nav-item">Error Reference</a>
-    </div>
-    <div class="nav-divider"></div>
-    <div class="nav-section">
-      <div class="nav-section-title">Modules</div>
-      <a href="modules.html#core" class="nav-item">ml-inference-core</a>
-      <a href="modules.html#sql" class="nav-item">otter-stream-sql</a>
-      <a href="modules.html#onnx" class="nav-item">otter-stream-onnx</a>
-      <a href="modules.html#tensorflow" class="nav-item">otter-stream-tensorflow</a>
-      <a href="modules.html#xgboost" class="nav-item">otter-streams-xgboost</a>
-      <a href="modules.html#pmml" class="nav-item">otter-stream-pmml</a>
-      <a href="modules.html#remote" class="nav-item">otter-stream-remote</a>
-    </div>
-    <div class="nav-divider"></div>
-    <div class="nav-section">
-      <div class="nav-section-title">Resources</div>
-      <a href="https://nightlies.apache.org/flink/flink-docs-stable/" class="nav-item" target="_blank">Apache Flink Docs</a>
-      <a href="https://github.com/martourez21/otter-streams/issues"   class="nav-item" target="_blank">Issue Tracker</a>
-      <a href="mailto:nestorabiawuh@gmail.com" class="nav-item">Contact</a>
-    </div>
-  </nav>
-
-  <main class="main">
-
-    <div class="page-header">
-      <div class="header-badge"><span class="header-dot"></span>Apache Flink &middot; SQL Integration</div>
-      <h1>Otter Streams &mdash; ML Inference for Apache Flink</h1>
-      <p class="lead">
-        A production-grade library for embedding machine learning inference directly into Flink SQL
-        pipelines and DataStream jobs. Supports ONNX, TensorFlow, PyTorch, XGBoost, and PMML with
-        a single consistent API and first-class MinIO / S3 model loading.
-      </p>
-      <div class="header-meta">
-        <span class="meta-pill">Version <span class="meta-pill-val">1.0.17</span></span>
-        <span class="meta-pill">Flink <span class="meta-pill-val">1.15 &ndash; 1.20</span></span>
-        <span class="meta-pill">Java <span class="meta-pill-val">11+</span></span>
-        <span class="meta-pill">License <span class="meta-pill-val">Apache 2.0</span></span>
-      </div>
-    </div>
-
-    <div class="breadcrumb">
-      <a href="index.html">Docs</a>
-      <span class="breadcrumb-sep">/</span>
-      <span class="breadcrumb-current">Introduction</span>
-    </div>
-
-    <div class="content-body cf">
-
-      <div class="toc">
-        <div class="toc-title">On this page</div>
-        <ul class="toc-list">
-          <li><a href="#intro">Introduction</a></li>
-          <li><a href="#quickstart">Quick Start</a></li>
-          <li><a href="#architecture">Architecture</a></li>
-          <li><a href="#sql-udf">UDF Reference</a></li>
-          <li><a href="#sql-registration" class="toc-sub">Studio Registration</a></li>
-          <li><a href="#sql-usage" class="toc-sub">SQL Usage</a></li>
-          <li><a href="#connector" class="toc-sub">Table Connector</a></li>
-          <li><a href="#shaded-jar">Shaded JAR Build</a></li>
-          <li><a href="#troubleshooting">Troubleshooting</a></li>
-          <li><a href="#error-reference">Error Reference</a></li>
-        </ul>
-      </div>
-
-      <!-- ══ Introduction ══════════════════════════════════════ -->
-      <h2 id="intro">Introduction</h2>
-
-      <p>
-        Otter Streams bridges the gap between machine learning model deployment and Apache Flink's
-        streaming SQL runtime. Rather than embedding model-serving logic inside custom Java operators,
-        data engineers register ML models as standard Flink SQL functions and call them inline in any
-        Flink SQL query — no Java required at query time.
-      </p>
-
-      <p>
-        The <code>otter-stream-sql</code> module exposes two primary extension points: a
-        <strong>scalar UDF</strong> (<code>MLInferenceFunction</code>) for synchronous per-row
-        inference, and a <strong>lookup table function</strong> (<code>MLInferenceLookupFunction</code>)
-        for temporal joins. Both share the same <code>ModelCache</code> and inference engine
-        abstractions defined in <code>ml-inference-core</code>. Models are downloaded from MinIO
-        (or any S3-compatible store) at engine initialisation time and held in a Caffeine LRU cache
-        for the session lifetime.
-      </p>
-
-      <div class="card-grid">
-        <div class="card">
-          <div class="card-title">Zero-code SQL deployment</div>
-          <div class="card-desc">Register any supported model format with a single <code>CREATE FUNCTION</code> statement. No Java operator required in the query itself.</div>
+    <nav class="sidebar">
+        <div class="nav-section">
+            <div class="nav-section-title">Getting Started</div>
+            <a href="#intro"        class="nav-item">Introduction</a>
+            <a href="#quickstart"   class="nav-item">Quick Start</a>
+            <a href="#architecture" class="nav-item">Architecture</a>
         </div>
-        <div class="card">
-          <div class="card-title">MinIO / S3 model loading</div>
-          <div class="card-desc">The connector downloads SavedModel directories and single-file formats (ONNX, XGBoost, PMML) from any S3-compatible endpoint at table-creation time.</div>
+        <div class="nav-divider"></div>
+        <div class="nav-section">
+            <div class="nav-section-title">Flink SQL</div>
+            <a href="#sql-udf"          class="nav-item">UDF Reference</a>
+            <a href="#sql-registration" class="nav-item nav-sub">Studio Registration</a>
+            <a href="#sql-usage"        class="nav-item nav-sub">SQL Usage</a>
+            <a href="#connector"        class="nav-item nav-sub">Table Connector</a>
         </div>
-        <div class="card">
-          <div class="card-title">LRU model caching</div>
-          <div class="card-desc">The Caffeine-backed <code>ModelCache</code> singleton avoids repeated engine initialisation across task slots and query re-runs within a session.</div>
+        <div class="nav-divider"></div>
+        <div class="nav-section">
+            <div class="nav-section-title">Deployment</div>
+            <a href="#shaded-jar"          class="nav-item">Shaded JAR Build</a>
+            <a href="examples.html#minio" class="nav-item">MinIO Model Loading</a>
+            <a href="datastream.html" class="nav-item">DataStream API Guide</a>
+            <a href="studio-demo.html" class="nav-item">Studio Demo</a>
+            <a href="#troubleshooting"     class="nav-item">Troubleshooting</a>
+            <a href="#error-reference"     class="nav-item">Error Reference</a>
         </div>
-        <div class="card">
-          <div class="card-title">Framework-agnostic</div>
-          <div class="card-desc">Swap between ONNX, TensorFlow, XGBoost, and PMML engines by changing the <code>model.format</code> DDL option. The SQL query is unchanged.</div>
+        <div class="nav-divider"></div>
+        <div class="nav-section">
+            <div class="nav-section-title">Modules</div>
+            <a href="modules.html#core" class="nav-item">ml-inference-core</a>
+            <a href="modules.html#sql" class="nav-item">otter-stream-sql</a>
+            <a href="modules.html#onnx" class="nav-item">otter-stream-onnx</a>
+            <a href="modules.html#tensorflow" class="nav-item">otter-stream-tensorflow</a>
+            <a href="modules.html#xgboost" class="nav-item">otter-streams-xgboost</a>
+            <a href="modules.html#pmml" class="nav-item">otter-stream-pmml</a>
+            <a href="modules.html#remote" class="nav-item">otter-stream-remote</a>
         </div>
-        <div class="card">
-          <div class="card-title">Flink reflection-compatible</div>
-          <div class="card-desc">The <code>eval()</code> method uses standard Flink type-extraction patterns. No custom <code>TypeInformation</code> factories or annotations are required.</div>
+        <div class="nav-divider"></div>
+        <div class="nav-section">
+            <div class="nav-section-title">Resources</div>
+            <a href="https://nightlies.apache.org/flink/flink-docs-stable/" class="nav-item" target="_blank">Apache Flink Docs</a>
+            <a href="https://github.com/martourez21/otter-streams/issues"   class="nav-item" target="_blank">Issue Tracker</a>
+            <a href="mailto:nestorabiawuh@gmail.com" class="nav-item">Contact</a>
         </div>
-        <div class="card">
-          <div class="card-title">Production observability</div>
-          <div class="card-desc">All engines emit Micrometer metrics — inference latency, request count, cache hit rate, and error rate — exportable to Prometheus, InfluxDB, or Datadog.</div>
-        </div>
-      </div>
+    </nav>
 
-      <!-- ══ Quick Start ════════════════════════════════════════ -->
-      <h2 id="quickstart">Quick Start</h2>
+    <main class="main">
 
-      <p>
-        The shortest path to running ML inference in Flink SQL has three steps: build the shaded
-        JAR, upload it to the Studio, then register and call the function.
-      </p>
-
-      <div class="steps">
-        <div class="step">
-          <div class="step-num">1</div>
-          <div class="step-body">
-            <div class="step-title">Build the shaded JAR</div>
-            <p>
-              Clone the repository and run the Maven package goal. The shade plugin produces a
-              self-contained <code>*-flink-udf.jar</code> that bundles <code>ml-inference-core</code>
-              and all other runtime dependencies, while leaving Flink itself as a provided dependency.
+        <div class="page-header">
+            <div class="header-badge"><span class="header-dot"></span>Apache Flink &middot; SQL Integration</div>
+            <h1>Otter Streams &mdash; ML Inference for Apache Flink</h1>
+            <p class="lead">
+                A production-grade library for embedding machine learning inference directly into Flink SQL
+                pipelines and DataStream jobs. Supports ONNX, TensorFlow, PyTorch, XGBoost, and PMML with
+                a single consistent API and first-class MinIO / S3 model loading.
             </p>
-            <div class="code-block">
-              <div class="code-block-header"><span class="code-lang">Shell</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
-              <pre>git clone https://github.com/martourez21/otter-streams.git
+            <div class="header-meta">
+                <span class="meta-pill">Version <span class="meta-pill-val">v0.0.4</span></span>
+                <span class="meta-pill">Flink <span class="meta-pill-val">2.0+</span></span>
+                <span class="meta-pill">Java <span class="meta-pill-val">17 & 21</span></span>
+                <span class="meta-pill">License <span class="meta-pill-val">Apache 2.0</span></span>
+            </div>
+        </div>
+
+        <div class="breadcrumb">
+            <a href="index.html">Docs</a>
+            <span class="breadcrumb-sep">/</span>
+            <span class="breadcrumb-current">Introduction</span>
+        </div>
+
+        <div class="content-body cf">
+
+            <div class="toc">
+                <div class="toc-title">On this page</div>
+                <ul class="toc-list">
+                    <li><a href="#intro">Introduction</a></li>
+                    <li><a href="#quickstart">Quick Start</a></li>
+                    <li><a href="#architecture">Architecture</a></li>
+                    <li><a href="#sql-udf">UDF Reference</a></li>
+                    <li><a href="#sql-registration" class="toc-sub">Studio Registration</a></li>
+                    <li><a href="#sql-usage" class="toc-sub">SQL Usage</a></li>
+                    <li><a href="#connector" class="toc-sub">Table Connector</a></li>
+                    <li><a href="#shaded-jar">Shaded JAR Build</a></li>
+                    <li><a href="#troubleshooting">Troubleshooting</a></li>
+                    <li><a href="#error-reference">Error Reference</a></li>
+                </ul>
+            </div>
+
+            <!-- ══ Introduction ══════════════════════════════════════ -->
+            <h2 id="intro">Introduction</h2>
+
+            <p>
+                Otter Streams bridges the gap between machine learning model deployment and Apache Flink's
+                streaming SQL runtime. Rather than embedding model-serving logic inside custom Java operators,
+                data engineers register ML models as standard Flink SQL functions and call them inline in any
+                Flink SQL query — no Java required at query time.
+            </p>
+
+            <p>
+                The <code>otter-stream-sql</code> module exposes two primary extension points: a
+                <strong>scalar UDF</strong> (<code>MLInferenceFunction</code>) for synchronous per-row
+                inference, and a <strong>lookup table function</strong> (<code>MLInferenceLookupFunction</code>)
+                for temporal joins. Both share the same <code>ModelCache</code> and inference engine
+                abstractions defined in <code>ml-inference-core</code>. Models are downloaded from MinIO
+                (or any S3-compatible store) at engine initialisation time and held in a Caffeine LRU cache
+                for the session lifetime.
+            </p>
+
+            <p>
+                <strong>New in v0.0.4:</strong> Full support for <strong>Apache Flink 2.0+</strong> and
+                <strong>Java 17 & 21</strong>. The SDK has been tested against Flink 2.0, 2.1, and 2.2
+                previews, with all engine modules compatible with Java 17 (LTS) and Java 21 (LTS). Users
+                running Flink 1.x should continue using earlier versions of the SDK.
+            </p>
+
+            <div class="card-grid">
+                <div class="card">
+                    <div class="card-title">Zero-code SQL deployment</div>
+                    <div class="card-desc">Register any supported model format with a single <code>CREATE FUNCTION</code> statement. No Java operator required in the query itself.</div>
+                </div>
+                <div class="card">
+                    <div class="card-title">MinIO / S3 model loading</div>
+                    <div class="card-desc">The connector downloads SavedModel directories and single-file formats (ONNX, XGBoost, PMML) from any S3-compatible endpoint at table-creation time.</div>
+                </div>
+                <div class="card">
+                    <div class="card-title">LRU model caching</div>
+                    <div class="card-desc">The Caffeine-backed <code>ModelCache</code> singleton avoids repeated engine initialisation across task slots and query re-runs within a session.</div>
+                </div>
+                <div class="card">
+                    <div class="card-title">Framework-agnostic</div>
+                    <div class="card-desc">Swap between ONNX, TensorFlow, XGBoost, and PMML engines by changing the <code>model.format</code> DDL option. The SQL query is unchanged.</div>
+                </div>
+                <div class="card">
+                    <div class="card-title">Flink reflection-compatible</div>
+                    <div class="card-desc">The <code>eval()</code> method uses standard Flink type-extraction patterns. No custom <code>TypeInformation</code> factories or annotations are required.</div>
+                </div>
+                <div class="card">
+                    <div class="card-title">Production observability</div>
+                    <div class="card-desc">All engines emit Micrometer metrics — inference latency, request count, cache hit rate, and error rate — exportable to Prometheus, InfluxDB, or Datadog.</div>
+                </div>
+            </div>
+
+            <!-- ══ Quick Start ════════════════════════════════════════ -->
+            <h2 id="quickstart">Quick Start</h2>
+
+            <p>
+                The shortest path to running ML inference in Flink SQL has three steps: build the shaded
+                JAR, upload it to the Studio, then register and call the function.
+            </p>
+
+            <div class="steps">
+                <div class="step">
+                    <div class="step-num">1</div>
+                    <div class="step-body">
+                        <div class="step-title">Build the shaded JAR</div>
+                        <p>
+                            Clone the repository and run the Maven package goal. The shade plugin produces a
+                            self-contained <code>*-flink-udf.jar</code> that bundles <code>ml-inference-core</code>
+                            and all other runtime dependencies, while leaving Flink itself as a provided dependency.
+                        </p>
+                        <div class="code-block">
+                            <div class="code-block-header"><span class="code-lang">Shell</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+                            <pre>git clone https://github.com/martourez21/otter-streams.git
 cd otter-streams
 mvn clean install -DskipTests
 
 # The artifact you need — note the -flink-udf classifier suffix:
-ls otter-stream-sql/target/otter-stream-sql-1.0.17-flink-udf.jar</pre>
-            </div>
-          </div>
-        </div>
+ls otter-stream-sql/target/otter-stream-sql-0.0.4-flink-udf.jar</pre>
+                        </div>
+                    </div>
+                </div>
 
-        <div class="step">
-          <div class="step-num">2</div>
-          <div class="step-body">
-            <div class="step-title">Upload the JAR in Studio</div>
-            <p>
-              Open the Str:::Lab Studio UDF Manager, navigate to the <em>Upload JAR</em> tab, and
-              drag <code>otter-stream-sql-1.0.17-flink-udf.jar</code> into the drop zone. The Studio
-              copies the file to <code>/var/www/udf-jars/</code> on the Gateway container and
-              automatically executes <code>ADD JAR</code> in the active session.
-            </p>
-          </div>
-        </div>
+                <div class="step">
+                    <div class="step-num">2</div>
+                    <div class="step-body">
+                        <div class="step-title">Upload the JAR in Studio</div>
+                        <p>
+                            Open the Str:::Lab Studio UDF Manager, navigate to the <em>Upload JAR</em> tab, and
+                            drag <code>otter-stream-sql-0.0.4-flink-udf.jar</code> into the drop zone. The Studio
+                            copies the file to <code>/var/www/udf-jars/</code> on the Gateway container and
+                            automatically executes <code>ADD JAR</code> in the active session.
+                        </p>
+                    </div>
+                </div>
 
-        <div class="step">
-          <div class="step-num">3</div>
-          <div class="step-body">
-            <div class="step-title">Preload the model and register the UDF</div>
-            <p>
-              Create the connector table first — this triggers the MinIO download and warms
-              <code>ModelCache</code>. Then register the scalar function and run the smoke test.
-            </p>
-            <div class="code-block">
-              <div class="code-block-header"><span class="code-lang">SQL</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
-              <pre>-- 1. Download the model from MinIO into ModelCache
+                <div class="step">
+                    <div class="step-num">3</div>
+                    <div class="step-body">
+                        <div class="step-title">Preload the model and register the UDF</div>
+                        <p>
+                            Create the connector table first — this triggers the MinIO download and warms
+                            <code>ModelCache</code>. Then register the scalar function and run the smoke test.
+                        </p>
+                        <div class="code-block">
+                            <div class="code-block-header"><span class="code-lang">SQL</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+                            <pre>-- 1. Download the model from MinIO into ModelCache
 CREATE TEMPORARY TABLE fraud_model_source (score DOUBLE)
 WITH (
     'connector'           = 'ml-inference',
@@ -272,314 +346,349 @@ SELECT ml_score(
     MAP['amount', '320.00', 'hour_of_day', '22', 'is_international', 'true'],
     'fraud-detector'
 ) AS score;</pre>
+                        </div>
+                    </div>
+                </div>
             </div>
-          </div>
-        </div>
-      </div>
 
-      <div class="callout callout-info">
-        <span class="callout-icon">i</span>
-        <div>
-          If the smoke-test returns <code>NULL</code> the model was not found in
-          <code>ModelCache</code>. This usually means the connector table was not created yet, or the
-          MinIO download failed. Check the TaskManager logs for a download exception and verify that
-          <code>model.s3.path-style = 'true'</code> is set — MinIO requires path-style access.
-        </div>
-      </div>
+            <div class="callout callout-info">
+                <span class="callout-icon">i</span>
+                <div>
+                    If the smoke-test returns <code>NULL</code> the model was not found in
+                    <code>ModelCache</code>. This usually means the connector table was not created yet, or the
+                    MinIO download failed. Check the TaskManager logs for a download exception and verify that
+                    <code>model.s3.path-style = 'true'</code> is set — MinIO requires path-style access.
+                </div>
+            </div>
 
-      <!-- ══ Architecture ══════════════════════════════════════ -->
-      <h2 id="architecture">Architecture</h2>
+            <!-- ══ Architecture (ENLARGED DIAGRAM with zoom) ══════════════ -->
+            <h2 id="architecture">Architecture</h2>
 
-      <p>
-        Otter Streams is built on two parallel tracks: a <strong>DataStream API</strong> path for
-        low-level operator control and an <strong>SQL / Table API</strong> path for declarative
-        pipelines. Both converge on the same <code>InferenceEngine</code> abstraction and share
-        the <code>ModelCache</code> singleton. Models are fetched from MinIO (or any S3-compatible
-        store) once per session and reused across task slots. Flink is always a
-        <code>provided</code> dependency — it is never bundled in the shaded JAR, so the same
-        artifact runs across Flink 1.15 through 1.20 without recompilation.
-      </p>
+            <p>
+                Otter Streams is built on two parallel tracks: a <strong>DataStream API</strong> path for
+                low-level operator control and an <strong>SQL / Table API</strong> path for declarative
+                pipelines. Both converge on the same <code>InferenceEngine</code> abstraction and share
+                the <code>ModelCache</code> singleton. Models are fetched from MinIO (or any S3-compatible
+                store) once per session and reused across task slots. Flink is always a
+                <code>provided</code> dependency — it is never bundled in the shaded JAR, so the same
+                artifact runs across Flink 2.0+ without recompilation.
+            </p>
 
-      <!-- Mermaid architecture diagram -->
-      <div class="mermaid-wrap">
-        <div class="mermaid-title">Otter Streams &mdash; System Architecture</div>
-        <div class="mermaid">
-flowchart TB
-    subgraph SOURCES["&nbsp;Data Sources&nbsp;"]
-        direction LR
-        K[("Kafka\nTopic")]
-        S[("S3 /\nHDFS")]
-        DB[("Database\nCDC")]
-    end
+            <!-- Enlarged Mermaid architecture diagram with zoom controls -->
+            <div class="mermaid-wrap enlarged" id="arch-diagram-wrap">
+                <div class="mermaid-zoom-controls">
+                    <button class="mermaid-zoom-btn" onclick="zoomDiagram('arch', 1.2)">+</button>
+                    <button class="mermaid-zoom-btn" onclick="zoomDiagram('arch', 0.8)">-</button>
+                    <button class="mermaid-zoom-btn mermaid-zoom-reset" onclick="resetZoom('arch')">Reset</button>
+                </div>
+                <div class="mermaid-title">Otter Streams — System Architecture (Flink 2.0+ / Java 17/21)</div>
+                <div class="mermaid-container" id="arch-diagram-container" style="overflow: auto; cursor: grab;">
+                    <div class="mermaid" style="transform-origin: top left; transition: transform 0.2s ease;" id="arch-mermaid">
+                        flowchart TB
+                        subgraph SOURCES["&nbsp;Data Sources&nbsp;"]
+                        direction LR
+                        K[("Kafka\nTopic")]
+                        S[("S3 /\nHDFS")]
+                        DB[("Database\nCDC")]
+                        end
 
-    subgraph FLINK["&nbsp;Apache Flink Cluster&nbsp;"]
-        direction TB
+                        subgraph FLINK["&nbsp;Apache Flink 2.0+ Cluster (Java 17/21)&nbsp;"]
+                        direction TB
 
-        subgraph JM["Job Manager"]
-            JMC["Job Coordination\n& Scheduling"]
-        end
+                        subgraph JM["Job Manager"]
+                        JMC["Job Coordination\n& Scheduling"]
+                        end
 
-        subgraph TM["Task Managers  (N slots)"]
-            direction TB
+                        subgraph TM["Task Managers  (N slots)"]
+                        direction TB
 
-            subgraph DS_PATH["DataStream API path"]
-                direction LR
-                SRC["SourceFunction\n/ KafkaSource"]
-                ASYNC["AsyncDataStream\n.unorderedWait()"]
-                AMIF["AsyncModelInference\nFunction"]
-                SINK_DS["DataStream\nSink"]
-                SRC --> ASYNC --> AMIF --> SINK_DS
-            end
+                        subgraph DS_PATH["DataStream API path"]
+                        direction LR
+                        SRC["SourceFunction\n/ KafkaSource"]
+                        ASYNC["AsyncDataStream\n.unorderedWait()"]
+                        AMIF["AsyncModelInference\nFunction"]
+                        SINK_DS["DataStream\nSink"]
+                        SRC --> ASYNC --> AMIF --> SINK_DS
+                        end
 
-            subgraph SQL_PATH["Flink SQL / Table API path"]
-                direction LR
-                GW["SQL Gateway\nSession"]
-                UDF["MLInference\nFunction\n(ScalarFunction)"]
-                LKP["MLInference\nLookupFunction\n(TableFunction)"]
-                CONN["ml-inference\nConnector\n(DynamicTableSource)"]
-                SINK_SQL["Table /\nKafka Sink"]
-                GW --> UDF
-                GW --> LKP
-                GW --> CONN
-                UDF --> SINK_SQL
-                LKP --> SINK_SQL
-            end
+                        subgraph SQL_PATH["Flink SQL / Table API path"]
+                        direction LR
+                        GW["SQL Gateway\nSession"]
+                        UDF["MLInference\nFunction\n(ScalarFunction)"]
+                        LKP["MLInference\nLookupFunction\n(TableFunction)"]
+                        CONN["ml-inference\nConnector\n(DynamicTableSource)"]
+                        SINK_SQL["Table /\nKafka Sink"]
+                        GW --> UDF
+                        GW --> LKP
+                        GW --> CONN
+                        UDF --> SINK_SQL
+                        LKP --> SINK_SQL
+                        end
 
-            subgraph CORE["ml-inference-core  (shared by both paths)"]
-                direction LR
-                MC["ModelCache\nCaffeine LRU\nsingleton"]
-                IE["InferenceEngine&lt;C&gt;\ninterface"]
-                IR["InferenceResult\n+ InferenceException"]
-                MC --> IE --> IR
-            end
+                        subgraph CORE["ml-inference-core  (shared by both paths)"]
+                        direction LR
+                        MC["ModelCache\nCaffeine LRU\nsingleton"]
+                        IE["InferenceEngine&lt;C&gt;\ninterface"]
+                        IR["InferenceResult\n+ InferenceException"]
+                        MC --> IE --> IR
+                        end
 
-            AMIF -- "getEngine(name)" --> MC
-            UDF  -- "getEngine(name)" --> MC
-            LKP  -- "getEngine(name)" --> MC
-            CONN -- "putEngine(name, engine)" --> MC
-        end
-    end
+                        AMIF -- "getEngine(name)" --> MC
+                        UDF  -- "getEngine(name)" --> MC
+                        LKP  -- "getEngine(name)" --> MC
+                        CONN -- "putEngine(name, engine)" --> MC
+                        end
+                        end
 
-    subgraph ENGINES["&nbsp;Engine Modules  (include only what you need)&nbsp;"]
-        direction LR
-        ONNX["otter-stream-onnx\nONNX Runtime 1.23.2\nCPU / CUDA / TensorRT"]
-        TF["otter-stream-tensorflow\nSavedModel format\nGPU acceleration"]
-        XGB["otter-streams-xgboost\nXGBoost4J 3.1.1\nbinary / JSON / UBJ"]
-        PMML["otter-stream-pmml\nJPMML 1.5.16\nregression / trees / NN"]
-        REM["otter-stream-remote\nHTTP / gRPC\nSageMaker · Vertex AI"]
-    end
+                        subgraph ENGINES["&nbsp;Engine Modules  (include only what you need)&nbsp;"]
+                        direction LR
+                        ONNX["otter-stream-onnx\nONNX Runtime 1.23.2\nCPU / CUDA / TensorRT"]
+                        TF["otter-stream-tensorflow\nSavedModel format\nGPU acceleration"]
+                        XGB["otter-streams-xgboost\nXGBoost4J 3.1.1\nbinary / JSON / UBJ"]
+                        PMML["otter-stream-pmml\nJPMML 1.5.16\nregression / trees / NN"]
+                        REM["otter-stream-remote\nHTTP / gRPC\nSageMaker · Vertex AI"]
+                        end
 
-    subgraph STORE["&nbsp;Model Store&nbsp;"]
-        direction LR
-        MINIO[("MinIO\nS3-compatible\nbucket")]
-        S3AWS[("AWS S3")]
-        LOCAL[("Local / HDFS\nfilesystem")]
-    end
+                        subgraph STORE["&nbsp;Model Store&nbsp;"]
+                        direction LR
+                        MINIO[("MinIO\nS3-compatible\nbucket")]
+                        S3AWS[("AWS S3")]
+                        LOCAL[("Local / HDFS\nfilesystem")]
+                        end
 
-    SOURCES --> DS_PATH
-    SOURCES --> SQL_PATH
+                        SOURCES --> DS_PATH
+                        SOURCES --> SQL_PATH
 
-    IE -- "implements" --> ONNX
-    IE -- "implements" --> TF
-    IE -- "implements" --> XGB
-    IE -- "implements" --> PMML
-    IE -- "implements" --> REM
+                        IE -- "implements" --> ONNX
+                        IE -- "implements" --> TF
+                        IE -- "implements" --> XGB
+                        IE -- "implements" --> PMML
+                        IE -- "implements" --> REM
 
-    CONN -- "MinioModelLoader\ndownloads on\ntable creation" --> MINIO
-    AMIF -- "ModelConfig\n.modelPath" --> MINIO
-    MINIO -.->|"also supports"| S3AWS
-    MINIO -.->|"also supports"| LOCAL
+                        CONN -- "MinioModelLoader\ndownloads on\ntable creation" --> MINIO
+                        AMIF -- "ModelConfig\n.modelPath" --> MINIO
+                        MINIO -.->|"also supports"| S3AWS
+                        MINIO -.->|"also supports"| LOCAL
 
-    classDef flinkBox  fill:#1a1f28,stroke:#0091d5,color:#c9d1d9,rx:6
-    classDef coreBox   fill:#0a2a3d,stroke:#0091d5,color:#a5d6ff,rx:6
-    classDef engineBox fill:#0d1f0d,stroke:#00875a,color:#a7f3d0,rx:6
-    classDef storeBox  fill:#2a1a0d,stroke:#b45309,color:#fde68a,rx:6
-    classDef srcBox    fill:#1a1a2a,stroke:#5c6878,color:#b0bac8,rx:6
-    classDef pathBox   fill:#111827,stroke:#2c3340,color:#8492a6,rx:4
+                        classDef flinkBox  fill:#1a1f28,stroke:#0091d5,color:#c9d1d9,rx:6
+                        classDef coreBox   fill:#0a2a3d,stroke:#0091d5,color:#a5d6ff,rx:6
+                        classDef engineBox fill:#0d1f0d,stroke:#00875a,color:#a7f3d0,rx:6
+                        classDef storeBox  fill:#2a1a0d,stroke:#b45309,color:#fde68a,rx:6
+                        classDef srcBox    fill:#1a1a2a,stroke:#5c6878,color:#b0bac8,rx:6
+                        classDef pathBox   fill:#111827,stroke:#2c3340,color:#8492a6,rx:4
 
-    class FLINK,JM,TM flinkBox
-    class CORE coreBox
-    class ENGINES,ONNX,TF,XGB,PMML,REM engineBox
-    class STORE,MINIO,S3AWS,LOCAL storeBox
-    class SOURCES,K,S,DB srcBox
-    class DS_PATH,SQL_PATH pathBox
-        </div>
-        <div class="mermaid-caption">
-          Both the DataStream and SQL paths share a single <code>ModelCache</code> and
-          <code>InferenceEngine</code> abstraction. Models are downloaded from MinIO at
-          initialisation time and held for the session lifetime.
-        </div>
-      </div>
+                        class FLINK,JM,TM flinkBox
+                        class CORE coreBox
+                        class ENGINES,ONNX,TF,XGB,PMML,REM engineBox
+                        class STORE,MINIO,S3AWS,LOCAL storeBox
+                        class SOURCES,K,S,DB srcBox
+                        class DS_PATH,SQL_PATH pathBox
+                    </div>
+                </div>
+                <div class="mermaid-caption">
+                    Both the DataStream and SQL paths share a single <code>ModelCache</code> and
+                    <code>InferenceEngine</code> abstraction. Models are downloaded from MinIO at
+                    initialisation time and held for the session lifetime. <strong>Flink 2.0+ and Java 17/21 are fully supported.</strong>
+                </div>
+            </div>
 
-      <p>
-        The critical design constraint is that <strong>Flink is always <code>provided</code>
-        scope</strong>. The shaded JAR bundles every runtime dependency except Flink and SLF4J,
-        so the same artifact works across Flink 1.15 through 1.20 without recompilation. Engine
-        modules are optional — include only the ones your pipeline requires to keep the JAR size
-        manageable.
-      </p>
+            <!-- Module Architecture Diagram (SQL Module) -->
+            <div class="module-diagram">
+                <div class="mermaid-title" style="margin-bottom: 12px;">otter-stream-sql — Module Internals</div>
+                <div class="mermaid" id="sql-module-mermaid">
+                    flowchart LR
+                    subgraph SQL_MODULE["otter-stream-sql Module"]
+                    UDF_CORE["MLInferenceFunction\n(ScalarFunction)"]
+                    UDF_LOOKUP["MLInferenceLookupFunction\n(TableFunction)"]
+                    CONNECTOR["MLInferenceDynamicTableFactory\n(SPI: 'connector' = 'ml-inference')"]
+                    CONFIG_PARSER["SqlInferenceConfig\n(DDL option parser)"]
+                    LOADER["MinioModelLoader\n(MinIO/S3 downloader)"]
 
-      <!-- ══ UDF Reference ═════════════════════════════════════ -->
-      <h2 id="sql-udf">UDF Class Reference &mdash; MLInferenceFunction</h2>
+                    UDF_CORE --> CONFIG_PARSER
+                    UDF_LOOKUP --> CONFIG_PARSER
+                    CONNECTOR --> CONFIG_PARSER
+                    CONFIG_PARSER --> LOADER
+                    LOADER --> CACHE[("ModelCache\n(Caffeine LRU)")]
+                    CACHE --> ENGINE[("InferenceEngine\n(ONNX/TF/XGB/PMML)")]
+                    end
 
-      <p>
-        <code>MLInferenceFunction</code> is the primary entry point for SQL-based inference. It
-        extends Flink's <code>ScalarFunction</code> and performs synchronous per-row inference by
-        delegating to the named engine in <code>ModelCache</code>.
-      </p>
+                    style SQL_MODULE fill:#0a2a3d,stroke:#0091d5,color:#c9d1d9
+                </div>
+                <div class="mermaid-caption" style="margin-top: 8px;">
+                    The SQL module provides three integration points: scalar UDF, lookup table function, and dynamic table connector.
+                    All share the same configuration parser and MinIO model loader, and populate the global <code>ModelCache</code>.
+                </div>
+            </div>
 
-      <h3>Method signature</h3>
-      <div class="artifact-table">
-        <div class="artifact-row">
-          <div class="artifact-key">Class</div>
-          <div class="artifact-val">com.codedstreams.otterstreams.sql.udf.MLInferenceFunction</div>
-        </div>
-        <div class="artifact-row">
-          <div class="artifact-key">Extends</div>
-          <div class="artifact-val">org.apache.flink.table.functions.ScalarFunction</div>
-        </div>
-        <div class="artifact-row">
-          <div class="artifact-key">Entry method</div>
-          <div class="artifact-val">eval(Map&lt;String, Object&gt; features, String modelName)</div>
-        </div>
-        <div class="artifact-row">
-          <div class="artifact-key">Return type</div>
-          <div class="artifact-val">Double — nullable; NULL when model absent, inference fails, or output is non-numeric</div>
-        </div>
-        <div class="artifact-row">
-          <div class="artifact-key">Declared exception</div>
-          <div class="artifact-val">throws InferenceException — this class must be present in the shaded JAR</div>
-        </div>
-        <div class="artifact-row">
-          <div class="artifact-key">Serialisation</div>
-          <div class="artifact-val">modelCache field is transient; lazily re-initialised per task slot via singleton getInstance()</div>
-        </div>
-      </div>
+            <p>
+                The critical design constraint is that <strong>Flink is always <code>provided</code>
+                scope</strong>. The shaded JAR bundles every runtime dependency except Flink and SLF4J,
+                so the same artifact works across Flink 2.0, 2.1, and later without recompilation. Engine
+                modules are optional — include only the ones your pipeline requires to keep the JAR size
+                manageable.
+            </p>
 
-      <h3>Parameters</h3>
-      <div class="table-wrap"><table>
-        <thead>
-          <tr><th>#</th><th>Name</th><th>Java type</th><th>SQL type (Studio)</th><th>Description</th></tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>1</td>
-            <td><code>features</code></td>
-            <td><code>Map&lt;String, Object&gt;</code></td>
-            <td><span class="tag tag-blue">MAP&lt;STRING,STRING&gt;</span></td>
-            <td>Feature map passed to the inference engine. Keys are feature names; values are cast to the correct numeric types internally by the engine.</td>
-          </tr>
-          <tr>
-            <td>2</td>
-            <td><code>modelName</code></td>
-            <td><code>String</code></td>
-            <td><span class="tag tag-blue">STRING</span></td>
-            <td>Logical model name that must match the <code>model.name</code> DDL option used when the connector table was created.</td>
-          </tr>
-        </tbody>
-      </table></div>
+            <!-- ══ UDF Reference ═════════════════════════════════════ -->
+            <h2 id="sql-udf">UDF Class Reference &mdash; MLInferenceFunction</h2>
 
-      <div class="callout callout-note">
-        <span class="callout-icon">i</span>
-        <div>
-          Flink discovers the <code>eval()</code> signature via reflection at registration time.
-          Parameter types are <strong>not</strong> written into the <code>CREATE FUNCTION</code>
-          DDL — they are inferred automatically. The entries in the Studio parameter builder are
-          advisory only; they populate the usage preview snippet but have no effect on the generated
-          DDL or on runtime behaviour.
-        </div>
-      </div>
+            <p>
+                <code>MLInferenceFunction</code> is the primary entry point for SQL-based inference. It
+                extends Flink's <code>ScalarFunction</code> and performs synchronous per-row inference by
+                delegating to the named engine in <code>ModelCache</code>.
+            </p>
 
-      <!-- ══ Studio Registration ═══════════════════════════════ -->
-      <h2 id="sql-registration">Registering the UDF in Str:::Lab Studio</h2>
+            <h3>Method signature</h3>
+            <div class="artifact-table">
+                <div class="artifact-row">
+                    <div class="artifact-key">Class</div>
+                    <div class="artifact-val">com.codedstreams.otterstreams.sql.udf.MLInferenceFunction</div>
+                </div>
+                <div class="artifact-row">
+                    <div class="artifact-key">Extends</div>
+                    <div class="artifact-val">org.apache.flink.table.functions.ScalarFunction</div>
+                </div>
+                <div class="artifact-row">
+                    <div class="artifact-key">Entry method</div>
+                    <div class="artifact-val">eval(Map&lt;String, Object&gt; features, String modelName)</div>
+                </div>
+                <div class="artifact-row">
+                    <div class="artifact-key">Return type</div>
+                    <div class="artifact-val">Double — nullable; NULL when model absent, inference fails, or output is non-numeric</div>
+                </div>
+                <div class="artifact-row">
+                    <div class="artifact-key">Declared exception</div>
+                    <div class="artifact-val">throws InferenceException — this class must be present in the shaded JAR</div>
+                </div>
+                <div class="artifact-row">
+                    <div class="artifact-key">Serialisation</div>
+                    <div class="artifact-val">modelCache field is transient; lazily re-initialised per task slot via singleton getInstance()</div>
+                </div>
+            </div>
 
-      <p>
-        The Studio UDF Manager (<em>Register UDF</em> tab) generates and executes the session-scoped
-        DDL automatically. Fill in the three required fields below; leave all other settings at their
-        defaults.
-      </p>
+            <h3>Parameters</h3>
+            <div class="table-wrap"><table>
+                <thead>
+                <tr><th>#</th><th>Name</th><th>Java type</th><th>SQL type (Studio)</th><th>Description</th></tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td>1</td>
+                    <td><code>features</code></td>
+                    <td><code>Map&lt;String, Object&gt;</code></td>
+                    <td><span class="tag tag-blue">MAP&lt;STRING,STRING&gt;</span></td>
+                    <td>Feature map passed to the inference engine. Keys are feature names; values are cast to the correct numeric types internally by the engine.</td>
+                </tr>
+                <tr>
+                    <td>2</td>
+                    <td><code>modelName</code></td>
+                    <td><code>String</code></td>
+                    <td><span class="tag tag-blue">STRING</span></td>
+                    <td>Logical model name that must match the <code>model.name</code> DDL option used when the connector table was created.</td>
+                </tr>
+                </tbody>
+            </table></div>
 
-      <h3>Required fields</h3>
-      <div class="artifact-table">
-        <div class="artifact-row">
-          <div class="artifact-key">Function Name</div>
-          <div class="artifact-val"><code>ml_score</code></div>
-        </div>
-        <div class="artifact-row">
-          <div class="artifact-key">Language</div>
-          <div class="artifact-val"><code>JAVA</code></div>
-        </div>
-        <div class="artifact-row">
-          <div class="artifact-key">Class / Module Path</div>
-          <div class="artifact-val"><code>com.codedstreams.otterstreams.sql.udf.MLInferenceFunction</code></div>
-        </div>
-        <div class="artifact-row">
-          <div class="artifact-key">Method (informational)</div>
-          <div class="artifact-val"><code>eval</code> &mdash; Flink resolves via reflection; not written into DDL</div>
-        </div>
-        <div class="artifact-row">
-          <div class="artifact-key">Scope</div>
-          <div class="artifact-val">Temporary (session-scoped)</div>
-        </div>
-      </div>
+            <div class="callout callout-note">
+                <span class="callout-icon">i</span>
+                <div>
+                    Flink discovers the <code>eval()</code> signature via reflection at registration time.
+                    Parameter types are <strong>not</strong> written into the <code>CREATE FUNCTION</code>
+                    DDL — they are inferred automatically. The entries in the Studio parameter builder are
+                    advisory only; they populate the usage preview snippet but have no effect on the generated
+                    DDL or on runtime behaviour.
+                </div>
+            </div>
 
-      <h3>Parameter entries &mdash; advisory only</h3>
-      <div class="table-wrap"><table>
-        <thead><tr><th>#</th><th>Name</th><th>Type to select in Studio dropdown</th></tr></thead>
-        <tbody>
-          <tr><td>1</td><td><code>features</code></td><td><span class="tag tag-blue">MAP&lt;STRING,STRING&gt;</span></td></tr>
-          <tr><td>2</td><td><code>modelName</code></td><td><span class="tag tag-blue">STRING</span></td></tr>
-        </tbody>
-      </table></div>
+            <!-- ══ Studio Registration ═══════════════════════════════ -->
+            <h2 id="sql-registration">Registering the UDF in Str:::Lab Studio</h2>
 
-      <h3>DDL the Studio executes</h3>
-      <div class="code-block">
-        <div class="code-block-header">
-          <span class="code-lang">SQL</span>
-          <span class="code-filename">session DDL — auto-generated by Studio</span>
-          <button class="copy-btn" onclick="copyCode(this)">Copy</button>
-        </div>
-        <pre>-- Loads the shaded JAR onto the Gateway session classpath
-ADD JAR '/var/www/udf-jars/otter-stream-sql-1.0.17-flink-udf.jar';
+            <p>
+                The Studio UDF Manager (<em>Register UDF</em> tab) generates and executes the session-scoped
+                DDL automatically. Fill in the three required fields below; leave all other settings at their
+                defaults.
+            </p>
+
+            <h3>Required fields</h3>
+            <div class="artifact-table">
+                <div class="artifact-row">
+                    <div class="artifact-key">Function Name</div>
+                    <div class="artifact-val"><code>ml_score</code></div>
+                </div>
+                <div class="artifact-row">
+                    <div class="artifact-key">Language</div>
+                    <div class="artifact-val"><code>JAVA</code></div>
+                </div>
+                <div class="artifact-row">
+                    <div class="artifact-key">Class / Module Path</div>
+                    <div class="artifact-val"><code>com.codedstreams.otterstreams.sql.udf.MLInferenceFunction</code></div>
+                </div>
+                <div class="artifact-row">
+                    <div class="artifact-key">Method (informational)</div>
+                    <div class="artifact-val"><code>eval</code> &mdash; Flink resolves via reflection; not written into DDL</div>
+                </div>
+                <div class="artifact-row">
+                    <div class="artifact-key">Scope</div>
+                    <div class="artifact-val">Temporary (session-scoped)</div>
+                </div>
+            </div>
+
+            <h3>Parameter entries &mdash; advisory only</h3>
+            <div class="table-wrap"><tr>
+                <thead><tr><th>#</th><th>Name</th><th>Type to select in Studio dropdown</th></tr></thead>
+                <tbody>
+                <tr><td>1</td><td><code>features</code></td><td><span class="tag tag-blue">MAP&lt;STRING,STRING&gt;</span></td></tr>
+                <tr><td>2</td><td><code>modelName</code></td><td><span class="tag tag-blue">STRING</span></td></tr>
+                </tbody>
+                </table></div>
+
+            <h3>DDL the Studio executes</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-lang">SQL</span>
+                    <span class="code-filename">session DDL — auto-generated by Studio</span>
+                    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                </div>
+                <pre>-- Loads the shaded JAR onto the Gateway session classpath
+ADD JAR '/var/www/udf-jars/otter-stream-sql-0.0.4-flink-udf.jar';
 
 -- Registers the scalar function
 CREATE TEMPORARY FUNCTION IF NOT EXISTS ml_score
 AS 'com.codedstreams.otterstreams.sql.udf.MLInferenceFunction'
 LANGUAGE JAVA;</pre>
-      </div>
+            </div>
 
-      <div class="callout callout-warn">
-        <span class="callout-icon">!</span>
-        <div>
-          <strong>Session scope.</strong> Both <code>ADD JAR</code> and
-          <code>CREATE TEMPORARY FUNCTION</code> are bound to the active Gateway session. After any
-          session renewal or disconnect you must re-register. The Studio UDF Manager handles this
-          automatically when you click <em>Register Function</em> at the start of a new session.
-        </div>
-      </div>
+            <div class="callout callout-warn">
+                <span class="callout-icon">!</span>
+                <div>
+                    <strong>Session scope.</strong> Both <code>ADD JAR</code> and
+                    <code>CREATE TEMPORARY FUNCTION</code> are bound to the active Gateway session. After any
+                    session renewal or disconnect you must re-register. The Studio UDF Manager handles this
+                    automatically when you click <em>Register Function</em> at the start of a new session.
+                </div>
+            </div>
 
-      <!-- ══ SQL Usage ════════════════════════════════════════ -->
-      <h2 id="sql-usage">SQL Usage Examples</h2>
+            <!-- ══ SQL Usage ════════════════════════════════════════ -->
+            <h2 id="sql-usage">SQL Usage Examples</h2>
 
-      <h3>Basic per-row inference</h3>
-      <div class="code-block">
-        <div class="code-block-header"><span class="code-lang">SQL</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
-        <pre>SELECT
+            <h3>Basic per-row inference</h3>
+            <div class="code-block">
+                <div class="code-block-header"><span class="code-lang">SQL</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+                <pre>SELECT
     transaction_id,
     amount,
     ml_score(features, 'fraud-detector') AS fraud_score
 FROM transactions;</pre>
-      </div>
+            </div>
 
-      <h3>Filtering without double evaluation</h3>
-      <p>
-        Use <code>CROSS JOIN LATERAL</code> to name the score once and reference it in both the
-        <code>SELECT</code> list and the <code>WHERE</code> clause. This prevents Flink from
-        invoking the UDF twice per row, which would double the inference cost.
-      </p>
-      <div class="code-block">
-        <div class="code-block-header"><span class="code-lang">SQL</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
-        <pre>INSERT INTO fraud_alerts
+            <h3>Filtering without double evaluation</h3>
+            <p>
+                Use <code>CROSS JOIN LATERAL</code> to name the score once and reference it in both the
+                <code>SELECT</code> list and the <code>WHERE</code> clause. This prevents Flink from
+                invoking the UDF twice per row, which would double the inference cost.
+            </p>
+            <div class="code-block">
+                <div class="code-block-header"><span class="code-lang">SQL</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+                <pre>INSERT INTO fraud_alerts
 SELECT
     transaction_id,
     fraud_score,
@@ -594,18 +703,18 @@ CROSS JOIN LATERAL (
     SELECT COALESCE(ml_score(features, 'fraud-detector'), 0.0) AS fraud_score
 ) scores
 WHERE fraud_score >= 0.40;</pre>
-      </div>
+            </div>
 
-      <h3>Inline feature map construction</h3>
-      <p>
-        If the upstream producer does not pre-assemble a <code>MAP</code> column, build one inline
-        using Flink's <code>MAP[key, value, ...]</code> constructor. Cast all values to
-        <code>STRING</code> to satisfy the UDF type; the engine casts them back to numerics
-        internally.
-      </p>
-      <div class="code-block">
-        <div class="code-block-header"><span class="code-lang">SQL</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
-        <pre>SELECT
+            <h3>Inline feature map construction</h3>
+            <p>
+                If the upstream producer does not pre-assemble a <code>MAP</code> column, build one inline
+                using Flink's <code>MAP[key, value, ...]</code> constructor. Cast all values to
+                <code>STRING</code> to satisfy the UDF type; the engine casts them back to numerics
+                internally.
+            </p>
+            <div class="code-block">
+                <div class="code-block-header"><span class="code-lang">SQL</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+                <pre>SELECT
     transaction_id,
     ml_score(
         MAP[
@@ -618,22 +727,22 @@ WHERE fraud_score >= 0.40;</pre>
         'fraud-detector'
     ) AS fraud_score
 FROM transactions;</pre>
-      </div>
+            </div>
 
-      <!-- ══ Connector ═════════════════════════════════════════ -->
-      <h2 id="connector">Table Connector &mdash; ml-inference</h2>
+            <!-- ══ Connector ═════════════════════════════════════════ -->
+            <h2 id="connector">Table Connector &mdash; ml-inference</h2>
 
-      <p>
-        The <code>ml-inference</code> connector is discovered at runtime via Java SPI from
-        <code>META-INF/services/org.apache.flink.table.factories.Factory</code>. Its primary role is
-        to <strong>preload models from MinIO into <code>ModelCache</code></strong> before any
-        streaming query runs, so that the first rows processed do not incur model-download latency.
-      </p>
+            <p>
+                The <code>ml-inference</code> connector is discovered at runtime via Java SPI from
+                <code>META-INF/services/org.apache.flink.table.factories.Factory</code>. Its primary role is
+                to <strong>preload models from MinIO into <code>ModelCache</code></strong> before any
+                streaming query runs, so that the first rows processed do not incur model-download latency.
+            </p>
 
-      <h3>Preloading a TensorFlow model from MinIO</h3>
-      <div class="code-block">
-        <div class="code-block-header"><span class="code-lang">SQL</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
-        <pre>CREATE TEMPORARY TABLE fraud_model_source (
+            <h3>Preloading a TensorFlow model from MinIO</h3>
+            <div class="code-block">
+                <div class="code-block-header"><span class="code-lang">SQL</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+                <pre>CREATE TEMPORARY TABLE fraud_model_source (
     score      DOUBLE,
     confidence DOUBLE
 ) WITH (
@@ -653,12 +762,12 @@ FROM transactions;</pre>
 -- If the MinIO download failed you will see the exception here
 -- rather than silently at inference time.
 DESCRIBE fraud_model_source;</pre>
-      </div>
+            </div>
 
-      <h3>Preloading an XGBoost model from MinIO</h3>
-      <div class="code-block">
-        <div class="code-block-header"><span class="code-lang">SQL</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
-        <pre>CREATE TEMPORARY TABLE anomaly_model_source (
+            <h3>Preloading an XGBoost model from MinIO</h3>
+            <div class="code-block">
+                <div class="code-block-header"><span class="code-lang">SQL</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+                <pre>CREATE TEMPORARY TABLE anomaly_model_source (
     score DOUBLE
 ) WITH (
     'connector'           = 'ml-inference',
@@ -671,12 +780,12 @@ DESCRIBE fraud_model_source;</pre>
     'model.s3.path-style' = 'true',
     'cache.enabled'       = 'true'
 );</pre>
-      </div>
+            </div>
 
-      <h3>Lookup join (temporal join)</h3>
-      <div class="code-block">
-        <div class="code-block-header"><span class="code-lang">SQL</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
-        <pre>SELECT
+            <h3>Lookup join (temporal join)</h3>
+            <div class="code-block">
+                <div class="code-block-header"><span class="code-lang">SQL</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+                <pre>SELECT
     t.transaction_id,
     t.amount,
     p.score      AS fraud_score,
@@ -685,37 +794,37 @@ FROM transactions AS t
 JOIN fraud_model_source FOR SYSTEM_TIME AS OF t.proc_time AS p
   ON t.feature_key = p.feature_key
 WHERE p.score > 0.5;</pre>
-      </div>
+            </div>
 
-      <p>
-        For the full DDL option reference see
-        <a href="api.html#connector-options">API Reference &rarr; Connector DDL Options</a>.
-      </p>
+            <p>
+                For the full DDL option reference see
+                <a href="api.html#connector-options">API Reference &rarr; Connector DDL Options</a>.
+            </p>
 
-      <!-- ══ Shaded JAR ════════════════════════════════════════ -->
-      <h2 id="shaded-jar">Building the Shaded JAR</h2>
+            <!-- ══ Shaded JAR ════════════════════════════════════════ -->
+            <h2 id="shaded-jar">Building the Shaded JAR</h2>
 
-      <p>
-        The <code>otter-stream-sql</code> module ships as a thin JAR by default. When the Flink SQL
-        Gateway registers <code>MLInferenceFunction</code> it reflects over all method signatures,
-        including the <code>throws InferenceException</code> clause on <code>eval()</code>. If
-        <code>InferenceException</code> is not on the Gateway classpath the JVM raises
-        <code>NoClassDefFoundError</code> and the registration fails with a
-        <em>ValidationException: due to implementation errors</em>.
-      </p>
+            <p>
+                The <code>otter-stream-sql</code> module ships as a thin JAR by default. When the Flink SQL
+                Gateway registers <code>MLInferenceFunction</code> it reflects over all method signatures,
+                including the <code>throws InferenceException</code> clause on <code>eval()</code>. If
+                <code>InferenceException</code> is not on the Gateway classpath the JVM raises
+                <code>NoClassDefFoundError</code> and the registration fails with a
+                <em>ValidationException: due to implementation errors</em>.
+            </p>
 
-      <p>
-        The fix is to build a shaded JAR that bundles all runtime dependencies except Flink and
-        SLF4J. Add the following plugin configuration to <code>otter-stream-sql/pom.xml</code>:
-      </p>
+            <p>
+                The fix is to build a shaded JAR that bundles all runtime dependencies except Flink and
+                SLF4J. Add the following plugin configuration to <code>otter-stream-sql/pom.xml</code>:
+            </p>
 
-      <div class="code-block">
-        <div class="code-block-header">
-          <span class="code-lang">XML</span>
-          <span class="code-filename">otter-stream-sql/pom.xml</span>
-          <button class="copy-btn" onclick="copyCode(this)">Copy</button>
-        </div>
-        <pre>&lt;plugin&gt;
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-lang">XML</span>
+                    <span class="code-filename">otter-stream-sql/pom.xml</span>
+                    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                </div>
+                <pre>&lt;plugin&gt;
   &lt;groupId&gt;org.apache.maven.plugins&lt;/groupId&gt;
   &lt;artifactId&gt;maven-shade-plugin&lt;/artifactId&gt;
   &lt;version&gt;${maven-shade-plugin.version}&lt;/version&gt;
@@ -754,217 +863,296 @@ WHERE p.score > 0.5;</pre>
     &lt;/execution&gt;
   &lt;/executions&gt;
 &lt;/plugin&gt;</pre>
-      </div>
+            </div>
 
-      <h3>Build and verify</h3>
-      <div class="code-block">
-        <div class="code-block-header"><span class="code-lang">Shell</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
-        <pre>cd otter-stream-sql
+            <h3>Build and verify</h3>
+            <div class="code-block">
+                <div class="code-block-header"><span class="code-lang">Shell</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+                <pre>cd otter-stream-sql
 mvn clean package -DskipTests
 
 # All four lines must appear in the output:
-jar tf target/otter-stream-sql-1.0.17-flink-udf.jar \
+jar tf target/otter-stream-sql-0.0.4-flink-udf.jar \
   | grep -E 'InferenceException|InferenceEngine|ModelCache|caffeine'</pre>
-      </div>
-
-      <div class="callout callout-note">
-        <span class="callout-icon">i</span>
-        <div>
-          <strong>TensorFlow native binaries.</strong> <code>tensorflow-core-platform</code> includes
-          platform-native shared libraries that add several hundred megabytes to the JAR. If you are
-          not using TensorFlow-format models, exclude the module from the shade to keep the artifact
-          small: add <code>&lt;exclude&gt;org.tensorflow:*&lt;/exclude&gt;</code> to the
-          <code>&lt;excludes&gt;</code> block.
-        </div>
-      </div>
-
-      <!-- ══ Troubleshooting ═══════════════════════════════════ -->
-      <h2 id="troubleshooting">Troubleshooting</h2>
-
-      <p>
-        The most common failure is <code>NoClassDefFoundError: InferenceException</code> during
-        <code>CREATE FUNCTION</code>. Flink's reflection scanner walks every method signature on the
-        UDF class, including exception types declared in <code>throws</code> clauses. Any class it
-        cannot resolve causes the validation to abort with an <em>implementation errors</em> message.
-      </p>
-
-      <div class="trace-block">
-Caused by: java.lang.<span class="trace-highlight">NoClassDefFoundError</span>:
-  com/codedstream/otterstream/inference/exception/<span class="trace-highlight">InferenceException</span>
-    at java.base/java.lang.Class.getDeclaredMethods0(Native Method)
-    at org.apache.flink.table.functions.UserDefinedFunctionHelper
-        .validateClass(UserDefinedFunctionHelper.java:439)
-Caused by: org.apache.flink.table.api.ValidationException:
-  Could not register temporary catalog function
-  'default_catalog.default_database.ml_score'
-  due to implementation errors.
-      </div>
-
-      <div class="steps">
-        <div class="step">
-          <div class="step-num">1</div>
-          <div class="step-body">
-            <div class="step-title">Confirm the JAR is on the session classpath</div>
-            <div class="code-block">
-              <div class="code-block-header"><span class="code-lang">SQL</span></div>
-              <pre>SHOW JARS;
--- otter-stream-sql-1.0.17-flink-udf.jar must appear in the output</pre>
             </div>
-            <p>If the JAR is absent, navigate to the Studio <em>Register UDF</em> tab,
-            click <em>SHOW JARS</em>, then enter the JAR path and click <em>ADD JAR</em>.</p>
-          </div>
-        </div>
 
-        <div class="step">
-          <div class="step-num">2</div>
-          <div class="step-body">
-            <div class="step-title">Verify the shaded JAR contains the missing class</div>
-            <div class="code-block">
-              <div class="code-block-header"><span class="code-lang">Shell</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
-              <pre>jar tf otter-stream-sql-1.0.17-flink-udf.jar | grep InferenceException
+            <div class="callout callout-note">
+                <span class="callout-icon">i</span>
+                <div>
+                    <strong>TensorFlow native binaries.</strong> <code>tensorflow-core-platform</code> includes
+                    platform-native shared libraries that add several hundred megabytes to the JAR. If you are
+                    not using TensorFlow-format models, exclude the module from the shade to keep the artifact
+                    small: add <code>&lt;exclude&gt;org.tensorflow:*&lt;/exclude&gt;</code> to the
+                    <code>&lt;excludes&gt;</code> block.
+                </div>
+            </div>
+
+            <!-- ══ Troubleshooting ═══════════════════════════════════ -->
+            <h2 id="troubleshooting">Troubleshooting</h2>
+
+            <p>
+                The most common failure is <code>NoClassDefFoundError: InferenceException</code> during
+                <code>CREATE FUNCTION</code>. Flink's reflection scanner walks every method signature on the
+                UDF class, including exception types declared in <code>throws</code> clauses. Any class it
+                cannot resolve causes the validation to abort with an <em>implementation errors</em> message.
+            </p>
+
+            <div class="trace-block">
+                Caused by: java.lang.<span class="trace-highlight">NoClassDefFoundError</span>:
+                com/codedstream/otterstream/inference/exception/<span class="trace-highlight">InferenceException</span>
+                at java.base/java.lang.Class.getDeclaredMethods0(Native Method)
+                at org.apache.flink.table.functions.UserDefinedFunctionHelper
+                .validateClass(UserDefinedFunctionHelper.java:439)
+                Caused by: org.apache.flink.table.api.ValidationException:
+                Could not register temporary catalog function
+                'default_catalog.default_database.ml_score'
+                due to implementation errors.
+            </div>
+
+            <div class="steps">
+                <div class="step">
+                    <div class="step-num">1</div>
+                    <div class="step-body">
+                        <div class="step-title">Confirm the JAR is on the session classpath</div>
+                        <div class="code-block">
+                            <div class="code-block-header"><span class="code-lang">SQL</span></div>
+                            <pre>SHOW JARS;
+-- otter-stream-sql-0.0.4-flink-udf.jar must appear in the output</pre>
+                        </div>
+                        <p>If the JAR is absent, navigate to the Studio <em>Register UDF</em> tab,
+                            click <em>SHOW JARS</em>, then enter the JAR path and click <em>ADD JAR</em>.</p>
+                    </div>
+                </div>
+
+                <div class="step">
+                    <div class="step-num">2</div>
+                    <div class="step-body">
+                        <div class="step-title">Verify the shaded JAR contains the missing class</div>
+                        <div class="code-block">
+                            <div class="code-block-header"><span class="code-lang">Shell</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+                            <pre>jar tf otter-stream-sql-0.0.4-flink-udf.jar | grep InferenceException
 # Expected output:
 # com/codedstream/otterstream/inference/exception/InferenceException.class</pre>
-            </div>
-            <p>
-              If the class is absent you are using the plain thin JAR, not the
-              <code>*-flink-udf.jar</code> shaded artifact. Rebuild with the shade plugin
-              configuration shown above, then re-upload the correct file.
-            </p>
-          </div>
-        </div>
+                        </div>
+                        <p>
+                            If the class is absent you are using the plain thin JAR, not the
+                            <code>*-flink-udf.jar</code> shaded artifact. Rebuild with the shade plugin
+                            configuration shown above, then re-upload the correct file.
+                        </p>
+                    </div>
+                </div>
 
-        <div class="step">
-          <div class="step-num">3</div>
-          <div class="step-body">
-            <div class="step-title">Drop and recreate a stale registration</div>
-            <div class="code-block">
-              <div class="code-block-header"><span class="code-lang">SQL</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
-              <pre>DROP TEMPORARY FUNCTION IF EXISTS ml_score;
+                <div class="step">
+                    <div class="step-num">3</div>
+                    <div class="step-body">
+                        <div class="step-title">Drop and recreate a stale registration</div>
+                        <div class="code-block">
+                            <div class="code-block-header"><span class="code-lang">SQL</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+                            <pre>DROP TEMPORARY FUNCTION IF EXISTS ml_score;
 
 CREATE TEMPORARY FUNCTION ml_score
 AS 'com.codedstreams.otterstreams.sql.udf.MLInferenceFunction'
 LANGUAGE JAVA;</pre>
-            </div>
-          </div>
-        </div>
+                        </div>
+                    </div>
+                </div>
 
-        <div class="step">
-          <div class="step-num">4</div>
-          <div class="step-body">
-            <div class="step-title">Confirm successful registration</div>
-            <div class="code-block">
-              <div class="code-block-header"><span class="code-lang">SQL</span></div>
-              <pre>SHOW USER FUNCTIONS;
+                <div class="step">
+                    <div class="step-num">4</div>
+                    <div class="step-body">
+                        <div class="step-title">Confirm successful registration</div>
+                        <div class="code-block">
+                            <div class="code-block-header"><span class="code-lang">SQL</span></div>
+                            <pre>SHOW USER FUNCTIONS;
 -- ml_score must appear in the list</pre>
+                        </div>
+                    </div>
+                </div>
             </div>
-          </div>
-        </div>
-      </div>
 
-      <!-- ══ Error Reference ═══════════════════════════════════ -->
-      <h2 id="error-reference">Error Reference</h2>
+            <!-- ══ Error Reference ═══════════════════════════════════ -->
+            <h2 id="error-reference">Error Reference</h2>
 
-      <div class="table-wrap"><table>
-        <thead>
-          <tr><th>Error</th><th>Likely cause</th><th>Fix</th></tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td><code>NoClassDefFoundError: InferenceException</code></td>
-            <td><code>ml-inference-core</code> not bundled in the JAR</td>
-            <td>Rebuild with shade plugin; upload the <code>*-flink-udf.jar</code> classifier artifact, not the plain JAR</td>
-          </tr>
-          <tr>
+            <div class="table-wrap"><table>
+                <thead>
+                <tr><th>Error</th><th>Likely cause</th><th>Fix</th></tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td><code>NoClassDefFoundError: InferenceException</code></td>
+                    <td><code>ml-inference-core</code> not bundled in the JAR</div>
+            <td>Rebuild with shade plugin; upload the <code>*-flink-udf.jar</code> classifier artifact, not the plain JAR</div>
+        </tr>
+        <tr>
             <td><code>ClassNotFoundException: MLInferenceFunction</code></td>
-            <td><code>ADD JAR</code> was skipped, or the JAR path on the Gateway container is wrong</td>
-            <td>Run <code>SHOW JARS</code>; use the Studio path chips to confirm the correct container path</td>
-          </tr>
-          <tr>
-            <td><code>already exists</code></td>
-            <td>Function registered earlier in the same session under the same name</td>
-            <td>Use <code>IF NOT EXISTS</code>, or <code>DROP TEMPORARY FUNCTION</code> then recreate</td>
-          </tr>
-          <tr>
-            <td><code>NoSuchMethodError (Scala)</code></td>
-            <td>Scala binary version mismatch between the JAR and the Flink cluster</td>
-            <td>Rebuild against Flink's Scala binary version — 2.12 for Flink 1.17</td>
-          </tr>
-          <tr>
-            <td><code>ml_score</code> returns NULL for every row</td>
-            <td>Model name not found in <code>ModelCache</code>; connector table not created yet</td>
-            <td>Create the connector table to trigger MinIO download; verify the model name matches exactly</td>
-          </tr>
-          <tr>
-            <td>MinIO download fails silently</td>
-            <td>Wrong endpoint, credentials, or bucket; path-style access not enabled</td>
-            <td>Set <code>'model.s3.path-style' = 'true'</code>; inspect TaskManager logs for the underlying exception</td>
-          </tr>
-        </tbody>
-      </table></div>
+            <td><code>ADD JAR</code> was skipped, or the JAR path on the Gateway container is wrong</div>
+<td>Run <code>SHOW JARS</code>; use the Studio path chips to confirm the correct container path</div>
+    </tr>
+    <tr>
+<td><code>already exists</code></div>
+<td>Function registered earlier in the same session under the same name</div>
+<td>Use <code>IF NOT EXISTS</code>, or <code>DROP TEMPORARY FUNCTION</code> then recreate</div>
+    </tr>
+    <tr>
+<td><code>NoSuchMethodError (Scala)</code></div>
+<td>Scala binary version mismatch between the JAR and the Flink cluster</div>
+<td>Rebuild against Flink's Scala binary version — 2.12 for Flink 1.17, 2.13 for Flink 2.0+</div>
+    </tr>
+    <tr>
+<td><code>ml_score</code> returns NULL for every row</div>
+<td>Model name not found in <code>ModelCache</code>; connector table not created yet</div>
+<td>Create the connector table to trigger MinIO download; verify the model name matches exactly</div>
+    </tr>
+    <tr>
+<td>MinIO download fails silently</div>
+<td>Wrong endpoint, credentials, or bucket; path-style access not enabled</div>
+<td>Set <code>'model.s3.path-style' = 'true'</code>; inspect TaskManager logs for the underlying exception</div>
+    </tr>
+    </tbody>
+    </table></div>
 
     </div><!-- /content-body -->
 
     <div class="doc-footer">
-      <span>Otter Streams v1.0.17 &mdash; Apache License 2.0 &mdash; CodedStreams &mdash;
+      <span>Otter Streams v0.0.4 &mdash; Apache License 2.0 &mdash; CodedStreams &mdash;
         <strong>Nestor Martourez Abiangang A.</strong> &mdash;
         <a href="https://www.linkedin.com/in/nestor-abiangang/" target="_blank" style="color:var(--blue-primary)">linkedin.com/in/nestor-abiangang</a>
       </span>
-      <div class="footer-links">
-        <a href="https://github.com/martourez21/otter-streams" target="_blank">GitHub</a>
-        <a href="releases.html">Releases</a>
-        <a href="api.html">API Reference</a>
-        <a href="mailto:nestorabiawuh@gmail.com">Contact</a>
-      </div>
+        <div class="footer-links">
+            <a href="https://github.com/martourez21/otter-streams" target="_blank">GitHub</a>
+            <a href="releases.html">Releases</a>
+            <a href="api.html">API Reference</a>
+            <a href="javadoc.html" target="_blank">Javadoc</a>
+            <a href="mailto:nestorabiawuh@gmail.com">Contact</a>
+        </div>
     </div>
-  </main>
-</div>
+    </main>
+    </div>
 
-<script>
-function copyCode(btn) {
-  const pre = btn.closest('.code-block').querySelector('pre');
-  navigator.clipboard.writeText(pre.textContent.trim()).then(() => {
-    const orig = btn.textContent;
-    btn.textContent = 'Copied';
-    btn.classList.add('ok');
-    setTimeout(() => { btn.textContent = orig; btn.classList.remove('ok'); }, 1800);
-  });
-}
-const obs = new IntersectionObserver(entries => {
-  entries.forEach(e => {
-    if (e.isIntersecting) {
-      document.querySelectorAll('.nav-item').forEach(a => a.classList.remove('active'));
-      const m = document.querySelector(`.nav-item[href="#${e.target.id}"]`);
-      if (m) m.classList.add('active');
-    }
-  });
-}, { rootMargin: '-20% 0px -70% 0px' });
-document.querySelectorAll('h2[id]').forEach(s => obs.observe(s));
-</script>
-<script>
-mermaid.initialize({
-  startOnLoad: true,
-  theme: 'dark',
-  themeVariables: {
-    background: '#0a0d10',
-    primaryColor: '#0a2a3d',
-    primaryBorderColor: '#0091d5',
-    primaryTextColor: '#c9d1d9',
-    secondaryColor: '#0d1f0d',
-    secondaryBorderColor: '#00875a',
-    secondaryTextColor: '#a7f3d0',
-    tertiaryColor: '#1a1f28',
-    tertiaryBorderColor: '#2c3340',
-    tertiaryTextColor: '#8492a6',
-    lineColor: '#5c6878',
-    edgeLabelBackground: '#1a1f28',
-    clusterBkg: '#111827',
-    clusterBorder: '#2c3340',
-    titleColor: '#c9d1d9',
-    fontFamily: 'IBM Plex Mono, monospace',
-    fontSize: '12px'
-  },
-  flowchart: { curve: 'orthogonal', padding: 20 }
-});
-</script>
+    <script>
+        function copyCode(btn) {
+            const pre = btn.closest('.code-block').querySelector('pre');
+            navigator.clipboard.writeText(pre.textContent.trim()).then(() => {
+                const orig = btn.textContent;
+                btn.textContent = 'Copied';
+                btn.classList.add('ok');
+                setTimeout(() => { btn.textContent = orig; btn.classList.remove('ok'); }, 1800);
+            });
+        }
+        const obs = new IntersectionObserver(entries => {
+            entries.forEach(e => {
+                if (e.isIntersecting) {
+                    document.querySelectorAll('.nav-item').forEach(a => a.classList.remove('active'));
+                    const m = document.querySelector(`.nav-item[href="#${e.target.id}"]`);
+                    if (m) m.classList.add('active');
+                }
+            });
+        }, { rootMargin: '-20% 0px -70% 0px' });
+        document.querySelectorAll('h2[id]').forEach(s => obs.observe(s));
+
+        // Diagram zoom functionality
+        let currentZoom = 1;
+        let isDragging = false;
+        let startX, startY, scrollLeft, scrollTop;
+
+        function zoomDiagram(diagramId, factor) {
+            const container = document.getElementById('arch-diagram-container');
+            const mermaidDiv = document.getElementById('arch-mermaid');
+            if (!container || !mermaidDiv) return;
+
+            currentZoom = currentZoom * factor;
+            currentZoom = Math.min(3, Math.max(0.5, currentZoom));
+            mermaidDiv.style.transform = `scale(${currentZoom})`;
+            mermaidDiv.style.transformOrigin = 'top left';
+        }
+
+        function resetZoom(diagramId) {
+            currentZoom = 1;
+            const mermaidDiv = document.getElementById('arch-mermaid');
+            if (mermaidDiv) {
+                mermaidDiv.style.transform = 'scale(1)';
+                mermaidDiv.style.transformOrigin = 'top left';
+            }
+            const container = document.getElementById('arch-diagram-container');
+            if (container) {
+                container.scrollLeft = 0;
+                container.scrollTop = 0;
+            }
+        }
+
+        // Pan/drag functionality
+        const container = document.getElementById('arch-diagram-container');
+        if (container) {
+            container.addEventListener('mousedown', (e) => {
+                isDragging = true;
+                startX = e.pageX - container.offsetLeft;
+                startY = e.pageY - container.offsetTop;
+                scrollLeft = container.scrollLeft;
+                scrollTop = container.scrollTop;
+                container.style.cursor = 'grabbing';
+            });
+
+            container.addEventListener('mouseleave', () => {
+                isDragging = false;
+                container.style.cursor = 'grab';
+            });
+
+            container.addEventListener('mouseup', () => {
+                isDragging = false;
+                container.style.cursor = 'grab';
+            });
+
+            container.addEventListener('mousemove', (e) => {
+                if (!isDragging) return;
+                e.preventDefault();
+                const x = e.pageX - container.offsetLeft;
+                const y = e.pageY - container.offsetTop;
+                const walkX = (x - startX);
+                const walkY = (y - startY);
+                container.scrollLeft = scrollLeft - walkX;
+                container.scrollTop = scrollTop - walkY;
+            });
+
+            container.style.cursor = 'grab';
+        }
+
+        // Initialize mermaid for all diagrams
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'dark',
+            themeVariables: {
+                background: '#0a0d10',
+                primaryColor: '#0a2a3d',
+                primaryBorderColor: '#0091d5',
+                primaryTextColor: '#c9d1d9',
+                secondaryColor: '#0d1f0d',
+                secondaryBorderColor: '#00875a',
+                secondaryTextColor: '#a7f3d0',
+                tertiaryColor: '#1a1f28',
+                tertiaryBorderColor: '#2c3340',
+                tertiaryTextColor: '#8492a6',
+                lineColor: '#5c6878',
+                edgeLabelBackground: '#1a1f28',
+                clusterBkg: '#111827',
+                clusterBorder: '#2c3340',
+                titleColor: '#c9d1d9',
+                fontFamily: 'IBM Plex Mono, monospace',
+                fontSize: '12px'
+            },
+            flowchart: { curve: 'orthogonal', padding: 20 }
+        });
+
+        // Re-render mermaid diagrams after page load to ensure they scale properly
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                const mermaidElements = document.querySelectorAll('.mermaid');
+                mermaidElements.forEach((el, idx) => {
+                    if (el.id !== 'arch-mermaid' && el.id !== 'sql-module-mermaid') {
+                        // Re-render non-arch diagrams if needed
+                    }
+                });
+            }, 100);
+        });
+    </script>
 </body>
 </html>

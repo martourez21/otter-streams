@@ -7,7 +7,7 @@
 
   <groupId>com.codedstreams</groupId>
   <artifactId>otter-streams</artifactId>
-  <version>0.0.3</version>
+  <version>0.0.4</version>
   <packaging>pom</packaging>
 
   <name>Otter Streams - ML Inference for Apache Flink</name>
@@ -51,15 +51,26 @@
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-    <maven.compiler.source>11</maven.compiler.source>
-    <maven.compiler.target>11</maven.compiler.target>
 
-    <!-- Flink -->
-    <flink.version>1.17.0</flink.version>
-    <scala.binary.version>2.12</scala.binary.version>
+    <!--
+      Flink 2.0 requires Java 17+. Java 8 support was dropped in 2.0 and
+      Java 11 support was dropped in the 2.x series entirely.
+      Java 17 is the minimum; Java 21 is recommended for new deployments.
+    -->
+    <maven.compiler.source>17</maven.compiler.source>
+    <maven.compiler.target>17</maven.compiler.target>
 
-    <flink.table.version>1.17.0</flink.table.version>
-    <flink.sql.version>1.17.0</flink.sql.version>
+    <!-- ═══════════════════════════════════════════════════════════════
+         Flink
+         • flink.version drives all core + table/SQL artifacts.
+         • scala.binary.version is REMOVED: the Scala DataStream API was
+           removed in Flink 2.0. flink-table-planner-loader (no Scala
+           suffix) replaces flink-table-planner_2.12 as of Flink 1.15+.
+         • The Kafka connector is versioned independently from Flink core
+           (scheme: <connector-version>-<flink-version>).
+         ═══════════════════════════════════════════════════════════════ -->
+    <flink.version>2.0.1</flink.version>
+    <flink.kafka.connector.version>4.0.0-2.0</flink.kafka.connector.version>
 
     <!-- ML Frameworks -->
     <onnxruntime.version>1.23.2</onnxruntime.version>
@@ -109,7 +120,11 @@
         <version>${project.version}</version>
       </dependency>
 
-      <!-- Flink Core -->
+      <!-- ═══════════════════════════════════════════════════════════════
+           Flink Core
+           flink-streaming-java and flink-clients are unchanged in Flink
+           2.x — same artifact IDs, no Scala suffix, scope=provided.
+           ═══════════════════════════════════════════════════════════════ -->
       <dependency>
         <groupId>org.apache.flink</groupId>
         <artifactId>flink-streaming-java</artifactId>
@@ -123,29 +138,41 @@
         <scope>provided</scope>
       </dependency>
 
-      <!-- Flink Table/SQL APIs -->
+      <!-- ═══════════════════════════════════════════════════════════════
+           Flink Table / SQL APIs
+           • flink-table-api-java-bridge  — unchanged artifact ID.
+           • flink-table-planner_2.12     — REMOVED. Replaced by
+             flink-table-planner-loader (no Scala suffix), which hides
+             the planner behind an isolated classloader. Available since
+             Flink 1.15; the only planner artifact in Flink 2.0+.
+           • flink-table-common            — unchanged artifact ID.
+           • flink-sql-connector-kafka    — versioned independently:
+             <connector-release>-<flink-major.minor>. The connector was
+             rewritten for Flink 2.x to use the new Source/Sink V2 APIs
+             (SourceFunction/SinkFunction were removed in Flink 2.0).
+           ═══════════════════════════════════════════════════════════════ -->
       <dependency>
         <groupId>org.apache.flink</groupId>
         <artifactId>flink-table-api-java-bridge</artifactId>
-        <version>${flink.table.version}</version>
+        <version>${flink.version}</version>
         <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>org.apache.flink</groupId>
-        <artifactId>flink-table-planner_${scala.binary.version}</artifactId>
-        <version>${flink.table.version}</version>
+        <artifactId>flink-table-planner-loader</artifactId>
+        <version>${flink.version}</version>
         <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>org.apache.flink</groupId>
         <artifactId>flink-table-common</artifactId>
-        <version>${flink.table.version}</version>
+        <version>${flink.version}</version>
         <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>org.apache.flink</groupId>
         <artifactId>flink-sql-connector-kafka</artifactId>
-        <version>${flink.version}</version>
+        <version>${flink.kafka.connector.version}</version>
         <scope>provided</scope>
       </dependency>
 
@@ -281,7 +308,6 @@
       </dependency>
 
       <!-- Testing -->
-
       <dependency>
         <groupId>org.junit.jupiter</groupId>
         <artifactId>junit-jupiter</artifactId>
@@ -326,14 +352,16 @@
 
     <pluginManagement>
       <plugins>
-        <!-- Compiler -->
+        <!-- Compiler
+             Release flag is preferred over source/target in Java 9+ as it also
+             sets the bootstrap classpath, preventing accidental use of APIs that
+             were added after the target version. -->
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-compiler-plugin</artifactId>
           <version>${maven-compiler-plugin.version}</version>
           <configuration>
-            <source>${maven.compiler.source}</source>
-            <target>${maven.compiler.target}</target>
+            <release>17</release>
             <encoding>${project.build.sourceEncoding}</encoding>
           </configuration>
         </plugin>
@@ -373,7 +401,7 @@
           <version>${maven-javadoc-plugin.version}</version>
           <configuration>
             <doclint>none</doclint>
-            <source>${maven.compiler.source}</source>
+            <release>17</release>
             <quiet>true</quiet>
             <failOnError>false</failOnError>
             <failOnWarnings>false</failOnWarnings>

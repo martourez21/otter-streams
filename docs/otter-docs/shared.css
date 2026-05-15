@@ -1,3 +1,4 @@
+/* shared.css — Otter Streams Docs — Shared Stylesheet */
 /* ─── Otter Streams Docs — Shared Stylesheet ─── */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -139,7 +140,7 @@ a:hover { text-decoration: underline; }
 .page-header::before {
   content: ''; position: absolute; inset: 0;
   background: radial-gradient(ellipse 60% 80% at 90% 40%, rgba(0,145,213,0.12) 0%, transparent 60%),
-              radial-gradient(ellipse 40% 60% at 10% 80%, rgba(0,107,161,0.08) 0%, transparent 50%);
+  radial-gradient(ellipse 40% 60% at 10% 80%, rgba(0,107,161,0.08) 0%, transparent 50%);
   pointer-events: none;
 }
 .header-badge {
