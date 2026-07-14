@@ -4,7 +4,7 @@
     <parent>
         <groupId>com.codedstreams</groupId>
         <artifactId>otter-streams</artifactId>
-        <version>0.0.3</version>
+        <version>0.0.4</version>
     </parent>
     <artifactId>otter-stream-tensorflow</artifactId>
     <packaging>jar</packaging>
@@ -25,13 +25,14 @@
         <dependency>
             <groupId>org.apache.flink</groupId>
             <artifactId>flink-shaded-zookeeper-3</artifactId>
-            <version>3.7.1-17.0</version>
+            <version>3.8.5-21.0</version>
             <scope>compile</scope>
         </dependency>
 
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter</artifactId>
+            <scope>test</scope>
         </dependency>
     </dependencies>
     <build>

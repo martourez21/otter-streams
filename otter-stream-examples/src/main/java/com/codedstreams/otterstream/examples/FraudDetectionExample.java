@@ -10,7 +10,7 @@ import com.codedstream.otterstream.onnx.OnnxInferenceEngine;
 import org.apache.flink.streaming.api.datastream.AsyncDataStream;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
-import org.apache.flink.streaming.api.functions.source.SourceFunction;
+import org.apache.flink.streaming.api.functions.source.legacy.SourceFunction;
 
 import java.time.Duration;
 import java.util.Map;
@@ -188,7 +188,7 @@ public class FraudDetectionExample {
          * @throws Exception if data generation fails
          */
         @Override
-        public void run(SourceContext<Map<String, Object>> ctx) throws Exception {
+        public void run(SourceFunction.SourceContext<Map<String, Object>> ctx) throws Exception {
             while (running) {
                 Map<String, Object> transaction = new HashMap<>();
                 transaction.put("transaction_id", "txn_" + (++transactionId));
