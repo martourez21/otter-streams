@@ -176,7 +176,7 @@
     <main class="main">
 
         <div class="page-header">
-            <div class="header-badge"><span class="header-dot"></span>Apache Flink &middot; SQL Integration</div>
+            <div class="header-badge"><span class="header-dot"></span>Apache Flink &middot; DataStream & Table API &middot; Flink SQL integration</div>
             <h1>Otter Streams &mdash; ML Inference for Apache Flink</h1>
             <p class="lead">
                 A production-grade library for embedding machine learning inference directly into Flink SQL
@@ -187,7 +187,7 @@
                 <span class="meta-pill">Version <span class="meta-pill-val">v0.0.4</span></span>
                 <span class="meta-pill">Flink <span class="meta-pill-val">2.0+</span></span>
                 <span class="meta-pill">Java <span class="meta-pill-val">17 & 21</span></span>
-                <span class="meta-pill">License <span class="meta-pill-val">Apache 2.0</span></span>
+                <span class="meta-pill">License <span class="meta-pill-val">MIT License</span></span>
             </div>
         </div>
 
@@ -982,7 +982,7 @@ LANGUAGE JAVA;</pre>
                     <td><code>NoClassDefFoundError: InferenceException</code></td>
                     <td><code>ml-inference-core</code> not bundled in the JAR</div>
             <td>Rebuild with shade plugin; upload the <code>*-flink-udf.jar</code> classifier artifact, not the plain JAR</div>
-        </tr>
+        </main>
         <tr>
             <td><code>ClassNotFoundException: MLInferenceFunction</code></td>
             <td><code>ADD JAR</code> was skipped, or the JAR path on the Gateway container is wrong</div>

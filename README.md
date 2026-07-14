@@ -16,49 +16,49 @@
 
 ## What is Otter Streams?
 
-Otter Streams is an open-source library that brings production-grade machine learning inference to Apache Flink streaming applications. It was built first as a **DataStream API** library — letting you embed ML inference directly into Flink operators via `AsyncDataStream` — and extended in v1.0.17 with a full **Flink SQL / Table API** layer, including a scalar UDF, a lookup table function, and the `ml-inference` dynamic table connector.
+Otter Streams is an open-source library that brings production-grade machine learning inference to Apache Flink streaming applications. It was built first as a **DataStream API** library - letting you embed ML inference directly into Flink operators via `AsyncDataStream` - and extended with a full **Flink SQL / Table API** layer, including a scalar UDF, a lookup table function, and the `ml-inference` dynamic table connector.
 
 Models are stored externally (MinIO, AWS S3, or any S3-compatible store) and loaded at engine initialisation time into a Caffeine LRU `ModelCache` that is shared across both the DataStream and SQL paths.
 
 ### Why Otter Streams?
 
-- **Real-time ML at scale** — millisecond-latency inference on unbounded Flink streams
-- **Framework agnostic** — ONNX, TensorFlow SavedModel, PyTorch TorchScript, XGBoost, PMML, and remote endpoints (HTTP/gRPC, SageMaker, Vertex AI)
-- **Two APIs, one cache** — DataStream operators and Flink SQL queries share the same `ModelCache` singleton; models are downloaded from MinIO once per session
-- **SQL-native deployment** — register `ml_score()` as a Flink UDF and call it inline in any SQL query; no Java operator required at query time
-- **Production ready** — Caffeine LRU caching, Micrometer metrics (Prometheus / InfluxDB / DataDog), async retry, configurable timeouts, dead-letter routing
-- **MinIO / S3 model store** — the `ml-inference` connector downloads SavedModel directories and single-file formats (`onnx`, `xgboost-json`, `pmml`) from any S3-compatible endpoint at table-creation time
+- **Real-time ML at scale** - millisecond-latency inference on unbounded Flink streams
+- **Framework agnostic** - ONNX, TensorFlow SavedModel, PyTorch TorchScript, XGBoost, PMML, and remote endpoints (HTTP/gRPC, SageMaker, Vertex AI)
+- **Two APIs, one cache** - DataStream operators and Flink SQL queries share the same `ModelCache` singleton; models are downloaded from MinIO once per session
+- **SQL-native deployment** - register `ml_score()` as a Flink UDF and call it inline in any SQL query; no Java operator required at query time
+- **Production ready** - Caffeine LRU caching, Micrometer metrics (Prometheus / InfluxDB / DataDog), async retry, configurable timeouts, dead-letter routing
+- **MinIO / S3 model store** - the `ml-inference` connector downloads SavedModel directories and single-file formats (`onnx`, `xgboost-json`, `pmml`) from any S3-compatible endpoint at table-creation time
 
 ---
 
 ## Quick Start
 
-### 1 — Add the core dependency
+### 1 - Add the core dependency
 
 ```xml
-<!-- Core framework — required by all engine modules -->
+<!-- Core framework - required by all engine modules -->
 <dependency>
     <groupId>com.codedstreams</groupId>
     <artifactId>ml-inference-core</artifactId>
-    <version>1.0.17</version>
+    <version>0.0.4</version>
 </dependency>
 
-        <!-- Pick the engine module(s) you need -->
+<!-- Pick the engine module(s) you need -->
 <dependency>
-<groupId>com.codedstreams</groupId>
-<artifactId>otter-stream-onnx</artifactId>
-<version>1.0.17</version>
+    <groupId>com.codedstreams</groupId>
+    <artifactId>otter-stream-onnx</artifactId>
+    <version>0.0.4</version>
 </dependency>
 
-        <!-- Flink SQL / Table API integration (optional) -->
+<!-- Flink SQL / Table API integration (optional) -->
 <dependency>
-<groupId>com.codedstreams</groupId>
-<artifactId>otter-stream-sql</artifactId>
-<version>1.0.17</version>
+    <groupId>com.codedstreams</groupId>
+    <artifactId>otter-stream-sql</artifactId>
+    <version>0.0.4</version>
 </dependency>
 ```
 
-### 2 — DataStream API
+### 2 - DataStream API
 
 ```java
 // Configure the model
@@ -97,11 +97,11 @@ DataStream<ScoredTransaction> scored = AsyncDataStream.unorderedWait(
 );
 ```
 
-### 3 — Flink SQL / Table API
+### 3 - Flink SQL / Table API
 
 ```sql
 -- Load the shaded JAR and register the scalar UDF
-ADD JAR '/var/www/udf-jars/otter-stream-sql-1.0.17-flink-udf.jar';
+ADD JAR '/var/www/udf-jars/otter-stream-sql-0.0.4-flink-udf.jar';
 
 CREATE TEMPORARY FUNCTION IF NOT EXISTS ml_score
 AS 'com.codedstreams.otterstreams.sql.udf.MLInferenceFunction'
@@ -151,19 +151,19 @@ WHERE fraud_score >= 0.40;
 | Page | Description |
 |------|-------------|
 | [Documentation](https://martourez21.github.io/otter-streams/docs/otter-docs/index.html) | Introduction, Quick Start, Architecture, UDF Reference, Shaded JAR, Troubleshooting |
-| [DataStream API Guide](https://martourez21.github.io/otter-streams/docs/otter-docs/datastream.html) | Complete Java code for every engine module — ONNX, TensorFlow, PyTorch, XGBoost, PMML, Remote |
+| [DataStream API Guide](https://martourez21.github.io/otter-streams/docs/otter-docs/datastream.html) | Complete Java code for every engine module - ONNX, TensorFlow, PyTorch, XGBoost, PMML, Remote |
 | [SQL Examples](https://martourez21.github.io/otter-streams/docs/otter-docs/examples.html) | MinIO pipeline demo (6 SQL sections), fraud detection, IoT anomaly detection |
 | [Studio Demo](https://martourez21.github.io/otter-streams/docs/otter-docs/studio-demo.html) | Str:::Lab Studio Feature Engineering Manager + Inference Manager walkthrough |
 | [API Reference](https://martourez21.github.io/otter-streams/docs/otter-docs/api.html) | InferenceEngine, InferenceResult, ModelCache, MLInferenceFunction, connector DDL options |
 | [Modules](https://martourez21.github.io/otter-streams/docs/otter-docs/modules.html) | Dependency graph + per-module docs for all 7 modules |
 | [Releases](https://martourez21.github.io/otter-streams/docs/otter-docs/releases.html) | Changelog, compatibility matrix, upgrade notes |
-| [Javadoc](https://martourez21.github.io/otter-streams/docs/javadoc/1.0.18/) | Full generated API documentation |
+| [Javadoc](https://martourez21.github.io/otter-streams/docs/javadoc/0.0.4/) | Full generated API documentation |
 
 ---
 
 ## Architecture
 
-Otter Streams has two parallel integration paths — both converge on the same engine and cache layer.
+Otter Streams has two parallel integration paths - both converge on the same engine and cache layer.
 
 ```
 Data Sources  (Kafka, S3, CDC)
@@ -193,7 +193,7 @@ Data Sources  (Kafka, S3, CDC)
          Sink  (Kafka, JDBC, S3, …)
 ```
 
-Flink is always `provided` scope — never bundled in the shaded JAR. The same artifact runs across Flink 1.15 through 1.20 without recompilation.
+Flink is always `provided` scope - never bundled in the shaded JAR. The same artifact runs across Flink 1.15 through 2.0 without recompilation.
 
 ---
 
@@ -231,19 +231,19 @@ otter-streams/
 
 ## Use Cases
 
-**Fraud detection** — score payment transactions against an ONNX or TensorFlow model inline in a Kafka-to-Kafka Flink SQL pipeline, with no Java operator code at query time.
+**Fraud detection** - score payment transactions against an ONNX or TensorFlow model inline in a Kafka-to-Kafka Flink SQL pipeline, with no Java operator code at query time.
 
-**Anomaly detection** — apply an XGBoost model loaded from MinIO to sensor readings in a HOP window aggregation pipeline; route anomalies to a Kafka alert topic.
+**Anomaly detection** - apply an XGBoost model loaded from MinIO to sensor readings in a HOP window aggregation pipeline; route anomalies to a Kafka alert topic.
 
-**Sentiment analysis** — run a PyTorch TorchScript NLP model on a streaming review feed using the DataStream async function with DJL GPU acceleration.
+**Sentiment analysis** - run a PyTorch TorchScript NLP model on a streaming review feed using the DataStream async function with DJL GPU acceleration.
 
-**Credit scoring** — evaluate PMML logistic regression models via JPMML in a Flink DataStream job; PMML's built-in preprocessing transforms are applied automatically.
+**Credit scoring** - evaluate PMML logistic regression models via JPMML in a Flink DataStream job; PMML's built-in preprocessing transforms are applied automatically.
 
-**Remote model serving** — route inference to an AWS SageMaker endpoint or a custom REST API from a DataStream operator, with configurable retry and circuit-breaker policies.
+**Remote model serving** - route inference to an AWS SageMaker endpoint or a custom REST API from a DataStream operator, with configurable retry and circuit-breaker policies.
 
 ---
 
-## Flink SQL — Shaded JAR Note
+## Flink SQL - Shaded JAR Note
 
 When deploying to the Flink SQL Gateway, you must use the **shaded classifier JAR** produced by the `maven-shade-plugin`:
 
@@ -251,8 +251,8 @@ When deploying to the Flink SQL Gateway, you must use the **shaded classifier JA
 cd otter-stream-sql
 mvn clean package -DskipTests
 
-# Use this file — note the -flink-udf classifier:
-ls target/otter-stream-sql-1.0.17-flink-udf.jar
+# Use this file - note the -flink-udf classifier:
+ls target/otter-stream-sql-0.0.4-flink-udf.jar
 ```
 
 The shaded JAR bundles `ml-inference-core` and all other runtime dependencies except Flink and SLF4J. Without it, the Flink SQL Gateway raises `NoClassDefFoundError: InferenceException` when it reflects over the `eval()` method signature during UDF registration.
@@ -263,15 +263,18 @@ The shaded JAR bundles `ml-inference-core` and all other runtime dependencies ex
 
 | Otter Streams | Flink | Java | ONNX Runtime | TensorFlow Java |
 |---------------|-------|------|--------------|-----------------|
-| **1.0.17** | 1.17 – 1.20 | 11, 17 | 1.23.2 | 0.5.0 |
+| **0.0.4** | 1.15 – 2.0 | 17 | 1.23.2 | 0.5.0 |
+| 1.0.17 | 1.17 – 1.20 | 11, 17 | 1.23.2 | 0.5.0 |
 | 1.0.15 | 1.17 – 1.18 | 11, 17 | 1.23.2 | 0.5.0 |
 | 1.0.0 | 1.16 | 11 | 1.14.0 | 0.4.2 |
+
+**Note:** Version 0.0.4 requires Java 17 and is compatible with Flink 2.0+ due to the removal of Scala-specific artifacts and the introduction of the table planner loader.
 
 ---
 
 ## Contributing
 
-Contributions of all kinds are welcome — bug reports, documentation improvements, new engine adapters, or test coverage.
+Contributions of all kinds are welcome - bug reports, documentation improvements, new engine adapters, or test coverage.
 
 ```bash
 # Fork, then clone your fork
@@ -291,7 +294,7 @@ Good first issues are labelled [`good first issue`](https://github.com/martourez
 
 ## License
 
-Apache License 2.0 — see [LICENSE](LICENSE) for details.
+Apache License 2.0 - see [LICENSE](LICENSE) for details.
 
 ---
 
