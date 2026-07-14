@@ -19,6 +19,13 @@
             <artifactId>ml-inference-core</artifactId>
         </dependency>
 
+        <!-- Flink CEP - Required for pattern detection -->
+        <dependency>
+            <groupId>org.apache.flink</groupId>
+            <artifactId>flink-cep</artifactId>
+            <version>${flink.version}</version>
+            <scope>provided</scope>
+        </dependency>
 
         <dependency>
             <groupId>org.apache.flink</groupId>
@@ -44,12 +51,10 @@
             <scope>provided</scope>
         </dependency>
 
-
         <dependency>
             <groupId>org.tensorflow</groupId>
             <artifactId>tensorflow-core-platform</artifactId>
         </dependency>
-
 
         <dependency>
             <groupId>software.amazon.awssdk</groupId>
@@ -80,15 +85,12 @@
             <version>7.74.0.Final</version>
         </dependency>
 
-
-
         <!-- MinIO Client -->
         <dependency>
             <groupId>io.minio</groupId>
             <artifactId>minio</artifactId>
             <version>8.5.7</version>
         </dependency>
-
 
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
