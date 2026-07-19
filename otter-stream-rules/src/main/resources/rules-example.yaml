@@ -1,0 +1,45 @@
+# Reference example for YamlRuleSetSource — see otter-stream-rules/README.md for the full format.
+# Load with: YamlRuleSetSource.fromClasspath("rules-example.yaml")
+
+name: fraud-detection-rules
+version: "3"
+evaluationMode: SINGLE   # SINGLE = highest-priority match wins; MULTIPLE = every match is recorded
+
+rules:
+  - id: high-risk-score
+    name: High Risk Score
+    priority: 100
+    condition: "output.risk_score > 0.85"
+    flag: FRAUD
+    category: HIGH_RISK
+    color: "#c0392b"
+    description: "Blocks transactions with a model risk score above 0.85"
+    enabled: true
+
+  - id: medium-risk-score
+    name: Medium Risk Score
+    priority: 50
+    condition: "output.risk_score > 0.5 && output.risk_score <= 0.85"
+    flag: REVIEW
+    category: MEDIUM_RISK
+    color: "#b45309"
+    description: "Routes borderline transactions to manual review"
+    enabled: true
+
+  - id: new-account-high-value
+    name: New Account, High Value Transaction
+    priority: 40
+    condition: "output.account_age_days < 7 && output.transaction_amount > 1000"
+    flag: REVIEW
+    category: NEW_ACCOUNT
+    color: "#b45309"
+    enabled: true
+
+  - id: default-approve
+    name: Default Approve
+    priority: 0
+    condition: "true"
+    flag: APPROVE
+    color: "#00875a"
+    description: "Fallback when no other rule matches"
+    enabled: true

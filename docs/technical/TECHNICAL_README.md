@@ -1,8 +1,13 @@
-# Otter Stream - Technical Documentation
+# Otter Streams - Technical Documentation
 
 ## Architecture Overview
 
-Otter Stream is a production-grade ML inference library for Apache Flink, designed for real-time machine learning predictions in streaming data pipelines.
+Otter Streams ships as Java libraries (Maven JARs) that together form an embedded runtime
+inside your Flink job — not a passive utility library, since `OtterRuntime` owns its own
+background threads (shadow-inference pool, version-polling scheduler, GPU auto-scale-down
+scheduler, hot-swap drain loop) once instantiated. See `OTTER_STREAMS_OVERVIEW.md` for the full
+library-vs-runtime distinction. This document covers the technical design of that runtime for
+real-time machine learning predictions in streaming data pipelines.
 
 ### High-Level Architecture
 

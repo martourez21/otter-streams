@@ -1,0 +1,34 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://otter-streams.dev/schema/topology-node.schema.json",
+  "title": "TopologyNode",
+  "description": "An aggregated pipeline-stage node in the live topology graph. Identity is (jobId, nodeKind), see ARCHITECTURE.md §7.1.",
+  "type": "object",
+  "required": ["jobId", "nodeKind", "displayName", "health", "p50Micros", "p99Micros", "throughputPerSec", "errorRatePercent"],
+  "additionalProperties": false,
+  "properties": {
+    "jobId": { "type": "string" },
+    "nodeKind": { "type": "string" },
+    "displayName": { "type": "string", "description": "e.g. 'Fraud Model v3.2'" },
+    "nodeCategory": {
+      "type": "string",
+      "enum": ["source", "feature-store", "inference", "rule-engine", "sink", "other"],
+      "description": "Drives which icon (§ icon set) and default layout position the UI uses"
+    },
+    "icon": {
+      "type": ["string", "null"],
+      "description": "Icon key matching docs/assets/icons/*.svg or otter-control-plane-ui equivalent, e.g. 'apachekafka', 'redis', 'onnx'. Null falls back to nodeCategory's default icon."
+    },
+    "health": { "$ref": "health.schema.json" },
+    "p50Micros": { "type": "integer", "minimum": 0 },
+    "p99Micros": { "type": "integer", "minimum": 0 },
+    "throughputPerSec": { "type": "number", "minimum": 0 },
+    "errorRatePercent": { "type": "number", "minimum": 0, "maximum": 100 },
+    "activeModelVersions": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Non-empty only for inference nodes; more than one entry means a canary is active"
+    },
+    "canaryTrafficPercent": { "type": ["integer", "null"], "minimum": 0, "maximum": 100 }
+  }
+}

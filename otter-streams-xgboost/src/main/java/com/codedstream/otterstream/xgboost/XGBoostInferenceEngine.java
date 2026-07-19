@@ -356,20 +356,48 @@ public class XGBoostInferenceEngine extends LocalInferenceEngine<Booster> {
     /**
      * Gets metadata about the loaded XGBoost model.
      *
-     * <p><strong>TODO:</strong> Implement XGBoost metadata extraction.
-     * XGBoost models contain metadata that can be extracted via:
-     * <ul>
-     *   <li>{@link Booster#getModelDump} - Tree structure dump</li>
-     *   <li>{@link Booster#getFeatureScore} - Feature importance scores</li>
-     *   <li>{@link Booster# attributes} - Model attributes (objective, booster type)</li>
-     *   <li>Number of features and trees</li>
-     * </ul>
+     * <p>Populates {@code outputSchema} from {@link Booster#getAttrNames()}/{@code getAttr} —
+     * booster-level attributes such as {@code objective} when the model was saved with them.
+     * XGBoost does not embed a fixed input feature schema in the booster itself (that lives in
+     * a separate feature-map file, which isn't guaranteed to be present) so {@code inputSchema}
+     * is intentionally left empty rather than guessed; a future enhancement could accept an
+     * optional feature-map path via {@link ModelConfig} for callers that have one.
      *
-     * @return model metadata (currently returns null, override for implementation)
+     * @return model metadata, or {@code null} if called before {@link #initialize} has succeeded
      */
     @Override
     public ModelMetadata getMetadata() {
-        return null;
+        if (loadedModel == null) {
+            return null;
+        }
+
+        Map<String, Object> outputSchema = new HashMap<>();
+        try {
+            for (String attrName : loadedModel.getAttrNames()) {
+                String value = loadedModel.getAttr(attrName);
+                if (value != null) {
+                    outputSchema.put(attrName, value);
+                }
+            }
+        } catch (XGBoostError e) {
+            // Best-effort: some boosters don't expose attributes at all. Metadata is still
+            // returned with an empty outputSchema rather than failing the whole call.
+        }
+
+        String modelName = (modelConfig != null && modelConfig.getModelId() != null)
+                ? modelConfig.getModelId() : "xgboost-model";
+        String modelVersion = (modelConfig != null && modelConfig.getModelVersion() != null)
+                ? modelConfig.getModelVersion() : "unknown";
+
+        return ModelMetadata.builder()
+                .modelName(modelName)
+                .modelVersion(modelVersion)
+                .format(modelConfig != null ? modelConfig.getFormat() : null)
+                .inputSchema(Map.of())
+                .outputSchema(outputSchema)
+                .modelSize(0L)
+                .loadTimestamp(System.currentTimeMillis())
+                .build();
     }
 
     /**

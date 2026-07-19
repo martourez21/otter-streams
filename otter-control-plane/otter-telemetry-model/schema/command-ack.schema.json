@@ -1,0 +1,14 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://otter-streams.dev/schema/command-ack.schema.json",
+  "title": "CommandAck",
+  "description": "A Runtime's acknowledgement of a RuntimeCommand. See ARCHITECTURE.md §6.5.",
+  "type": "object",
+  "required": ["commandId", "status"],
+  "additionalProperties": false,
+  "properties": {
+    "commandId": { "type": "string" },
+    "status": { "type": "string", "enum": ["OK", "FAILED"] },
+    "errorMessage": { "type": ["string", "null"] }
+  }
+}

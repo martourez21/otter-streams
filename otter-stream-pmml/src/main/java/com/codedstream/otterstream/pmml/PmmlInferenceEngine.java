@@ -155,10 +155,13 @@ public class PmmlInferenceEngine extends LocalInferenceEngine<Evaluator> {
                 PMML pmml = PMMLUtil.unmarshal(is);
 
                 ModelEvaluatorFactory factory = ModelEvaluatorFactory.newInstance();
+                this.evaluator = factory.newModelEvaluator(pmml);
 
-                // This method exists ONLY if pmml-evaluator is included
-                // Note: Uncomment when dependency is properly configured
-                // this.evaluator = factory.newModelEvaluator(pmml);
+                if (this.evaluator == null) {
+                    throw new IllegalStateException(
+                            "ModelEvaluatorFactory returned a null Evaluator for PMML file: "
+                                    + config.getModelPath() + " — the PMML document may not contain a usable model element");
+                }
 
                 this.evaluator.verify();
                 this.initialized = true;
@@ -348,21 +351,62 @@ public class PmmlInferenceEngine extends LocalInferenceEngine<Evaluator> {
     }
 
     /**
-     * Gets metadata about the loaded PMML model.
+     * Gets metadata about the loaded PMML model, derived from the evaluator's own field
+     * introspection ({@code getInputFields()}/{@code getTargetFields()}/{@code getOutputFields()}
+     * — the standard jpmml-evaluator API for this), rather than parsing the PMML XML separately.
      *
-     * <p><strong>TODO:</strong> Implement PMML metadata extraction. Potential metadata includes:
-     * <ul>
-     *   <li>Model type (regression, decision tree, neural network, etc.)</li>
-     *   <li>Input field definitions and data types</li>
-     *   <li>Output/target field information</li>
-     *   <li>Model version and creation timestamp</li>
-     *   <li>Training data characteristics</li>
-     * </ul>
-     *
-     * @return model metadata (currently returns null, override for implementation)
+     * @return model metadata with input/output field names and PMML data types, or {@code null}
+     *         if called before {@link #initialize} has successfully run
      */
     @Override
     public ModelMetadata getMetadata() {
-        return null;
+        if (evaluator == null) {
+            return null;
+        }
+
+        Map<String, Object> inputSchema = new HashMap<>();
+        for (InputField field : evaluator.getInputFields()) {
+            inputSchema.put(fieldName(field.getName()), dataTypeOf(field));
+        }
+
+        Map<String, Object> outputSchema = new HashMap<>();
+        for (TargetField field : evaluator.getTargetFields()) {
+            outputSchema.put(fieldName(field.getName()), dataTypeOf(field));
+        }
+        for (OutputField field : evaluator.getOutputFields()) {
+            outputSchema.putIfAbsent(fieldName(field.getName()), dataTypeOf(field));
+        }
+
+        String modelName = (modelConfig != null && modelConfig.getModelId() != null)
+                ? modelConfig.getModelId() : "pmml-model";
+        String modelVersion = (modelConfig != null && modelConfig.getModelVersion() != null)
+                ? modelConfig.getModelVersion() : "unknown";
+
+        return ModelMetadata.builder()
+                .modelName(modelName)
+                .modelVersion(modelVersion)
+                .format(com.codedstream.otterstream.inference.model.ModelFormat.PMML)
+                .inputSchema(inputSchema)
+                .outputSchema(outputSchema)
+                // PMML models are XML text, not a fixed binary blob — file size on disk would need
+                // to be captured separately at load time; left at 0 rather than guessed.
+                .modelSize(0L)
+                .loadTimestamp(System.currentTimeMillis())
+                .build();
+    }
+
+    /** {@code FieldName}/{@code String} shim: jpmml-evaluator's field name type has varied across versions; toString() is safe for both. */
+    private static String fieldName(Object name) {
+        return name != null ? name.toString() : "unknown";
+    }
+
+    /**
+     * Extracts the PMML {@code DataType} for a field. {@link InputField}, {@link TargetField},
+     * and {@link OutputField} all extend the common {@link ModelField} interface, which is
+     * what actually declares {@code getDataType()} — calling against that shared supertype
+     * (rather than reflection) keeps this both simpler and safer.
+     */
+    private static String dataTypeOf(ModelField field) {
+        return field.getDataType() != null ? field.getDataType().toString() : "UNKNOWN";
     }
 }

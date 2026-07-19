@@ -1,0 +1,59 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>com.codedstreams</groupId>
+        <artifactId>otter-streams</artifactId>
+        <version>0.0.4</version>
+    </parent>
+    <artifactId>otter-stream-kafka</artifactId>
+    <packaging>jar</packaging>
+    <name>otter-stream-kafka</name>
+    <description>Publishes InferenceResults and rule-engine Decisions to Kafka. Deliberately does
+        NOT reimplement Flink's Kafka sink (flink-connector-kafka already does that well) — this
+        module provides JSON serialization schemas plus one-liner builder helpers on top of
+        Flink's real, well-tested KafkaSink, not a competing sink implementation.</description>
+    <url>http://maven.apache.org</url>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.codedstreams</groupId>
+            <artifactId>ml-inference-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.codedstreams</groupId>
+            <artifactId>otter-stream-rules</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.flink</groupId>
+            <artifactId>flink-connector-kafka</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.flink</groupId>
+            <artifactId>flink-streaming-java</artifactId>
+            <scope>provided</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-deploy-plugin</artifactId>
+                <configuration>
+                    <skip>false</skip>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
+</project>

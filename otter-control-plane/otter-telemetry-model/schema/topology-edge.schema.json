@@ -1,0 +1,18 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://otter-streams.dev/schema/topology-edge.schema.json",
+  "title": "TopologyEdge",
+  "description": "An aggregated flow between two topology nodes, see ARCHITECTURE.md §4.4 / §7.2.",
+  "type": "object",
+  "required": ["jobId", "fromNodeKind", "toNodeKind", "throughputPerSec", "avgLatencyMicros"],
+  "additionalProperties": false,
+  "properties": {
+    "jobId": { "type": "string" },
+    "fromNodeKind": { "type": "string" },
+    "toNodeKind": { "type": "string" },
+    "throughputPerSec": { "type": "number", "minimum": 0 },
+    "avgLatencyMicros": { "type": "integer", "minimum": 0 },
+    "backpressurePercent": { "type": "number", "minimum": 0, "maximum": 100 },
+    "failureCount": { "type": "integer", "minimum": 0, "description": "Failures observed on this edge within the current aggregation window" }
+  }
+}

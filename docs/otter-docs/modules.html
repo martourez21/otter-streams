@@ -7,12 +7,17 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@300;400;500;600&family=IBM+Plex+Serif:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="shared.css">
+<script src="shared.js" defer></script>
+<link rel="icon" type="image/x-icon" href="../assets/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="../assets/favicon-16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/favicon-32.png">
+<link rel="apple-touch-icon" sizes="192x192" href="../assets/otter-icon-192.png">
 </head>
 <body>
 
 <header class="topbar">
   <a href="index.html" class="topbar-brand">
-    <div class="brand-icon">OS</div>
+    <img class="brand-icon" src="../assets/otter-mark-navbar-dark.png" alt="Otter Streams logo" width="28" height="28">
     <span class="brand-name">Otter Streams</span>
     <span class="brand-version">v1.0.17</span>
   </a>
@@ -20,12 +25,19 @@
     <a href="index.html" class="topbar-link">Documentation</a>
     <a href="api.html" class="topbar-link">API Reference</a>
     <a href="modules.html" class="topbar-link active">Modules</a>
+        <a href="rules.html" class="topbar-link">Rule Engine</a>
     <a href="examples.html" class="topbar-link">Examples</a>
     <a href="datastream.html" class="topbar-link">DataStream Guide</a>
     <a href="studio-demo.html" class="topbar-link">Studio Demo</a>
     <a href="releases.html" class="topbar-link">Releases</a>
+    <a href="javadoc.html" class="topbar-link" target="_blank">Javadoc</a>
   </nav>
   <div class="topbar-right">
+    <div class="search-box" id="otter-search" role="button" tabindex="0" aria-label="Search documentation">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <span class="search-box-label">Search docs</span>
+        <span class="search-box-kbd">⌘K</span>
+    </div>
     <span class="topbar-badge">Flink 1.15&ndash;1.20</span>
     <a href="https://github.com/martourez21/otter-streams" class="gh-link" target="_blank">
       <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
@@ -61,6 +73,11 @@
     <div class="nav-section">
       <div class="nav-section-title">Modules</div>
       <a href="#core" class="nav-item active">ml-inference-core</a>
+      <a href="#runtime" class="nav-item">↳ Runtime Layer</a>
+      <a href="#dynamic-loading" class="nav-item nav-sub">↳ Dynamic Loading</a>
+      <a href="#canary-shadow" class="nav-item nav-sub">↳ Shadow &amp; Canary</a>
+      <a href="#feature-stores" class="nav-item">Feature Store Providers</a>
+      <a href="#rules-and-kafka" class="nav-item">Rule Engine &amp; Kafka</a>
       <a href="#sql" class="nav-item">otter-stream-sql</a>
       <a href="#onnx" class="nav-item">otter-stream-onnx</a>
       <a href="#tensorflow" class="nav-item">otter-stream-tensorflow</a>
@@ -107,6 +124,9 @@
         <ul class="toc-list">
           <li><a href="#dependency-graph">Dependency Graph</a></li>
           <li><a href="#core">ml-inference-core</a></li>
+          <li><a href="#runtime">↳ Runtime Layer</a></li>
+          <li><a href="#feature-stores">Feature Store Providers</a></li>
+          <li><a href="#rules-and-kafka">Rule Engine &amp; Kafka</a></li>
           <li><a href="#sql">otter-stream-sql</a></li>
           <li><a href="#onnx">otter-stream-onnx</a></li>
           <li><a href="#tensorflow">otter-stream-tensorflow</a></li>
@@ -162,6 +182,120 @@
         </tbody>
       </table></div>
 
+      <h3 id="runtime">Runtime layer (<code>com.codedstream.otterstream.runtime</code>) — new in 0.1.0</h3>
+      <p>
+        <code>OtterRuntime</code> is an optional facade that sits above the classes in the table
+        above. It does not replace them — every existing class continues to work exactly as
+        before and does not require the runtime to function. What it adds is a Provider SPI
+        (so engine implementations are discovered rather than hardcoded) and a Lifecycle Manager
+        (so a model version can be validated, warmed, and atomically swapped in without ever
+        exposing a partially-initialized engine to callers).
+      </p>
+      <div class="table-wrap"><table>
+        <thead><tr><th>Class / Interface</th><th>Package</th><th>Purpose</th></tr></thead>
+        <tbody>
+          <tr><td><code>OtterRuntime</code></td><td><code>...runtime</code></td><td>Central facade + builder tying together the provider registry, model registry, lifecycle manager, cache, and metrics.</td></tr>
+          <tr><td><code>InferenceProvider</code></td><td><code>...runtime.spi</code></td><td>SPI implemented by each engine module (ONNX, TensorFlow, ...) so it can be discovered via <code>ServiceLoader</code> instead of hardcoded.</td></tr>
+          <tr><td><code>ModelRegistry</code></td><td><code>...runtime.spi</code></td><td>SPI for resolving a <code>ModelReference</code> (id + optional version) to a loadable <code>ModelConfig</code>. Extension point for MLflow/S3/Nexus-backed registries.</td></tr>
+          <tr><td><code>ModelReference</code></td><td><code>...runtime.spi</code></td><td>Value type: a logical model id, optionally pinned to a version.</td></tr>
+          <tr><td><code>FeatureProvider</code></td><td><code>...runtime.spi</code></td><td>SPI shape for feature-store lookups. Interface only for now — implementations (Redis, JDBC, Feast) land in a later milestone.</td></tr>
+          <tr><td><code>ProviderRegistry</code></td><td><code>...runtime.registry</code></td><td>Holds registered <code>InferenceProvider</code>s, resolves the right one per <code>ModelFormat</code>, supports <code>ServiceLoader</code> auto-discovery.</td></tr>
+          <tr><td><code>DefaultModelRegistry</code></td><td><code>...runtime.registry</code></td><td>Simple in-memory <code>ModelRegistry</code> implementation used when no other registry is supplied.</td></tr>
+          <tr><td><code>LifecycleManager</code></td><td><code>...runtime.lifecycle</code></td><td>Orchestrates validate → warm → atomic swap → drain → retire for every deployment, plus rollback, canary, and shadow flows.</td></tr>
+          <tr><td><code>ManagedModel</code></td><td><code>...runtime.lifecycle</code></td><td>Stable handle for a model id. Routes traffic between primary/canary engines, mirrors sampled traffic to a shadow engine, and tracks in-flight requests per engine for graceful draining.</td></tr>
+          <tr><td><code>ModelVersion</code></td><td><code>...runtime.lifecycle</code></td><td>Tracks a single deployment's stage: <code>VALIDATING → WARMING → ACTIVE → RETIRED</code> (or <code>FAILED</code>) — and the <code>ModelConfig</code> it came from, for rollback.</td></tr>
+          <tr><td><code>DynamicLoader</code></td><td><code>...runtime.lifecycle</code></td><td>Polls a <code>ModelRegistry</code> per watched model id and auto-deploys newly discovered versions.</td></tr>
+          <tr><td><code>LifecycleListener</code></td><td><code>...runtime.lifecycle</code></td><td>Optional observer callback for deployment events (logging, metrics, alerting).</td></tr>
+          <tr><td><code>ShadowListener</code></td><td><code>...runtime.lifecycle</code></td><td>Optional observer callback fired with (primary result, shadow result) pairs for comparison/logging.</td></tr>
+          <tr><td><code>DeploymentException</code></td><td><code>...inference.exception</code></td><td>Thrown when validation or warmup fails during a deployment.</td></tr>
+        </tbody>
+      </table></div>
+
+      <div class="code-block">
+        <div class="code-block-header"><span class="code-lang">Java</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+        <pre>OtterRuntime runtime = OtterRuntime.builder()
+    .metrics(new MetricsCollector())
+    .build(); // auto-discovers otter-stream-* providers on the classpath via ServiceLoader
+
+ManagedModel model = runtime.deploy(ModelConfig.builder()
+    .modelId("fraud-detector")
+    .modelPath("file:///models/fraud_detection.onnx")
+    .format(ModelFormat.ONNX)
+    .modelVersion("1.0")
+    .build());
+
+InferenceResult result = runtime.infer("fraud-detector", inputs);
+
+// later — hot-swap to v2; no code change needed at the call site above.
+// the old engine is drained (in-flight requests finish) before it's closed.
+runtime.deploy(v2Config);
+
+runtime.close();</pre>
+      </div>
+
+      <p style="margin-top:14px">
+        <strong>Provider coverage:</strong> ONNX, TensorFlow, PyTorch, XGBoost, PMML, remote HTTP,
+        and SageMaker all ship an <code>InferenceProvider</code> and are auto-discovered.
+        Vertex AI and gRPC remote clients are not yet covered by the SPI — their constructors
+        require an <code>InferenceConfig</code> at construction time rather than following the
+        no-arg-constructor-then-<code>initialize(ModelConfig)</code> pattern the rest of the
+        engines use, so they can't be created generically yet. They remain fully usable directly
+        (outside <code>OtterRuntime</code>); aligning them with the rest of the SPI is tracked as
+        a follow-up.
+      </p>
+
+      <h3 id="dynamic-loading">Dynamic model loading &amp; rollback</h3>
+      <p>
+        <code>OtterRuntime.watch(modelId, interval)</code> polls the configured
+        <code>ModelRegistry</code> on a per-model schedule and deploys new versions automatically
+        as they're registered — no code needs to call <code>deploy()</code> by hand. Every swap,
+        whether triggered manually or by the watcher, drains the outgoing engine (waits for its
+        in-flight requests to finish, up to a configurable timeout) before closing it, so a hot
+        swap under load never severs an in-progress call. <code>rollback()</code> re-deploys the
+        last known-good version if a new one turns out to be bad.
+      </p>
+      <div class="code-block">
+        <div class="code-block-header"><span class="code-lang">Java</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+        <pre>runtime.watch("fraud-detector", Duration.ofSeconds(30));
+// ... new versions registered in the ModelRegistry are now picked up automatically ...
+runtime.unwatch("fraud-detector");
+
+// something's wrong with the latest deploy — go back to the previous version
+runtime.rollback("fraud-detector");</pre>
+      </div>
+
+      <h3 id="canary-shadow">Shadow &amp; canary deployments</h3>
+      <p>
+        <strong>Canary:</strong> deploy a candidate version alongside the current primary at a
+        chosen traffic percentage; each call to <code>infer()</code> is routed to the canary or
+        the primary per that split. <code>promoteCanary()</code> makes it the new primary (and
+        drains/retires the old one); <code>rollbackCanary()</code> discards it, leaving the
+        primary untouched.
+      </p>
+      <p>
+        <strong>Shadow:</strong> deploy a version that receives a sampled, asynchronous copy of
+        traffic purely for comparison — it never affects what the caller receives, and a
+        <code>ShadowListener</code> is notified with each (primary, shadow) result pair.
+      </p>
+      <div class="code-block">
+        <div class="code-block-header"><span class="code-lang">Java</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+        <pre>// canary: 10% of traffic to the candidate
+runtime.deployCanary(v2Config, 10);
+// looks good after watching metrics/logs for a while...
+runtime.promoteCanary("fraud-detector");
+// ...or if it doesn't:
+// runtime.rollbackCanary("fraud-detector");
+
+// shadow: mirror 5% of traffic to a candidate, compare offline, no user-facing impact
+runtime.addShadowListener((modelId, shadowVersion, primary, shadow, error) -> {
+    if (error == null && !primary.equals(shadow)) {
+        log.warn("Shadow mismatch for {} v{}", modelId, shadowVersion);
+    }
+});
+runtime.deployShadow("fraud-detector", candidateConfig, 0.05);
+runtime.stopShadow("fraud-detector");</pre>
+      </div>
+
       <h3>Maven</h3>
       <div class="code-block">
         <div class="code-block-header"><span class="code-lang">XML</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
@@ -171,6 +305,58 @@
   &lt;version&gt;0.0.4&lt;/version&gt;
 &lt;/dependency&gt;</pre>
       </div>
+
+      <!-- ── Feature Store Providers ── -->
+      <h2 id="feature-stores">Feature store providers</h2>
+      <p>
+        Implementations of the <code>FeatureProvider</code> SPI (<code>runtime.spi.FeatureProvider</code>).
+        Unlike <code>InferenceProvider</code>s, feature providers always need connection details
+        (a host, a JDBC URL, a base URL) to be useful, so they're constructed directly by your
+        application rather than auto-discovered — the same reasoning that keeps
+        <code>ModelCache</code> and <code>MetricsCollector</code> explicit constructor calls
+        instead of SPI-discovered singletons. <code>OtterRuntime</code> does not yet wire feature
+        lookups into the inference call path itself; these providers are ready to call directly
+        from your own pre-processing step.
+      </p>
+      <div class="table-wrap"><table>
+        <thead><tr><th>Module</th><th>Class</th><th>Backing store</th><th>Notes</th></tr></thead>
+        <tbody>
+          <tr><td><code>otter-stream-feature-redis</code></td><td><code>RedisFeatureProvider</code></td><td>Redis (via Jedis)</td><td>Reads a per-entity hash (<code>HGETALL</code>/<code>HMGET</code>); values come back as raw strings.</td></tr>
+          <tr><td><code>otter-stream-feature-jdbc</code></td><td><code>JdbcFeatureProvider</code></td><td>Any JDBC source</td><td>One row per entity, one column per feature. No driver bundled — bring your own (PostgreSQL, MySQL, Snowflake, ...). Accepts a raw JDBC URL or a pooled <code>DataSource</code>.</td></tr>
+          <tr><td><code>otter-stream-feature-feast</code></td><td><code>FeastFeatureProvider</code></td><td>Feast (HTTP feature server)</td><td>Calls <code>POST /get-online-features</code> on a Feast HTTP feature server. Targets REST, not the gRPC serving API.</td></tr>
+        </tbody>
+      </table></div>
+
+      <div class="code-block">
+        <div class="code-block-header"><span class="code-lang">Java</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+        <pre>RedisFeatureProvider redis = new RedisFeatureProvider("localhost", 6379, "features:user:");
+Map&lt;String, Object&gt; values = redis.fetch("42", List.of("age", "country", "ltv_score"));
+
+JdbcFeatureProvider jdbc = new JdbcFeatureProvider(
+        "jdbc:postgresql://localhost:5432/features", "reader", "secret",
+        "user_features", "user_id");
+Map&lt;String, Object&gt; row = jdbc.fetch("42", List.of("age", "country"));
+
+FeastFeatureProvider feast = new FeastFeatureProvider("http://localhost:6566", "driver_id");
+Map&lt;String, Object&gt; feats = feast.fetch("1001",
+        List.of("driver_hourly_stats:conv_rate", "driver_hourly_stats:acc_rate"));</pre>
+      </div>
+
+      <!-- ── Rule Engine / Kafka ── -->
+      <h2 id="rules-and-kafka">otter-stream-rules, otter-stream-rules-drools, otter-stream-kafka</h2>
+      <p>
+        Post-inference decision engine and result publishing. Full documentation, including
+        architecture diagrams and the expression language reference, lives on its own page:
+        <a href="rules.html">Rule Engine →</a>
+      </p>
+      <div class="table-wrap"><table>
+        <thead><tr><th>Module</th><th>Purpose</th><th>Dependencies</th></tr></thead>
+        <tbody>
+          <tr><td><code>otter-stream-rules</code></td><td>YAML/properties/programmatic rule engine, <code>Decision</code> model, <code>RestDecisionEngineConnector</code></td><td><code>ml-inference-core</code> + SnakeYAML only</td></tr>
+          <tr><td><code>otter-stream-rules-drools</code></td><td>Optional embedded Drools <code>DecisionEngineConnector</code></td><td>+ <code>drools-core</code>, <code>drools-compiler</code>, <code>kie-api</code> — isolated to this module</td></tr>
+          <tr><td><code>otter-stream-kafka</code></td><td>JSON serialization schemas + one-liner <code>KafkaSink</code> builders for <code>InferenceResult</code>/<code>Decision</code></td><td>+ <code>flink-connector-kafka</code> (provided scope)</td></tr>
+        </tbody>
+      </table></div>
 
       <!-- ── otter-stream-sql ── -->
       <h2 id="sql">otter-stream-sql</h2>
@@ -328,10 +514,16 @@
 
     </div><!-- /content-body -->
 
+    <div class="page-nav">
+      <a class="page-nav-link prev" href="api.html"><span class="page-nav-dir">&larr; Previous</span><span class="page-nav-title">API Reference</span></a>
+      <a class="page-nav-link next" href="examples.html"><span class="page-nav-dir">Next &rarr;</span><span class="page-nav-title">Examples</span></a>
+    </div>
+
     <div class="doc-footer">
-      <span>Otter Streams v1.0.17 <span>Otter Streams v1.0.17 &mdash; Apache License 2.0 &mdash; CodedStreams</span>mdash; Apache License 2.0 <span>Otter Streams v1.0.17 &mdash; Apache License 2.0 &mdash; CodedStreams</span>mdash; CodedStreams <span>Otter Streams v1.0.17 &mdash; Apache License 2.0 &mdash; CodedStreams</span>mdash; <strong>Nestor Martourez Abiangang A.</strong> <span>Otter Streams v1.0.17 &mdash; Apache License 2.0 &mdash; CodedStreams</span>mdash; <a href="https://www.linkedin.com/in/nestor-abiangang/" target="_blank" style="color:var(--blue-primary)">linkedin.com/in/nestor-abiangang</a></span>
+      <span>Otter Streams v1.0.17 &mdash; Apache License 2.0 &mdash; CodedStreams</span>
       <div class="footer-links">
         <a href="https://github.com/martourez21/otter-streams" target="_blank">GitHub</a>
+            <a href="https://github.com/martourez21/otter-streams/edit/main/docs/otter-docs/modules.html" target="_blank">Edit this page</a>
         <a href="releases.html">Releases</a>
         <a href="datastream.html">DataStream Guide</a>
         <a href="studio-demo.html">Studio Demo</a>

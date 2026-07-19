@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rule Engine — Otter Streams</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@300;400;500;600&family=IBM+Plex+Serif:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="shared.css">
+<script src="shared.js" defer></script>
+<link rel="icon" type="image/x-icon" href="../assets/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="../assets/favicon-16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/favicon-32.png">
+<link rel="apple-touch-icon" sizes="192x192" href="../assets/otter-icon-192.png">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.9.0/mermaid.min.js"></script>
+<style>
+    .mermaid-wrap {
+        margin: 24px 0 28px;
+        border: 1px solid var(--rule);
+        border-radius: 4px;
+        overflow: hidden;
+        background: var(--ink-0);
+    }
+    .mermaid-title {
+        font-size: 11px; font-family: var(--font-mono);
+        color: var(--ink-5); background: var(--ink-1);
+        padding: 7px 16px; border-bottom: 1px solid var(--ink-2);
+        letter-spacing: 0.4px;
+    }
+    .mermaid {
+        padding: 28px 20px;
+        display: flex; justify-content: center; overflow-x: auto;
+    }
+    .mermaid svg { max-width: 100%; height: auto; }
+    .mermaid-caption {
+        font-size: 12px; color: var(--ink-5);
+        padding: 8px 16px; background: var(--ink-1);
+        border-top: 1px solid var(--ink-2);
+        font-style: italic;
+    }
+    .color-swatch {
+        display: inline-block; width: 12px; height: 12px; border-radius: 3px;
+        margin-right: 6px; vertical-align: middle; border: 1px solid rgba(0,0,0,0.15);
+    }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <a href="index.html" class="topbar-brand">
+    <img class="brand-icon" src="../assets/otter-mark-navbar-dark.png" alt="Otter Streams logo" width="28" height="28">
+    <span class="brand-name">Otter Streams</span>
+    <span class="brand-version">v0.0.4</span>
+  </a>
+  <nav class="topbar-nav">
+    <a href="index.html" class="topbar-link">Documentation</a>
+    <a href="api.html" class="topbar-link">API Reference</a>
+    <a href="modules.html" class="topbar-link">Modules</a>
+    <a href="rules.html" class="topbar-link active">Rule Engine</a>
+    <a href="examples.html" class="topbar-link">Examples</a>
+    <a href="datastream.html" class="topbar-link">DataStream Guide</a>
+    <a href="studio-demo.html" class="topbar-link">Studio Demo</a>
+    <a href="releases.html" class="topbar-link">Releases</a>
+  </nav>
+  <div class="topbar-right">
+    <div class="search-box" id="otter-search" role="button" tabindex="0" aria-label="Search documentation">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <span class="search-box-label">Search docs</span>
+        <span class="search-box-kbd">⌘K</span>
+    </div>
+    <span class="topbar-badge">Flink 1.15&ndash;1.20</span>
+    <a href="https://github.com/martourez21/otter-streams" class="gh-link" target="_blank">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+      GitHub
+    </a>
+  </div>
+</header>
+
+<div class="layout">
+  <nav class="sidebar">
+    <div class="nav-section">
+      <div class="nav-section-title">Rule Engine</div>
+      <a href="#overview" class="nav-item active">Overview</a>
+      <a href="#quickstart" class="nav-item">Quick Start</a>
+      <a href="#architecture" class="nav-item">Architecture</a>
+      <a href="#config-formats" class="nav-item">Configuration Formats</a>
+      <a href="#evaluation-modes" class="nav-item">Evaluation Modes</a>
+      <a href="#connectors" class="nav-item">External Connectors</a>
+      <a href="#dashboard" class="nav-item">Rule Dashboard</a>
+      <a href="#kafka" class="nav-item">Publishing Decisions</a>
+    </div>
+    <div class="nav-divider"></div>
+    <div class="nav-section">
+      <div class="nav-section-title">Related</div>
+      <a href="modules.html#runtime" class="nav-item">Runtime Layer</a>
+      <a href="modules.html#feature-stores" class="nav-item">Feature Store Providers</a>
+      <a href="https://github.com/martourez21/otter-streams/blob/main/otter-control-plane/ARCHITECTURE.md" class="nav-item" target="_blank">Control Plane Design</a>
+    </div>
+  </nav>
+
+  <main class="main">
+    <div class="page-header">
+      <div class="header-badge"><span class="header-dot"></span>Post-Inference Decisions</div>
+      <h1>Rule Engine</h1>
+      <p class="lead">
+        Turn an <code>InferenceResult</code> into a decision — a flag like <code>FRAUD</code>,
+        <code>APPROVE</code>, or <code>REVIEW</code>, plus which rule(s) fired — using rules you
+        configure. YAML is the standard, default format; properties files and fully-programmatic
+        rules are equally first-class alternatives.
+      </p>
+      <div class="header-meta">
+        <span class="meta-pill">Module <span class="meta-pill-val">otter-stream-rules</span></span>
+        <span class="meta-pill">Default format <span class="meta-pill-val">YAML</span></span>
+        <span class="meta-pill">Dependencies <span class="meta-pill-val">ml-inference-core + SnakeYAML only</span></span>
+      </div>
+    </div>
+
+    <div class="breadcrumb">
+      <a href="index.html">Docs</a>
+      <span class="breadcrumb-sep">/</span>
+      <span class="breadcrumb-current">Rule Engine</span>
+    </div>
+
+    <div class="content-body cf">
+
+      <div class="toc">
+        <div class="toc-title">On this page</div>
+        <ul class="toc-list">
+          <li><a href="#overview">Overview</a></li>
+          <li><a href="#quickstart">Quick Start</a></li>
+          <li><a href="#architecture">Architecture</a></li>
+          <li><a href="#config-formats">Configuration Formats</a></li>
+          <li><a href="#evaluation-modes">Evaluation Modes</a></li>
+          <li><a href="#connectors">External Connectors</a></li>
+          <li><a href="#dashboard">Rule Dashboard</a></li>
+          <li><a href="#kafka">Publishing Decisions</a></li>
+        </ul>
+      </div>
+
+      <h2 id="overview">Overview</h2>
+      <p>
+        Otter Streams' Rule Engine sits immediately after inference: it takes the
+        <code>InferenceResult</code> your model produced and applies a set of declarative rules
+        to it, producing a <code>Decision</code> — a primary flag, an optional category, which
+        rule(s) matched, and a hex color for dashboard rendering. This is conceptually the same
+        role Drools or Red Hat Decision Manager plays in traditional enterprise systems, purpose
+        -built for the streaming-inference case: fast (compiled conditions, no per-call
+        parsing), safe (a small boolean expression language, not a general scripting engine),
+        and configuration-first (YAML by default).
+      </p>
+
+      <h2 id="quickstart">Quick Start</h2>
+      <div class="code-block">
+        <div class="code-block-header"><span class="code-lang">YAML</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+        <pre>name: fraud-detection-rules
+version: "3"
+evaluationMode: SINGLE   # highest-priority match wins
+
+rules:
+  - id: high-risk-score
+    priority: 100
+    condition: "output.risk_score > 0.85"
+    flag: FRAUD
+    category: HIGH_RISK
+    color: "#c0392b"
+    description: "Blocks transactions with a model risk score above 0.85"
+
+  - id: medium-risk-score
+    priority: 50
+    condition: "output.risk_score > 0.5 && output.risk_score <= 0.85"
+    flag: REVIEW
+    color: "#b45309"
+
+  - id: default-approve
+    priority: 0
+    condition: "true"
+    flag: APPROVE
+    color: "#00875a"</pre>
+      </div>
+      <div class="code-block">
+        <div class="code-block-header"><span class="code-lang">Java</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+        <pre>RuleEngine engine = new DefaultRuleEngine(
+        YamlRuleSetSource.fromClasspath("rules.yaml"));
+
+InferenceResult result = runtime.infer("fraud-detector", inputs);
+Decision decision = engine.evaluate(result, Map.of());
+
+if (decision.isFlagged()) {
+    System.out.println(decision.flag() + " via " + decision.matchedRuleIds());
+}</pre>
+      </div>
+
+      <h2 id="architecture">Architecture</h2>
+      <p>
+        The Rule Engine composes with <code>OtterRuntime</code> rather than being wired into
+        it — it consumes the already-stable <code>InferenceResult</code> type, so
+        <code>ml-inference-core</code> has no dependency on the rule engine and vice versa.
+      </p>
+
+      <div class="mermaid-wrap">
+        <div class="mermaid-title">Inference → Rule Engine → Decision → downstream</div>
+        <div class="mermaid">
+flowchart LR
+    subgraph CFG["Rule Configuration (pick one)"]
+        Y["rules.yaml<br/>(default)"]
+        P["rules.properties"]
+        C["RuleSetSource<br/>(Java class)"]
+    end
+
+    CFG --> DRE["DefaultRuleEngine<br/>compiles every condition once at load"]
+
+    IR["InferenceResult<br/>(from OtterRuntime.infer)"] --> DRE
+    DRE -->|SINGLE or MULTIPLE mode| DEC["Decision<br/>flag · category · matchedRuleIds · color"]
+
+    DEC --> KFK["otter-stream-kafka<br/>(publish downstream)"]
+    DEC --> DASH["Rule Dashboard<br/>(Otter Control Plane)"]
+    DRE -.->|RuleMetricsSnapshot| DASH
+        </div>
+        <div class="mermaid-caption">Conditions are compiled once at rule-set load time — evaluation never re-parses a condition string.</div>
+      </div>
+
+      <h2 id="config-formats">Configuration Formats</h2>
+      <p>Three equally-supported ways to define a rule set — pick whichever fits your team's config tooling:</p>
+      <div class="table-wrap"><table>
+        <thead><tr><th>Format</th><th>Class</th><th>Best for</th></tr></thead>
+        <tbody>
+          <tr><td>YAML <em>(default)</em></td><td><code>YamlRuleSetSource</code></td><td>Nested rule lists read naturally; the recommended default</td></tr>
+          <tr><td>Properties</td><td><code>PropertiesRuleSetSource</code></td><td>Teams whose config tooling standardizes on flat <code>.properties</code> files</td></tr>
+          <tr><td>Java class</td><td>implement <code>RuleSetSource</code></td><td>Fully programmatic rules, computed or generated at startup</td></tr>
+        </tbody>
+      </table></div>
+
+      <h2 id="evaluation-modes">Evaluation Modes</h2>
+      <div class="table-wrap"><table>
+        <thead><tr><th>Mode</th><th>Behavior</th></tr></thead>
+        <tbody>
+          <tr><td><code>SINGLE</code></td><td>Stops at the first (highest-priority) matching rule. <code>matchedRuleIds</code> has at most one entry.</td></tr>
+          <tr><td><code>MULTIPLE</code></td><td>Evaluates every enabled rule; <code>matchedRuleIds</code> can have several entries (e.g. flagged as both <code>HIGH_RISK</code> and <code>NEW_ACCOUNT</code>).</td></tr>
+          <tr><td><em>Batch</em></td><td>Call <code>evaluateBatch(List&lt;InferenceResult&gt;, context)</code> — sequential below 64 items, auto-parallelized above.</td></tr>
+        </tbody>
+      </table></div>
+
+      <h2 id="connectors">External Connectors</h2>
+      <p>
+        Delegate to an external enterprise decision engine instead of evaluating in-process.
+        Rather than a bespoke SDK per vendor, <code>RestDecisionEngineConnector</code> is one
+        configurable connector that works against any REST-exposed decision engine — KIE Server
+        (Red Hat Decision Manager), Camunda DMN, IBM ODM, or an in-house service.
+      </p>
+
+      <div class="mermaid-wrap">
+        <div class="mermaid-title">Decision engine connector options</div>
+        <div class="mermaid">
+flowchart TB
+    IR["InferenceResult"] --> CHOICE{"Where should<br/>the decision<br/>come from?"}
+
+    CHOICE -->|in-process, fast| DRE["DefaultRuleEngine<br/>(otter-stream-rules)<br/>YAML / properties / class"]
+
+    CHOICE -->|external, over REST| REST["RestDecisionEngineConnector<br/>(otter-stream-rules)"]
+    REST --> KIE["KIE Server /<br/>Red Hat Decision Manager"]
+    REST --> DMN["Camunda DMN<br/>REST API"]
+    REST --> ODM["IBM ODM<br/>Decision Server"]
+    REST --> INHOUSE["In-house<br/>decision service"]
+
+    CHOICE -->|embedded Drools, no REST| DRC["DroolsDecisionEngineConnector<br/>(otter-stream-rules-drools,<br/>isolated dependency)"]
+    DRC --> KIESESSION["Embedded KIE Session"]
+
+    DRE --> DEC["Decision"]
+    REST --> DEC
+    DRC --> DEC
+        </div>
+      </div>
+
+      <div class="code-block">
+        <div class="code-block-header"><span class="code-lang">Java</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+        <pre>DecisionEngineConnector connector = new RestDecisionEngineConnector(
+        "kie-server",
+        URI.create("https://decisions.mycompany.com/kie-server/decision"),
+        System.getenv("KIE_SERVER_TOKEN"));
+
+Decision decision = connector.evaluate(result, Map.of());</pre>
+      </div>
+      <p>
+        For embedded Drools (not over REST), add the separate <code>otter-stream-rules-drools</code>
+        module — kept isolated specifically so its KIE dependency tree never lands on a project
+        that only wants the lightweight YAML engine.
+      </p>
+
+      <h2 id="dashboard">Rule Dashboard</h2>
+      <p>
+        Every rule can carry a hex <code>color</code>, validated at load time, so dashboards
+        render consistently without arbitrary auto-assigned colors:
+      </p>
+      <p>
+        <span class="color-swatch" style="background:#c0392b"></span><code>#c0392b</code> — FRAUD / high risk &nbsp;·&nbsp;
+        <span class="color-swatch" style="background:#b45309"></span><code>#b45309</code> — REVIEW / medium risk &nbsp;·&nbsp;
+        <span class="color-swatch" style="background:#00875a"></span><code>#00875a</code> — APPROVE
+      </p>
+      <p>
+        <code>RuleEngine.getMetrics()</code> returns a <code>RuleMetricsSnapshot</code> — per-rule
+        and per-flag hit counts, backed by <code>LongAdder</code> counters for low-contention
+        writes under concurrent evaluation. The Rule Dashboard (Otter Control Plane) polls or
+        receives this to render per-rule/per-flag charts using each rule's configured color —
+        see <code>otter-control-plane/ARCHITECTURE.md</code> for the broader observability
+        design this feeds into.
+      </p>
+      <div class="code-block">
+        <div class="code-block-header"><span class="code-lang">Java</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+        <pre>RuleMetricsSnapshot snapshot = engine.getMetrics();
+snapshot.hitsByRuleId();  // Map&lt;String, Long&gt;
+snapshot.hitsByFlag();    // Map&lt;String, Long&gt; — FRAUD, REVIEW, APPROVE, ...</pre>
+      </div>
+
+      <h2 id="kafka">Publishing Decisions</h2>
+      <p>
+        Pair with <code>otter-stream-kafka</code> to publish both the raw inference result and
+        the rule-engine decision downstream:
+      </p>
+      <div class="code-block">
+        <div class="code-block-header"><span class="code-lang">Java</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+        <pre>KafkaSink&lt;Decision&gt; sink = OtterKafkaSinks.decisionSink(
+        "broker1:9092,broker2:9092", "fraud-decisions");
+decisionStream.sinkTo(sink);</pre>
+      </div>
+      <p>
+        For any other stream system (Kinesis, Pulsar, a webhook), implement the generic
+        <code>StreamResultSink&lt;T&gt;</code> SPI in <code>ml-inference-core</code>.
+      </p>
+
+    </div><!-- /content-body -->
+
+    <div class="page-nav">
+      <a class="page-nav-link prev" href="modules.html">
+        <span class="page-nav-dir">&larr; Previous</span>
+        <span class="page-nav-title">Modules</span></a>
+      <a class="page-nav-link next" href="examples.html">
+        <span class="page-nav-dir">Next &rarr;</span>
+        <span class="page-nav-title">Examples</span></a>
+    </div>
+
+    <div class="doc-footer">
+      <span>Otter Streams v0.0.4 &mdash; Apache License 2.0 &mdash; CodedStreams</span>
+        <div class="footer-links">
+            <a href="https://github.com/martourez21/otter-streams" target="_blank">GitHub</a>
+            <a href="https://github.com/martourez21/otter-streams/edit/main/docs/otter-docs/rules.html" target="_blank">Edit this page</a>
+            <a href="releases.html">Releases</a>
+            <a href="api.html">API Reference</a>
+            <a href="javadoc.html" target="_blank">Javadoc</a>
+        </div>
+    </div>
+  </main>
+</div>
+
+<script>
+    function copyCode(btn) {
+        const pre = btn.closest('.code-block').querySelector('pre');
+        navigator.clipboard.writeText(pre.textContent).then(() => {
+            const original = btn.textContent;
+            btn.textContent = 'Copied!';
+            setTimeout(() => { btn.textContent = original; }, 1500);
+        });
+    }
+
+    mermaid.initialize({
+        startOnLoad: true,
+        theme: 'dark',
+        themeVariables: {
+            background: '#0a0d10',
+            primaryColor: '#0a2a3d',
+            primaryBorderColor: '#0091d5',
+            primaryTextColor: '#c9d1d9',
+            secondaryColor: '#0d1f0d',
+            secondaryBorderColor: '#00875a',
+            secondaryTextColor: '#a7f3d0',
+            tertiaryColor: '#1a1f28',
+            tertiaryBorderColor: '#2c3340',
+            tertiaryTextColor: '#8492a6',
+            lineColor: '#5c6878',
+            edgeLabelBackground: '#1a1f28',
+            clusterBkg: '#111827',
+            clusterBorder: '#2c3340',
+            titleColor: '#c9d1d9',
+            fontFamily: 'IBM Plex Mono, monospace',
+            fontSize: '12px'
+        },
+        flowchart: { curve: 'orthogonal', padding: 20 }
+    });
+</script>
+</body>
+</html>

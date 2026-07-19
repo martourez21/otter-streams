@@ -1,5 +1,19 @@
 # 🏗️ Otter Streams Architecture
 
+> **This document predates the Runtime layer, Rule Engine, feature store providers, and Otter
+> Control Plane** — it describes the original DataStream/SQL inference design and is kept for
+> historical context, but some of its code samples (e.g. `InferenceOutput`, a bare `execute()`
+> call) no longer match the current public API. **For current architecture, start with:**
+> - [`OTTER_STREAMS_OVERVIEW.md`](OTTER_STREAMS_OVERVIEW.md) — what exists today, in one document
+> - [`docs/otter-docs/modules.html`](../otter-docs/modules.html) — the Runtime Layer, Rule
+>   Engine, and per-module reference
+> - [`otter-control-plane/ARCHITECTURE.md`](../../otter-control-plane/ARCHITECTURE.md) — the topology/
+>   tracing Control Plane design
+>
+> The design philosophy and system overview below are still accurate in spirit; treat specific
+> class names and code samples as illustrative of the original design intent rather than a
+> literal API reference.
+
 This document describes the architecture and design principles behind Otter Streams, helping you understand how the system works and how to extend it.
 
 ##  Design Philosophy
