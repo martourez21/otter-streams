@@ -1,0 +1,20 @@
+{
+  "name": "otter-control-plane-ui",
+  "version": "0.1.0",
+  "description": "Otter Control Plane web UI — live topology graph, tracing, and rule dashboard. See ../ARCHITECTURE.md.",
+  "license": "MIT",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "socket.io-client": "^4.7.5"
+  },
+  "devDependencies": {
+    "typescript": "^5.6.2",
+    "vite": "^5.4.8"
+  }
+}

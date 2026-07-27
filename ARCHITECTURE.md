@@ -1,5 +1,19 @@
 # 🏗️ Otter Streams Architecture
 
+> **This document predates the Runtime layer, Rule Engine, feature store providers, and Otter
+> Control Plane** — it describes the original DataStream/SQL inference design and is kept for
+> historical context, but some of its code samples (e.g. `InferenceOutput`, a bare `execute()`
+> call) no longer match the current public API. **For current architecture, start with:**
+> - [`OTTER_STREAMS_OVERVIEW.md`](OTTER_STREAMS_OVERVIEW.md) — what exists today, in one document
+> - [`docs/otter-docs/modules.html`](docs/otter-docs/modules.html) — the Runtime Layer, Rule
+>   Engine, and per-module reference
+> - [`otter-control-plane/ARCHITECTURE.md`](otter-control-plane/ARCHITECTURE.md) — the topology/
+>   tracing Control Plane design
+>
+> The design philosophy and system overview below are still accurate in spirit; treat specific
+> class names and code samples as illustrative of the original design intent rather than a
+> literal API reference.
+
 This document describes the architecture and design principles behind Otter Streams, helping you understand how the system works and how to extend it.
 
 ##  Design Philosophy
@@ -405,22 +419,53 @@ graph TD
 
 ## 🔮 Future Architecture
 
-### Planned Improvements
+### Planned Improvements — status update
 
-1. **Distributed Model Serving**
-    - Model sharding across nodes
-    - Load balancing
-    - Automatic scaling
+The three items originally listed here are now implemented, each with real scope boundaries
+worth reading before you rely on them — see each module's own README for the full picture.
 
-2. **Feature Store Integration**
-    - Real-time feature computation
-    - Feature versioning
-    - Feature monitoring
+1. **Distributed Model Serving** — `ml-inference-core`'s `runtime.serving` package
+   (`ReplicaPool`, `LoadBalancingStrategy` with round-robin/least-connections implementations,
+   `ReplicaAutoScaler`).
+    - Model sharding across nodes — **not what this builds.** Cross-node distribution already
+      happens via Flink's own parallelism/scheduling (`OtterRuntime` is deliberately an embedded,
+      per-TaskManager runtime) and via the Control Plane's command fan-out across every
+      TaskManager instance serving a model. What's built here is **in-process replica pooling**
+      — multiple engine instances of the same model version within one JVM, for when a single
+      instance can't keep up with one subtask's throughput. Literal model-weight sharding
+      (splitting one model too large for a single machine) is a different, much larger problem
+      this project's target model sizes don't call for. See `ReplicaPool`'s class Javadoc.
+    - Load balancing — implemented (round-robin, least-connections).
+    - Automatic scaling — implemented, genuinely bidirectional (unlike GPU auto-scaling, in
+      -flight count is a real present-tense signal for both scale-up and scale-down — see
+      `ReplicaAutoScaler`'s class Javadoc for why that distinction matters).
 
-3. **A/B Testing Framework**
-    - Model version routing
-    - Experiment management
-    - Performance comparison
+2. **Feature Store Integration** — `ml-inference-core`'s `runtime.feature` package, on top of
+   the existing Redis/JDBC/Feast providers (`otter-stream-feature-*`).
+    - Real-time feature computation — `SlidingWindowFeatureProvider`: genuinely computes an
+      aggregate (count/sum/avg/min/max) over a rolling time window from values you `record()` as
+      events arrive, not a cached lookup of something computed elsewhere.
+    - Feature versioning — `VersioningFeatureProvider` stamps a version tag onto every fetch.
+      Scoped honestly: this is fetch-time stamping, **not** point-in-time historical correctness
+      (Feast's offline store does that; a plain Redis hash or JDBC table generally can't) — see
+      `FeatureVersion`'s class Javadoc.
+    - Feature monitoring — `MonitoredFeatureProvider`: wraps any provider with latency/error-rate
+      tracking, mirroring `RuleMetricsSnapshot`'s shape for consistency.
+
+3. **A/B Testing Framework** — new module `otter-stream-experiments`.
+    - Model version routing — reuses `OtterRuntime`'s existing canary mechanism
+      (`LifecycleManager.deployCanary`, Milestone 6) rather than reimplementing traffic
+      splitting.
+    - Experiment management — `ExperimentManager`: named experiments, one running per model at a
+      time, outcome recording, promote/rollback tied to the underlying canary.
+    - Performance comparison — `StatisticalTest`: Welch's t-test (continuous metrics) and a
+      two-proportion z-test (conversion/flag-rate metrics), implemented without a math library
+      dependency. Read the p-value approximation caveat in its class Javadoc before treating a
+      result as exact for small samples.
+
+**How to validate any of this yourself:** `otter-benchmarks` (JMH) measures the routing/rule
+-evaluation/load-balancing overhead in isolation; see its README for what it does and doesn't
+tell you, plus guidance for real end-to-end and HTTP-load benchmarking beyond what JMH covers.
 
 ---
 

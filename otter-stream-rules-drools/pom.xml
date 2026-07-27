@@ -1,0 +1,68 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>com.codedstreams</groupId>
+        <artifactId>otter-streams</artifactId>
+        <version>0.0.4</version>
+    </parent>
+    <artifactId>otter-stream-rules-drools</artifactId>
+    <packaging>jar</packaging>
+    <name>otter-stream-rules-drools</name>
+    <description>Embedded Drools (KIE) DecisionEngineConnector for otter-stream-rules. Kept as
+        its own module, separate from otter-stream-rules itself, specifically so the Drools/KIE
+        dependency tree (kie-api, drools-core, drools-compiler, and their transitive Maven/
+        classloading machinery) is never forced onto a project that only wants the lightweight
+        YAML rule engine. Only depend on this module if you specifically need in-process Drools,
+        as opposed to a KIE Server exposed over REST (use RestDecisionEngineConnector in
+        otter-stream-rules for that instead — no Drools dependency required).</description>
+    <url>http://maven.apache.org</url>
+
+    <properties>
+        <drools.version>9.44.0.Final</drools.version>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.codedstreams</groupId>
+            <artifactId>otter-stream-rules</artifactId>
+        </dependency>
+
+        <!-- Isolated to this module — see the description above. -->
+        <dependency>
+            <groupId>org.drools</groupId>
+            <artifactId>drools-core</artifactId>
+            <version>${drools.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.drools</groupId>
+            <artifactId>drools-compiler</artifactId>
+            <version>${drools.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.kie</groupId>
+            <artifactId>kie-api</artifactId>
+            <version>${drools.version}</version>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+<!--            <plugin>-->
+<!--                <groupId>org.apache.maven.plugins</groupId>-->
+<!--                <artifactId>maven-deploy-plugin</artifactId>-->
+<!--                <configuration>-->
+<!--                    <skip>false</skip>-->
+<!--                </configuration>-->
+<!--            </plugin>-->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
+</project>

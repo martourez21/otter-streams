@@ -5,8 +5,8 @@ Welcome to Otter Streams! This guide will help you set up and run your first mac
 ## 📋 Prerequisites
 
 ### Required Software
-- **Java**: JDK 11 or later
-- **Apache Flink**: Version 1.17 or later
+- **Java**: JDK 17 (the project builds with `maven.compiler.release=17`; JDK 21 also works for building, see `PERFORMANCE.md` for why the codebase itself targets the Java 17 language level)
+- **Apache Flink**: Version 1.15 through 2.0 (the same artifact runs across this range unmodified — see the root `README.md`'s Compatibility section)
 - **Maven**: Version 3.6 or later
 
 ### Optional Dependencies
@@ -23,7 +23,7 @@ Add the core dependency to your `pom.xml`:
 <dependency>
     <groupId>com.codedstreams</groupId>
     <artifactId>ml-inference-core</artifactId>
-    <version>1.0.0</version>
+    <version>0.0.4</version>
 </dependency>
 ```
 
@@ -36,28 +36,28 @@ Choose based on your ML framework:
 <dependency>
     <groupId>com.codedstreams</groupId>
     <artifactId>otter-stream-onnx</artifactId>
-    <version>1.0.0</version>
+    <version>0.0.4</version>
 </dependency>
 
 <!-- TensorFlow -->
 <dependency>
     <groupId>com.codedstreams</groupId>
     <artifactId>otter-stream-tensorflow</artifactId>
-    <version>1.0.0</version>
+    <version>0.0.4</version>
 </dependency>
 
 <!-- PyTorch -->
 <dependency>
     <groupId>com.codedstreams</groupId>
     <artifactId>otter-stream-pytorch</artifactId>
-    <version>1.0.0</version>
+    <version>0.0.4</version>
 </dependency>
 
 <!-- XGBoost -->
 <dependency>
     <groupId>com.codedstreams</groupId>
     <artifactId>otter-stream-xgboost</artifactId>
-    <version>1.0.0</version>
+    <version>0.0.4</version>
 </dependency>
 ```
 
@@ -67,7 +67,7 @@ Choose based on your ML framework:
 mvn clean compile
 ```
 
-## 🎯 Your First Inference Pipeline
+##  Your First Inference Pipeline
 
 ### Example 1: Simple ONNX Model Inference
 
@@ -246,7 +246,7 @@ InferenceConfig.builder()
         .modelId("my-model")
         .modelPath("models/my_model.onnx")
         .format(ModelFormat.ONNX)
-        .modelVersion("1.0.0")
+        .modelVersion("0.0.4")
         .build())
     .batchSize(32)
     .timeout(Duration.ofSeconds(10))
@@ -281,7 +281,7 @@ InferenceConfig.builder()
     .build();
 ```
 
-## 🧪 Testing Your Setup
+##  Testing Your Setup
 
 Create a simple test to verify everything works:
 
@@ -356,9 +356,13 @@ InferenceConfig.builder()
 ## 📚 Next Steps
 
 1. **Explore Examples**: Check out the `otter-stream-examples` module
-2. **Read Documentation**: Visit [martourez21.github.io/otter-streams](https://martourez21.github.io/otter-streams/)
-3. **Try Different Models**: Experiment with TensorFlow, PyTorch, or XGBoost models
-4. **Monitor Performance**: Enable metrics and monitor your inference pipeline
+2. **Read Documentation**: Visit [martourez21.github.io/otter-streams](https://martourez21.github.io/otter-streams/), or `OTTER_STREAMS_OVERVIEW.md` in this repo for a full technical overview
+3. **Try Different Models**: Experiment with TensorFlow, PyTorch, XGBoost, or PMML models
+4. **Turn predictions into decisions**: See `otter-stream-rules/README.md` for the YAML-configured Rule Engine (fraud/approve/review-style flagging)
+5. **Add feature lookups**: `otter-stream-feature-redis`, `-jdbc`, and `-feast` for pulling extra features into a model call
+6. **Hot swaps, canary, and shadow deployments**: `OtterRuntime`'s `deployCanary`/`deployShadow`/`rollback` — see the Runtime Layer section of `docs/otter-docs/modules.html`
+7. **Publish results downstream**: `otter-stream-kafka` for sending inference results/decisions to Kafka
+8. **Monitor Performance**: Enable metrics, and see `PERFORMANCE.md` for the concurrency/latency review of the hot inference path
 
 ## 🆘 Need Help?
 
@@ -368,4 +372,4 @@ InferenceConfig.builder()
 
 ---
 
-**Ready for more?** Check out the [Architecture Guide](ARCHITECTURE.md) to understand how Otter Streams works internally.
+**Ready for more?** Check out `OTTER_STREAMS_OVERVIEW.md` for the full picture — what's implemented today (Runtime, Rule Engine, feature stores) versus what's architected but not yet built (the Otter Control Plane's UI).

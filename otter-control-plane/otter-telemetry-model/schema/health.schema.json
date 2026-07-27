@@ -1,0 +1,7 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://otter-streams.dev/schema/health.schema.json",
+  "title": "NodeHealth",
+  "type": "string",
+  "enum": ["HEALTHY", "DEGRADED", "BACKPRESSURE", "ERROR", "STOPPED"]
+}

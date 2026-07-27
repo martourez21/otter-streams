@@ -1,0 +1,23 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://otter-streams.dev/schema/runtime-command.schema.json",
+  "title": "RuntimeCommand",
+  "description": "A command sent from the Control Plane to a specific OtterRuntime instance over the bidirectional telemetry WebSocket. See ARCHITECTURE.md §6.5.",
+  "type": "object",
+  "required": ["commandId", "type", "modelId"],
+  "additionalProperties": false,
+  "properties": {
+    "commandId": { "type": "string", "description": "Idempotency key — a Runtime that sees the same commandId twice must not double-apply it" },
+    "type": {
+      "type": "string",
+      "enum": ["DEPLOY", "ROLLBACK", "DEPLOY_CANARY", "PROMOTE_CANARY", "ROLLBACK_CANARY", "DEPLOY_SHADOW", "STOP_SHADOW"]
+    },
+    "modelId": { "type": "string" },
+    "trafficPercent": { "type": ["integer", "null"], "minimum": 0, "maximum": 100, "description": "For DEPLOY_CANARY" },
+    "sampleRate": { "type": ["number", "null"], "minimum": 0, "maximum": 1, "description": "For DEPLOY_SHADOW" },
+    "modelConfig": {
+      "type": ["object", "null"],
+      "description": "Serialized ModelConfig, required for DEPLOY/DEPLOY_CANARY/DEPLOY_SHADOW"
+    }
+  }
+}

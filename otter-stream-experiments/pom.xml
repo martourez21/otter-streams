@@ -1,0 +1,48 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>com.codedstreams</groupId>
+        <artifactId>otter-streams</artifactId>
+        <version>0.0.4</version>
+    </parent>
+    <artifactId>otter-stream-experiments</artifactId>
+    <packaging>jar</packaging>
+    <name>otter-stream-experiments</name>
+    <description>A/B testing / experiment management on top of OtterRuntime's existing canary
+        deployment mechanism (Milestone 6) — named experiments, outcome recording, and
+        statistical comparison (Welch's t-test, two-proportion z-test) between control and
+        variant. Deliberately does not reimplement traffic routing — that's LifecycleManager's
+        job already; this module is the experiment bookkeeping and statistics layer on top of
+        it.</description>
+    <url>http://maven.apache.org</url>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.codedstreams</groupId>
+            <artifactId>ml-inference-core</artifactId>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <!-- Remove this entire block -->
+            <!-- <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-deploy-plugin</artifactId>
+                <configuration>
+                    <skip>false</skip>
+                </configuration>
+            </plugin> -->
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
+</project>

@@ -5,6 +5,7 @@ import com.codedstream.otterstream.inference.engine.InferenceEngine;
 import com.codedstream.otterstream.inference.exception.InferenceException;
 import com.codedstream.otterstream.inference.model.InferenceResult;
 import com.codedstream.otterstream.inference.model.ModelFormat;
+import com.codedstream.otterstream.inference.model.ModelMetadata;
 import ml.dmlc.xgboost4j.java.Booster;
 import ml.dmlc.xgboost4j.java.DMatrix;
 import ml.dmlc.xgboost4j.java.XGBoost;
@@ -491,12 +492,27 @@ class XGBoostInferenceEngineTest {
     // ========================================================================
 
     @Test
-    @DisplayName("Should return null metadata (not yet implemented)")
+    @DisplayName("Should return metadata with model name, version, and output schema attributes")
     void testGetMetadata() throws InferenceException {
         engine.initialize(testModelConfig);
 
+        ModelMetadata metadata = engine.getMetadata();
+
+        assertNotNull(metadata, "Metadata should not be null after initialization");
+        assertEquals("test-xgboost-model", metadata.getModelName());
+        assertEquals("1.0.0", metadata.getModelVersion());
+        assertEquals(ModelFormat.XGBOOST_JSON, metadata.getFormat());
+        assertTrue(metadata.getInputSchema().isEmpty(),
+                "Input schema is intentionally empty - XGBoost doesn't embed a feature schema in the booster");
+        assertFalse(metadata.getOutputSchema().isEmpty(),
+                "Output schema should contain booster attributes like best_iteration/best_score");
+    }
+
+    @Test
+    @DisplayName("Should return null metadata before initialize is called")
+    void testGetMetadataBeforeInitialize() {
         assertNull(engine.getMetadata(),
-                "Metadata should be null as it's not yet implemented");
+                "Metadata should be null when engine has not been initialized");
     }
 
     // ========================================================================

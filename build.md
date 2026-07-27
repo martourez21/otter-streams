@@ -2,7 +2,7 @@
 
 ## Prerequisites
 
-- **JDK 11 or higher** (Java 11, 17 recommended)
+- **JDK 17** (the project builds with `maven.compiler.release=17`)
 - **Apache Maven 3.6+**
 - **Git**
 
@@ -10,8 +10,8 @@
 
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/flink-ml-inference-sdk.git
-cd flink-ml-inference-sdk
+git clone https://github.com/martourez21/otter-streams.git
+cd otter-streams
 
 # Build all modules
 mvn clean install
@@ -23,7 +23,7 @@ mvn clean install -DskipTests
 ## Module Structure
 
 ```
-flink-ml-inference-sdk/
+otter-streams/
 ├── ml-inference-core/          # Core interfaces and abstractions
 ├── otter-stream-onnx/          # ONNX Runtime implementation
 ├── otter-stream-tensorflow/    # TensorFlow implementation
@@ -93,7 +93,7 @@ mvn clean install assembly:single
 ### IntelliJ IDEA
 
 1. Import project as Maven project
-2. File → Project Structure → Project SDK → Select JDK 11+
+2. File → Project Structure → Project SDK → Select JDK 17
 3. Enable annotation processing
 4. Install Lombok plugin (if using Lombok)
 
@@ -154,7 +154,7 @@ gpg --keyserver keyserver.ubuntu.com --send-keys YOUR_KEY_ID
 The project includes these workflows:
 
 1. **CI Pipeline** (`.github/workflows/ci.yml`)
-    - Builds on Java 11 and 17
+    - Builds on Java 17 (see the CI matrix in `.github/workflows/ci.yaml`, which also builds JDK 21 for forward-compatibility)
     - Runs tests
     - Code coverage with Codecov
     - Code quality with SonarQube
@@ -343,6 +343,6 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for development guidelines.
 
 ## Support
 
-- **Issues**: https://github.com/yourusername/flink-ml-inference-sdk/issues
-- **Discussions**: https://github.com/yourusername/flink-ml-inference-sdk/discussions
+- **Issues**: https://github.com/martourez21/otter-streams/issues
+- **Discussions**: https://github.com/martourez21/otter-streams/discussions
 - **Stack Overflow**: Tag with `otter-sstreams`

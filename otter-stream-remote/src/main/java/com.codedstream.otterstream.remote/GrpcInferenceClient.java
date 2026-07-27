@@ -198,12 +198,22 @@ public class GrpcInferenceClient
     // ---------------------------------------------------------------------
 
     /**
-     * Performs single inference using gRPC (placeholder implementation).
+     * Performs single inference using gRPC.
      *
-     * <p><strong>TODO:</strong> Replace with actual gRPC calls after generating stubs.
-     * Example for TensorFlow Serving:
+     * <p><strong>Status: not yet wired to a real gRPC service.</strong> Generating and calling
+     * real stubs requires a concrete {@code .proto} contract (e.g. TensorFlow Serving's
+     * {@code tensorflow_serving/apis/predict.proto} + {@code prediction_service.proto}, or
+     * Triton's {@code grpc_service.proto}) compiled via {@code protobuf-maven-plugin} +
+     * {@code grpc-java} codegen — neither is vendored into this module yet. This method
+     * previously returned a hardcoded placeholder prediction ({@code {"prediction": 0.5}})
+     * with no signal to the caller that the value was fake, which is worse than failing: a
+     * caller has no way to distinguish a real low-confidence prediction from a stub. It now
+     * throws instead, so misconfiguration surfaces immediately rather than silently producing
+     * wrong decisions downstream (e.g. in the rule/decision engine consuming this result).
+     *
+     * <p>Example of the real call this method should make, once stubs exist, for
+     * TensorFlow Serving:
      * <pre>{@code
-     * // Generate stubs from tensorflow_serving/apis/*.proto
      * PredictionServiceGrpc.PredictionServiceBlockingStub stub =
      *     PredictionServiceGrpc.newBlockingStub(channel)
      *         .withDeadlineAfter(timeoutMs, TimeUnit.MILLISECONDS);
@@ -214,8 +224,8 @@ public class GrpcInferenceClient
      * }</pre>
      *
      * @param inputs map of input names to values
-     * @return placeholder inference result
-     * @throws InferenceException always throws (placeholder implementation)
+     * @return never returns; always throws until real stubs are wired in
+     * @throws InferenceException always — see above
      */
     @Override
     public InferenceResult infer(Map<String, Object> inputs)
@@ -223,27 +233,13 @@ public class GrpcInferenceClient
 
         ensureInitialized();
 
-        long start = System.currentTimeMillis();
-
         try {
-            /*
-             * TODO: Replace this placeholder with real gRPC call:
-             *
-             * PredictRequest request = ...
-             * PredictResponse response = blockingStub
-             *      .withDeadlineAfter(inferenceConfig.getTimeoutMs(), TimeUnit.MILLISECONDS)
-             *      .predict(request);
-             */
-
-            // Placeholder output
-            Map<String, Object> output = Map.of("prediction", 0.5);
-
-            return new InferenceResult(
-                    output,
-                    System.currentTimeMillis() - start,
-                    metadata.getModelVersion()
-            );
-
+            throw new InferenceException(
+                    "GrpcInferenceClient has no generated gRPC stubs wired in yet — a .proto "
+                            + "contract (TensorFlow Serving / Triton / custom) must be compiled via "
+                            + "protobuf-maven-plugin before this engine can serve real predictions. "
+                            + "Refusing to return a placeholder result to avoid silently feeding fabricated "
+                            + "predictions into downstream decisioning.");
         } catch (StatusRuntimeException e) {
             throw new InferenceException(
                     "gRPC inference failed: " + e.getStatus(), e);
@@ -253,8 +249,9 @@ public class GrpcInferenceClient
     /**
      * Performs batch inference using sequential processing (placeholder).
      *
-     * <p><strong>TODO:</strong> Implement native batch support if gRPC server supports it.
-     * Some frameworks like Triton support batch predictions via gRPC.
+     * <p>Currently a sequential fallback over {@link #infer}. Native batch support (e.g. Triton's
+     * batched gRPC predictions) is blocked on the same missing generated stubs documented on
+     * {@link #infer(Map)} — not a separate gap.
      *
      * @param batchInputs array of input maps for batch processing
      * @return aggregated inference results

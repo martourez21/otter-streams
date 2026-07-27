@@ -1,0 +1,7 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://otter-streams.dev/schema/outcome.schema.json",
+  "title": "SpanOutcome",
+  "type": "string",
+  "enum": ["OK", "ERROR", "TIMEOUT"]
+}

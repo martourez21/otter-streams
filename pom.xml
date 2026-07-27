@@ -16,8 +16,8 @@
 
   <licenses>
     <license>
-      <name>Apache License, Version 2.0</name>
-      <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
+      <name>MIT License</name>
+      <url>https://opensource.org/licenses/MIT</url>
       <distribution>repo</distribution>
     </license>
   </licenses>
@@ -44,8 +44,17 @@
     <module>otter-streams-xgboost</module>
     <module>otter-stream-pmml</module>
     <module>otter-stream-remote</module>
+    <module>otter-stream-feature-redis</module>
+    <module>otter-stream-feature-jdbc</module>
+    <module>otter-stream-feature-feast</module>
+    <module>otter-stream-context</module>
+    <module>otter-stream-rules</module>
+    <module>otter-stream-rules-drools</module>
+    <module>otter-stream-experiments</module>
+    <module>otter-stream-kafka</module>
     <module>otter-stream-examples</module>
     <module>otter-stream-sql</module>
+    <module>otter-benchmarks</module>
   </modules>
 
   <properties>
@@ -86,6 +95,15 @@
     <grpc.version>1.59.0</grpc.version>
     <okhttp.version>4.12.0</okhttp.version>
 
+    <!-- Feature Stores -->
+    <jedis.version>5.1.3</jedis.version>
+
+    <!-- Rule Engine -->
+    <snakeyaml.version>2.2</snakeyaml.version>
+
+    <!-- Benchmarks -->
+    <jmh.version>1.37</jmh.version>
+
     <!-- Serialization & Utilities -->
     <jackson.version>2.15.3</jackson.version>
     <protobuf.version>3.24.4</protobuf.version>
@@ -117,6 +135,24 @@
       <dependency>
         <groupId>com.codedstreams</groupId>
         <artifactId>ml-inference-core</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>com.codedstreams</groupId>
+        <artifactId>otter-stream-context</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>com.codedstreams</groupId>
+        <artifactId>otter-stream-rules</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>com.codedstreams</groupId>
+        <artifactId>otter-stream-experiments</artifactId>
         <version>${project.version}</version>
       </dependency>
 
@@ -174,6 +210,28 @@
         <artifactId>flink-sql-connector-kafka</artifactId>
         <version>${flink.kafka.connector.version}</version>
         <scope>provided</scope>
+      </dependency>
+
+      <!-- Unshaded Kafka connector (DataStream API — KafkaSink/KafkaSource classes used
+           directly in application code, as opposed to flink-sql-connector-kafka above which is
+           shaded for Table/SQL plugin classloading). Same connector-release train, same
+           provided scope convention: the Flink cluster/app supplies its own connector jar. -->
+      <dependency>
+        <groupId>org.apache.flink</groupId>
+        <artifactId>flink-connector-kafka</artifactId>
+        <version>${flink.kafka.connector.version}</version>
+        <scope>provided</scope>
+      </dependency>
+
+      <!-- YAML parsing (Rule Engine default config format). Deliberately SnakeYAML directly
+           rather than a heavier config framework — near zero transitive footprint, so adding
+           the Rule Engine module never drags in a competing YAML/config library version into a
+           user's existing Flink app (Flink itself already shades its own SnakeYAML use, so this
+           stays isolated to otter-stream-rules's own classpath). -->
+      <dependency>
+        <groupId>org.yaml</groupId>
+        <artifactId>snakeyaml</artifactId>
+        <version>${snakeyaml.version}</version>
       </dependency>
 
       <!-- ONNX Runtime -->
@@ -270,6 +328,13 @@
         <groupId>com.squareup.okhttp3</groupId>
         <artifactId>okhttp</artifactId>
         <version>${okhttp.version}</version>
+      </dependency>
+
+      <!-- Redis (Feature Store) -->
+      <dependency>
+        <groupId>redis.clients</groupId>
+        <artifactId>jedis</artifactId>
+        <version>${jedis.version}</version>
       </dependency>
 
       <!-- Jackson -->

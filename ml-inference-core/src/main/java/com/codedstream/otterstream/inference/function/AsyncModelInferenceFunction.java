@@ -4,12 +4,19 @@ import com.codedstream.otterstream.inference.config.InferenceConfig;
 import com.codedstream.otterstream.inference.engine.InferenceEngine;
 import com.codedstream.otterstream.inference.exception.InferenceException;
 import com.codedstream.otterstream.inference.model.InferenceResult;
+import org.apache.flink.api.common.functions.OpenContext;
+import org.apache.flink.configuration.Configuration;
 import org.apache.flink.streaming.api.functions.async.AsyncFunction;
 import org.apache.flink.streaming.api.functions.async.ResultFuture;
 import org.apache.flink.api.common.functions.AbstractRichFunction;
 import java.util.Collections;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 
 /**
@@ -94,21 +101,81 @@ import java.util.function.Function;
 public class AsyncModelInferenceFunction<IN, OUT> extends AbstractRichFunction
         implements AsyncFunction<IN, OUT> {
 
+    private static final int DEFAULT_EXECUTOR_POOL_SIZE = 32;
+
     private final InferenceConfig inferenceConfig;
     private final Function<InferenceConfig, InferenceEngine<?>> engineFactory;
+    private final int executorPoolSize;
     private transient InferenceEngine<?> inferenceEngine;
 
     /**
-     * Constructs async inference function.
+     * Dedicated pool for the blocking {@code inferenceEngine.infer(...)} call inside
+     * {@link #asyncInvoke}. Deliberately <b>not</b> the default
+     * {@link CompletableFuture#supplyAsync(java.util.function.Supplier)} behavior, which silently
+     * runs on the shared, JVM-wide {@link java.util.concurrent.ForkJoinPool#commonPool()} —
+     * fine for short, non-blocking CPU work, but a real problem here: inference calls block the
+     * calling thread for the full call duration, and the common pool is shared with anything
+     * else in the same JVM using parallel streams or unqualified {@code CompletableFuture}
+     * calls. Under concurrent load, that means one hot model can starve unrelated work
+     * elsewhere in the same TaskManager, and vice versa — exactly the kind of hard-to-diagnose
+     * latency spike a sub-5ms latency target can't tolerate. A dedicated, sized-to-this-function
+     * pool keeps that blast radius contained.
+     */
+    private transient ExecutorService inferenceExecutor;
+
+    /**
+     * Constructs async inference function with the default executor pool size ({@value #DEFAULT_EXECUTOR_POOL_SIZE}
+     * threads — tune via {@link #AsyncModelInferenceFunction(InferenceConfig, Function, int)} to
+     * match the {@code capacity} you pass to {@code AsyncDataStream.unorderedWait(...)}; they
+     * should generally be the same order of magnitude, since capacity governs how many
+     * in-flight {@code asyncInvoke} calls Flink allows per subtask).
      *
      * @param inferenceConfig configuration for inference operations
      * @param engineFactory factory function to create inference engine
      */
     public AsyncModelInferenceFunction(InferenceConfig inferenceConfig,
                                        Function<InferenceConfig, InferenceEngine<?>> engineFactory) {
+        this(inferenceConfig, engineFactory, DEFAULT_EXECUTOR_POOL_SIZE);
+    }
+
+    /**
+     * @param inferenceConfig  configuration for inference operations
+     * @param engineFactory    factory function to create inference engine
+     * @param executorPoolSize size of the dedicated thread pool backing {@link #asyncInvoke} —
+     *                         should be sized to roughly match the {@code capacity} argument of
+     *                         the corresponding {@code AsyncDataStream.unorderedWait(...)} call
+     */
+    public AsyncModelInferenceFunction(InferenceConfig inferenceConfig,
+                                       Function<InferenceConfig, InferenceEngine<?>> engineFactory,
+                                       int executorPoolSize) {
         this.inferenceConfig = inferenceConfig;
         this.engineFactory = engineFactory;
+        this.executorPoolSize = executorPoolSize;
     }
+
+    /**
+     * Initializes the inference engine and the dedicated executor pool.
+     *
+     * <p>In Flink 2.0+, {@link OpenContext} replaces the legacy {@link Configuration}
+     * parameter from earlier versions.
+     *
+     * @param openContext the open context providing access to runtime information
+     * @throws Exception if initialization fails
+     */
+    @Override
+    public void open(OpenContext openContext) throws Exception {  // <-- Use OpenContext
+        super.open(openContext);  // <-- Call super with OpenContext
+        initializeEngine();
+
+        AtomicInteger threadCounter = new AtomicInteger();
+        ThreadFactory threadFactory = runnable -> {
+            Thread t = new Thread(runnable, "otter-async-inference-" + threadCounter.incrementAndGet());
+            t.setDaemon(true);
+            return t;
+        };
+        this.inferenceExecutor = Executors.newFixedThreadPool(executorPoolSize, threadFactory);
+    }
+
 
     /**
      * Performs asynchronous inference on input record.
@@ -119,23 +186,16 @@ public class AsyncModelInferenceFunction<IN, OUT> extends AbstractRichFunction
      */
     @Override
     public void asyncInvoke(IN input, ResultFuture<OUT> resultFuture) throws Exception {
-        if (inferenceEngine == null || !inferenceEngine.isReady()) {
-            initializeEngine();
-        }
-
         Map<String, Object> features = extractFeatures(input);
 
         CompletableFuture
                 .supplyAsync(() -> {
                     try {
-                        long startTime = System.currentTimeMillis();
-                        InferenceResult result = inferenceEngine.infer(features);
-                        long endTime = System.currentTimeMillis();
-                        return result;
+                        return inferenceEngine.infer(features);
                     } catch (InferenceException e) {
                         throw new RuntimeException("Inference failed", e);
                     }
-                })
+                }, inferenceExecutor)
                 .thenAccept(result -> {
                     if (result.isSuccess()) {
                         OUT output = transformResult(input, result);
@@ -164,9 +224,30 @@ public class AsyncModelInferenceFunction<IN, OUT> extends AbstractRichFunction
                 new InferenceException("Inference timeout for input: " + input));
     }
 
+    /** Releases the engine and the dedicated executor pool. */
+    @Override
+    public void close() throws Exception {
+        if (inferenceExecutor != null) {
+            inferenceExecutor.shutdown();
+            try {
+                if (!inferenceExecutor.awaitTermination(10, TimeUnit.SECONDS)) {
+                    inferenceExecutor.shutdownNow();
+                }
+            } catch (InterruptedException e) {
+                inferenceExecutor.shutdownNow();
+                Thread.currentThread().interrupt();
+            }
+        }
+        if (inferenceEngine != null) {
+            inferenceEngine.close();
+        }
+        super.close();
+    }
+
     /**
-     * Initializes the inference engine lazily.
-     * <p>Called on first use in each Flink TaskManager.
+     * Initializes the inference engine. Called once from {@link #open(OpenContext)} — see
+     * that method's Javadoc for why this is no longer safe to call lazily from
+     * {@code asyncInvoke}.
      *
      * @throws InferenceException if initialization fails
      */

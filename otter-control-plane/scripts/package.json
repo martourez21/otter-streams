@@ -1,0 +1,13 @@
+{
+  "name": "otter-runtime-simulator",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Fake OtterRuntime instance for testing/demoing otter-control-plane-server and otter-control-plane-ui without a real Flink job. NOT part of the product — a test/demo tool only. See README.md in this directory.",
+  "type": "module",
+  "scripts": {
+    "start": "node simulate-runtime.js"
+  },
+  "dependencies": {
+    "socket.io-client": "^4.7.5"
+  }
+}

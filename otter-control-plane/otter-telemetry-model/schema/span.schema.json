@@ -1,0 +1,45 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://otter-streams.dev/schema/span.schema.json",
+  "title": "Span",
+  "description": "One unit of work within a trace — e.g. a feature lookup, a model inference call. Spans nest via parentSpanId. See otter-control-plane/ARCHITECTURE.md §4.1.",
+  "type": "object",
+  "required": ["spanId", "traceId", "jobId", "nodeKind", "startTimeMillis", "durationMicros", "outcome"],
+  "additionalProperties": false,
+  "properties": {
+    "spanId": { "type": "string", "description": "Unique id for this span" },
+    "traceId": { "type": "string", "description": "Groups spans into one trace" },
+    "parentSpanId": { "type": ["string", "null"], "description": "Null for the root span of a trace" },
+    "jobId": { "type": "string", "description": "The Flink job this span originated from — part of topology node identity, see ARCHITECTURE.md §7.1" },
+    "nodeKind": {
+      "type": "string",
+      "description": "Pipeline stage identity, e.g. 'kafka-source', 'feature-lookup', 'inference:fraud-detector', 'rule-engine'"
+    },
+    "modelId": { "type": ["string", "null"], "description": "Populated for inference spans" },
+    "modelVersion": { "type": ["string", "null"] },
+    "provider": {
+      "type": ["string", "null"],
+      "description": "InferenceProvider.getProviderId(), e.g. 'onnx', 'remote-http', 'sagemaker'"
+    },
+    "executionTarget": { "type": ["string", "null"], "description": "e.g. 'CPU', 'CUDA:0'" },
+    "startTimeMillis": { "type": "integer", "minimum": 0 },
+    "durationMicros": { "type": "integer", "minimum": 0 },
+    "outcome": { "$ref": "outcome.schema.json" },
+    "confidence": {
+      "type": ["number", "null"],
+      "minimum": 0,
+      "maximum": 1,
+      "description": "For inference spans that produce a confidence score"
+    },
+    "role": {
+      "type": ["string", "null"],
+      "enum": ["primary", "canary", "shadow", null],
+      "description": "Which ManagedModel traffic slot served this span, see ARCHITECTURE.md §8"
+    },
+    "attributes": {
+      "type": "object",
+      "description": "Free-form key/value pairs — entity id, decision, cache hit/miss, etc.",
+      "additionalProperties": { "type": "string" }
+    }
+  }
+}

@@ -1,0 +1,35 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://otter-streams.dev/schema/model-lifecycle-event.schema.json",
+  "title": "ModelLifecycleEvent",
+  "description": "Wire representation of LifecycleListener/ShadowListener callbacks already emitted by LifecycleManager — see ARCHITECTURE.md §4.5 / §5.2 / §9.",
+  "type": "object",
+  "required": ["modelId", "version", "eventType", "timestampMillis"],
+  "additionalProperties": false,
+  "properties": {
+    "modelId": { "type": "string" },
+    "version": { "type": "string" },
+    "jobId": { "type": ["string", "null"] },
+    "eventType": {
+      "type": "string",
+      "enum": [
+        "VALIDATING", "WARMING", "ACTIVATED", "RETIRED", "FAILED",
+        "CANARY_DEPLOYED", "CANARY_PROMOTED", "CANARY_ROLLED_BACK",
+        "SHADOW_DEPLOYED", "SHADOW_RESULT", "SHADOW_STOPPED",
+        "ROLLED_BACK"
+      ]
+    },
+    "timestampMillis": { "type": "integer", "minimum": 0 },
+    "trafficPercent": { "type": ["integer", "null"], "minimum": 0, "maximum": 100 },
+    "shadowComparison": {
+      "type": ["object", "null"],
+      "additionalProperties": false,
+      "properties": {
+        "primaryResult": {},
+        "shadowResult": {},
+        "matched": { "type": ["boolean", "null"] }
+      }
+    },
+    "failureReason": { "type": ["string", "null"] }
+  }
+}
