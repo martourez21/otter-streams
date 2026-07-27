@@ -8,7 +8,7 @@
     </parent>
     <artifactId>otter-stream-feature-redis</artifactId>
     <packaging>jar</packaging>
-    <n>otter-stream-feature-redis</n>
+    <name>otter-stream-feature-redis</name>
     <description>Redis-backed FeatureProvider implementation for Otter Stream</description>
     <url>http://maven.apache.org</url>
 
@@ -28,13 +28,13 @@
 
     <build>
         <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-deploy-plugin</artifactId>
-                <configuration>
-                    <skip>false</skip>
-                </configuration>
-            </plugin>
+<!--            <plugin>-->
+<!--                <groupId>org.apache.maven.plugins</groupId>-->
+<!--                <artifactId>maven-deploy-plugin</artifactId>-->
+<!--                <configuration>-->
+<!--                    <skip>false</skip>-->
+<!--                </configuration>-->
+<!--            </plugin>-->
 
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

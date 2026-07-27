@@ -146,11 +146,17 @@ everything the Runtime is doing, in the spirit of Flink's own execution graph or
 Jaeger/Zipkin-style trace viewer, but purpose-built around AI inference (model version,
 confidence, provider, GPU) rather than generic RPC semantics.
 
-**Status: fully architected, not yet implemented.** The design (`otter-control-plane/ARCHITECTURE.md`)
-covers the full data model, the NestJS-based server, ClickHouse for trace storage, a
-bidirectional WebSocket channel so the UI can trigger rollbacks/canary changes from a dashboard,
-and how it maps onto the Runtime's existing lifecycle/shadow/canary events with zero new Runtime
-logic required. What it will show once built:
+**Status: implemented and verified to build/boot/serve — not yet run end-to-end against a live
+Runtime, and not yet visually verified in a real browser.** Both halves exist as real code, not
+just design: the NestJS server (`otter-control-plane-server`) actually installs, builds, boots,
+and responds correctly on `/health`, `/api/v1/topology`, and `/api/v1/traces`; the UI
+(`otter-control-plane-ui`) actually installs, type-checks, builds, and serves its JS bundle,
+icons, and logo with real HTTP 200s. What's genuinely not done: ClickHouse has never been tested
+against a live cluster (it degrades gracefully without one, by design), the UI has never
+connected to a live `OtterRuntime` or rendered in an actual browser, and the Docker images for
+both are unverified (no Docker daemon in the environment they were built in). Each module's own
+README states exactly what was and wasn't run — treat those as the source of truth over any
+summary here. What it shows:
 
 - A **live topology graph** of your inference pipeline, colored by latency, confidence, or model
   version — not a static diagram, an animated one with traffic actually flowing across it.
@@ -197,7 +203,9 @@ logic required. What it will show once built:
 | Rule Engine (YAML/properties/programmatic, REST/Drools connectors) | Implemented |
 | Kafka result publishing | Implemented |
 | GPU auto-scale-down | Implemented (scale-up is an explicit trigger, by design) |
-| Otter Control Plane (topology, tracing, rule dashboard) | Architected, not yet built |
+| Otter Control Plane — server (ingestion, topology, traces, models, commands, rules) | Implemented and verified to build/boot (see `otter-control-plane-server/README.md` for exactly what's verified vs. not) |
+| Otter Control Plane — UI (topology graph, tracing, rule dashboard, model controls) | Implemented and verified to build/serve (see `otter-control-plane-ui/README.md`); never rendered in a real browser or connected to a live Runtime |
+| Otter Control Plane — ClickHouse cold tier, production hardening, RBAC | Not done — hot tier + degraded-mode ClickHouse wiring exist, full production validation doesn't |
 
 See `README.md` for install instructions per module, `PERFORMANCE.md` for the concurrency/latency
 review, and `otter-control-plane/ARCHITECTURE.md` for the full Control Plane design.

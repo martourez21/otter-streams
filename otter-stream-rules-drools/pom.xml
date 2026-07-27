@@ -8,7 +8,7 @@
     </parent>
     <artifactId>otter-stream-rules-drools</artifactId>
     <packaging>jar</packaging>
-    <n>otter-stream-rules-drools</n>
+    <name>otter-stream-rules-drools</name>
     <description>Embedded Drools (KIE) DecisionEngineConnector for otter-stream-rules. Kept as
         its own module, separate from otter-stream-rules itself, specifically so the Drools/KIE
         dependency tree (kie-api, drools-core, drools-compiler, and their transitive Maven/
@@ -48,13 +48,13 @@
 
     <build>
         <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-deploy-plugin</artifactId>
-                <configuration>
-                    <skip>false</skip>
-                </configuration>
-            </plugin>
+<!--            <plugin>-->
+<!--                <groupId>org.apache.maven.plugins</groupId>-->
+<!--                <artifactId>maven-deploy-plugin</artifactId>-->
+<!--                <configuration>-->
+<!--                    <skip>false</skip>-->
+<!--                </configuration>-->
+<!--            </plugin>-->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>

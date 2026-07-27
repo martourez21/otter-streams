@@ -23,7 +23,7 @@ Add the core dependency to your `pom.xml`:
 <dependency>
     <groupId>com.codedstreams</groupId>
     <artifactId>ml-inference-core</artifactId>
-    <version>1.0.0</version>
+    <version>0.0.4</version>
 </dependency>
 ```
 
@@ -36,28 +36,28 @@ Choose based on your ML framework:
 <dependency>
     <groupId>com.codedstreams</groupId>
     <artifactId>otter-stream-onnx</artifactId>
-    <version>1.0.0</version>
+    <version>0.0.4</version>
 </dependency>
 
 <!-- TensorFlow -->
 <dependency>
     <groupId>com.codedstreams</groupId>
     <artifactId>otter-stream-tensorflow</artifactId>
-    <version>1.0.0</version>
+    <version>0.0.4</version>
 </dependency>
 
 <!-- PyTorch -->
 <dependency>
     <groupId>com.codedstreams</groupId>
     <artifactId>otter-stream-pytorch</artifactId>
-    <version>1.0.0</version>
+    <version>0.0.4</version>
 </dependency>
 
 <!-- XGBoost -->
 <dependency>
     <groupId>com.codedstreams</groupId>
     <artifactId>otter-stream-xgboost</artifactId>
-    <version>1.0.0</version>
+    <version>0.0.4</version>
 </dependency>
 ```
 
@@ -67,7 +67,7 @@ Choose based on your ML framework:
 mvn clean compile
 ```
 
-## 🎯 Your First Inference Pipeline
+##  Your First Inference Pipeline
 
 ### Example 1: Simple ONNX Model Inference
 
@@ -246,7 +246,7 @@ InferenceConfig.builder()
         .modelId("my-model")
         .modelPath("models/my_model.onnx")
         .format(ModelFormat.ONNX)
-        .modelVersion("1.0.0")
+        .modelVersion("0.0.4")
         .build())
     .batchSize(32)
     .timeout(Duration.ofSeconds(10))
@@ -281,7 +281,7 @@ InferenceConfig.builder()
     .build();
 ```
 
-## 🧪 Testing Your Setup
+##  Testing Your Setup
 
 Create a simple test to verify everything works:
 

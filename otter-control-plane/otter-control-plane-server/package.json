@@ -2,7 +2,7 @@
   "name": "otter-control-plane-server",
   "version": "0.1.0",
   "description": "Otter Control Plane — ingestion, topology builder, trace store, REST + WebSocket API. See ../ARCHITECTURE.md.",
-  "license": "Apache-2.0",
+  "license": "MIT",
   "private": true,
   "scripts": {
     "prebuild": "npm run generate:types && rimraf dist",

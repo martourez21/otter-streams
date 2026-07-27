@@ -126,4 +126,4 @@ If you have questions about this Code of Conduct, please contact the maintainer 
 
 *Last updated: September 2025*
 *Maintained by Nestor Martourez*
-*Apache License 2.0*
+*MIT License*

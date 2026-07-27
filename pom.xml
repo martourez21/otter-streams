@@ -16,8 +16,8 @@
 
   <licenses>
     <license>
-      <name>Apache License, Version 2.0</name>
-      <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
+      <name>MIT License</name>
+      <url>https://opensource.org/licenses/MIT</url>
       <distribution>repo</distribution>
     </license>
   </licenses>
@@ -47,11 +47,14 @@
     <module>otter-stream-feature-redis</module>
     <module>otter-stream-feature-jdbc</module>
     <module>otter-stream-feature-feast</module>
+    <module>otter-stream-context</module>
     <module>otter-stream-rules</module>
     <module>otter-stream-rules-drools</module>
+    <module>otter-stream-experiments</module>
     <module>otter-stream-kafka</module>
     <module>otter-stream-examples</module>
     <module>otter-stream-sql</module>
+    <module>otter-benchmarks</module>
   </modules>
 
   <properties>
@@ -98,6 +101,9 @@
     <!-- Rule Engine -->
     <snakeyaml.version>2.2</snakeyaml.version>
 
+    <!-- Benchmarks -->
+    <jmh.version>1.37</jmh.version>
+
     <!-- Serialization & Utilities -->
     <jackson.version>2.15.3</jackson.version>
     <protobuf.version>3.24.4</protobuf.version>
@@ -134,7 +140,19 @@
 
       <dependency>
         <groupId>com.codedstreams</groupId>
+        <artifactId>otter-stream-context</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>com.codedstreams</groupId>
         <artifactId>otter-stream-rules</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>com.codedstreams</groupId>
+        <artifactId>otter-stream-experiments</artifactId>
         <version>${project.version}</version>
       </dependency>
 

@@ -4,6 +4,7 @@ import com.codedstream.otterstream.inference.config.InferenceConfig;
 import com.codedstream.otterstream.inference.engine.InferenceEngine;
 import com.codedstream.otterstream.inference.exception.InferenceException;
 import com.codedstream.otterstream.inference.model.InferenceResult;
+import org.apache.flink.api.common.functions.OpenContext;
 import org.apache.flink.configuration.Configuration;
 import org.apache.flink.streaming.api.functions.async.AsyncFunction;
 import org.apache.flink.streaming.api.functions.async.ResultFuture;
@@ -153,16 +154,17 @@ public class AsyncModelInferenceFunction<IN, OUT> extends AbstractRichFunction
     }
 
     /**
-     * Initializes the inference engine and the dedicated executor pool once, before any
-     * {@code asyncInvoke} calls begin — Flink guarantees {@code open()} runs exactly once per
-     * parallel subtask instance ahead of any invocations, which is what makes this safe without
-     * additional synchronization (unlike the previous lazy-init-inside-asyncInvoke approach,
-     * which raced when Flink's async operator had multiple in-flight calls concurrently — the
-     * entire point of the {@code capacity} parameter on {@code AsyncDataStream.unorderedWait}).
+     * Initializes the inference engine and the dedicated executor pool.
+     *
+     * <p>In Flink 2.0+, {@link OpenContext} replaces the legacy {@link Configuration}
+     * parameter from earlier versions.
+     *
+     * @param openContext the open context providing access to runtime information
+     * @throws Exception if initialization fails
      */
     @Override
-    public void open(Configuration parameters) throws Exception {
-        super.open(parameters);
+    public void open(OpenContext openContext) throws Exception {  // <-- Use OpenContext
+        super.open(openContext);  // <-- Call super with OpenContext
         initializeEngine();
 
         AtomicInteger threadCounter = new AtomicInteger();
@@ -173,6 +175,7 @@ public class AsyncModelInferenceFunction<IN, OUT> extends AbstractRichFunction
         };
         this.inferenceExecutor = Executors.newFixedThreadPool(executorPoolSize, threadFactory);
     }
+
 
     /**
      * Performs asynchronous inference on input record.
@@ -242,7 +245,7 @@ public class AsyncModelInferenceFunction<IN, OUT> extends AbstractRichFunction
     }
 
     /**
-     * Initializes the inference engine. Called once from {@link #open(Configuration)} — see
+     * Initializes the inference engine. Called once from {@link #open(OpenContext)} — see
      * that method's Javadoc for why this is no longer safe to call lazily from
      * {@code asyncInvoke}.
      *

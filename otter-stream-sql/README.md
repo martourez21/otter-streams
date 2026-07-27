@@ -2,7 +2,7 @@
 
 **Production-Grade ML Inference for Apache Flink SQL**
 
-[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/MIT)
 [![Flink](https://img.shields.io/badge/Flink-1.17.0-orange.svg)](https://flink.apache.org/)
 [![TensorFlow](https://img.shields.io/badge/TensorFlow-2.x-orange.svg)](https://www.tensorflow.org/)
 
@@ -406,7 +406,7 @@ Automatic circuit breaking to prevent cascading failures:
 
 ## License
 
-Apache License 2.0 - see [LICENSE](../LICENSE)
+MIT License - see [LICENSE](../LICENSE)
 
 ---
 

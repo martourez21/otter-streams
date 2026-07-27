@@ -324,7 +324,7 @@ Your contributions help make Otter-Streams better for everyone. Whether you're f
 ---
 
 *Maintained by [Nestor Martourez](https://github.com/martourez21) at [CodedStreams](https://github.com/martourez21)*
-*Apache License 2.0 • © 2025*
+*MIT License • © 2025*
 
 ---
 

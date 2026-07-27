@@ -1,0 +1,61 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>com.codedstreams</groupId>
+        <artifactId>otter-streams</artifactId>
+        <version>0.0.4</version>
+    </parent>
+    <artifactId>otter-stream-context</artifactId>
+    <packaging>jar</packaging>
+    <name>otter-stream-context</name>
+    <description>Optional Context Engine: assembles context (feature lookups, conversation
+        memory, vector search, cached state) from multiple providers in parallel before
+        inference — for RAG and other context/memory-heavy AI applications built on Otter
+        Streams. Entirely opt-in: ml-inference-core has no dependency on this module and no
+        awareness of it. Depends only on ml-inference-core and Caffeine (already a pinned,
+        shared dependency via ModelCache) — no new client libraries for Redis/Memcached/vector
+        DBs; those are implemented with the JDK's own socket/HTTP APIs, the same
+        minimal-dependency-footprint approach used throughout this project.</description>
+    <url>http://maven.apache.org</url>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.codedstreams</groupId>
+            <artifactId>ml-inference-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.github.ben-manes.caffeine</groupId>
+            <artifactId>caffeine</artifactId>
+        </dependency>
+
+        <!-- Flink state APIs, for FlinkStateContextProvider only — provided scope, same
+             convention as every other Flink dependency in this project: the user's own Flink
+             distribution supplies it. -->
+        <dependency>
+            <groupId>org.apache.flink</groupId>
+            <artifactId>flink-streaming-java</artifactId>
+            <scope>provided</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+<!--            <plugin>-->
+<!--                <groupId>org.apache.maven.plugins</groupId>-->
+<!--                <artifactId>maven-deploy-plugin</artifactId>-->
+<!--                <configuration>-->
+<!--                    <skip>false</skip>-->
+<!--                </configuration>-->
+<!--            </plugin>-->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
+</project>

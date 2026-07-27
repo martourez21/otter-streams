@@ -8,7 +8,7 @@
     </parent>
     <artifactId>otter-stream-feature-feast</artifactId>
     <packaging>jar</packaging>
-    <n>otter-stream-feature-feast</n>
+    <name>otter-stream-feature-feast</name>
     <description>Feast-backed FeatureProvider implementation for Otter Stream. Talks to a Feast
         HTTP feature server's online-serving endpoint over REST (not the gRPC serving API).</description>
     <url>http://maven.apache.org</url>
@@ -36,13 +36,13 @@
 
     <build>
         <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-deploy-plugin</artifactId>
-                <configuration>
-                    <skip>false</skip>
-                </configuration>
-            </plugin>
+<!--            <plugin>-->
+<!--                <groupId>org.apache.maven.plugins</groupId>-->
+<!--                <artifactId>maven-deploy-plugin</artifactId>-->
+<!--                <configuration>-->
+<!--                    <skip>false</skip>-->
+<!--                </configuration>-->
+<!--            </plugin>-->
 
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

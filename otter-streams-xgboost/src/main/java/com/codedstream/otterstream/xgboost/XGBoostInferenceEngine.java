@@ -10,6 +10,7 @@ import ml.dmlc.xgboost4j.java.Booster;
 import ml.dmlc.xgboost4j.java.DMatrix;
 import ml.dmlc.xgboost4j.java.XGBoost;
 import ml.dmlc.xgboost4j.java.XGBoostError;
+import scala.collection.JavaConverters;
 
 import java.util.Map;
 import java.util.HashMap;
@@ -356,7 +357,7 @@ public class XGBoostInferenceEngine extends LocalInferenceEngine<Booster> {
     /**
      * Gets metadata about the loaded XGBoost model.
      *
-     * <p>Populates {@code outputSchema} from {@link Booster#getAttrNames()}/{@code getAttr} —
+     * —
      * booster-level attributes such as {@code objective} when the model was saved with them.
      * XGBoost does not embed a fixed input feature schema in the booster itself (that lives in
      * a separate feature-map file, which isn't guaranteed to be present) so {@code inputSchema}
@@ -373,15 +374,16 @@ public class XGBoostInferenceEngine extends LocalInferenceEngine<Booster> {
 
         Map<String, Object> outputSchema = new HashMap<>();
         try {
-            for (String attrName : loadedModel.getAttrNames()) {
-                String value = loadedModel.getAttr(attrName);
-                if (value != null) {
-                    outputSchema.put(attrName, value);
-                }
+            // ml.dmlc.xgboost4j.java.Booster (the Java API) exposes attributes
+            // directly as a java.util.Map<String, String> via getAttrs() -
+            // no Scala conversion needed.
+            Map<String, String> attrs = loadedModel.getAttrs();
+            if (attrs != null && !attrs.isEmpty()) {
+                outputSchema.putAll(attrs);
             }
         } catch (XGBoostError e) {
-            // Best-effort: some boosters don't expose attributes at all. Metadata is still
-            // returned with an empty outputSchema rather than failing the whole call.
+            // Best-effort: some boosters don't expose attributes at all
+            // Metadata is still returned with an empty outputSchema rather than failing the whole call
         }
 
         String modelName = (modelConfig != null && modelConfig.getModelId() != null)

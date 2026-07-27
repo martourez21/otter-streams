@@ -154,8 +154,20 @@ public class PmmlInferenceEngine extends LocalInferenceEngine<Evaluator> {
 
                 PMML pmml = PMMLUtil.unmarshal(is);
 
+                if (pmml.getModels() == null || pmml.getModels().isEmpty()) {
+                    throw new IllegalStateException(
+                            "PMML file contains no model elements: " + config.getModelPath());
+                }
+
+                // Use the first (default) model in the PMML document.
+                // PMML files can technically contain multiple model elements (e.g. MiningModel
+                // segments aside), but a single primary model per file is by far the common case;
+                // for multi-model PMML documents needing a specific model, extend ModelConfig with
+                // an optional model index/name and select accordingly.
+                org.dmg.pmml.Model model = pmml.getModels().get(0);
+
                 ModelEvaluatorFactory factory = ModelEvaluatorFactory.newInstance();
-                this.evaluator = factory.newModelEvaluator(pmml);
+                this.evaluator = factory.newModelEvaluator(pmml, model);
 
                 if (this.evaluator == null) {
                     throw new IllegalStateException(

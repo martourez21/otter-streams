@@ -14,6 +14,7 @@ import org.tensorflow.ndarray.Shape;
 import org.tensorflow.proto.framework.GraphDef;
 import org.tensorflow.types.TFloat32;
 import org.tensorflow.types.TInt32;
+import org.tensorflow.Result;
 
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -99,7 +100,7 @@ public class TensorFlowGraphDefEngine extends LocalInferenceEngine<Graph> {
     public InferenceResult infer(Map<String, Object> inputs) throws InferenceException {
         long startTime = System.currentTimeMillis();
         Session.Runner runner = session.runner();
-        Session.Result result = null;
+        Result result = null;
         try {
             Object rawInput = inputs.get(inputTensorName);
             if (rawInput == null) {
