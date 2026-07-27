@@ -7,12 +7,17 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@300;400;500;600&family=IBM+Plex+Serif:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="shared.css">
+<script src="shared.js" defer></script>
+<link rel="icon" type="image/x-icon" href="../assets/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="../assets/favicon-16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/favicon-32.png">
+<link rel="apple-touch-icon" sizes="192x192" href="../assets/otter-icon-192.png">
 </head>
 <body>
 
 <header class="topbar">
   <a href="index.html" class="topbar-brand">
-    <div class="brand-icon">OS</div>
+    <img class="brand-icon" src="../assets/otter-mark-navbar-dark.png" alt="Otter Streams logo" width="28" height="28">
     <span class="brand-name">Otter Streams</span>
     <span class="brand-version">v1.0.17</span>
   </a>
@@ -20,12 +25,19 @@
     <a href="index.html" class="topbar-link">Documentation</a>
     <a href="api.html"      class="topbar-link active">API Reference</a>
     <a href="modules.html" class="topbar-link">Modules</a>
+        <a href="rules.html" class="topbar-link">Rule Engine</a>
     <a href="examples.html" class="topbar-link">Examples</a>
     <a href="datastream.html" class="topbar-link">DataStream Guide</a>
     <a href="studio-demo.html" class="topbar-link">Studio Demo</a>
     <a href="releases.html" class="topbar-link">Releases</a>
+    <a href="javadoc.html" class="topbar-link" target="_blank">Javadoc</a>
   </nav>
   <div class="topbar-right">
+    <div class="search-box" id="otter-search" role="button" tabindex="0" aria-label="Search documentation">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <span class="search-box-label">Search docs</span>
+        <span class="search-box-kbd">⌘K</span>
+    </div>
     <span class="topbar-badge">Flink 1.15&ndash;1.20</span>
     <a href="https://github.com/martourez21/otter-streams" class="gh-link" target="_blank">
       <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
@@ -299,10 +311,16 @@
 
     </div><!-- /content-body -->
 
+    <div class="page-nav">
+      <a class="page-nav-link prev" href="index.html"><span class="page-nav-dir">&larr; Previous</span><span class="page-nav-title">Documentation</span></a>
+      <a class="page-nav-link next" href="modules.html"><span class="page-nav-dir">Next &rarr;</span><span class="page-nav-title">Modules</span></a>
+    </div>
+
     <div class="doc-footer">
-      <span>Otter Streams v1.0.17 <span>Otter Streams v1.0.17 &mdash; Apache License 2.0 &mdash; CodedStreams</span>mdash; Apache License 2.0 <span>Otter Streams v1.0.17 &mdash; Apache License 2.0 &mdash; CodedStreams</span>mdash; CodedStreams <span>Otter Streams v1.0.17 &mdash; Apache License 2.0 &mdash; CodedStreams</span>mdash; <strong>Nestor Martourez Abiangang A.</strong> <span>Otter Streams v1.0.17 &mdash; Apache License 2.0 &mdash; CodedStreams</span>mdash; <a href="https://www.linkedin.com/in/nestor-abiangang/" target="_blank" style="color:var(--blue-primary)">linkedin.com/in/nestor-abiangang</a></span>
+      <span>Otter Streams v1.0.17 &mdash; MIT License &mdash; CodedStreams</span>
       <div class="footer-links">
         <a href="https://github.com/martourez21/otter-streams" target="_blank">GitHub</a>
+            <a href="https://github.com/martourez21/otter-streams/edit/main/docs/otter-docs/api.html" target="_blank">Edit this page</a>
         <a href="releases.html">Releases</a>
         <a href="datastream.html">DataStream Guide</a>
         <a href="studio-demo.html">Studio Demo</a>

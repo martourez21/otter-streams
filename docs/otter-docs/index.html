@@ -7,6 +7,11 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@300;400;500;600&family=IBM+Plex+Serif:wght@400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="shared.css">
+<script src="shared.js" defer></script>
+<link rel="icon" type="image/x-icon" href="../assets/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="../assets/favicon-16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/favicon-32.png">
+<link rel="apple-touch-icon" sizes="192x192" href="../assets/otter-icon-192.png">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.9.0/mermaid.min.js"></script>
     <style>
         /* ── Mermaid diagram container ── */
@@ -106,7 +111,7 @@
 
 <header class="topbar">
     <a href="index.html" class="topbar-brand">
-        <div class="brand-icon">OS</div>
+        <img class="brand-icon" src="../assets/otter-mark-navbar-dark.png" alt="Otter Streams logo" width="28" height="28">
         <span class="brand-name">Otter Streams</span>
         <span class="brand-version">v0.0.4</span>
     </a>
@@ -114,12 +119,20 @@
         <a href="index.html"    class="topbar-link active">Documentation</a>
         <a href="api.html" class="topbar-link">API Reference</a>
         <a href="modules.html" class="topbar-link">Modules</a>
+        <a href="rules.html" class="topbar-link">Rule Engine</a>
         <a href="examples.html" class="topbar-link">Examples</a>
+        <a href="datastream.html" class="topbar-link">DataStream Guide</a>
+        <a href="studio-demo.html" class="topbar-link">Studio Demo</a>
         <a href="releases.html" class="topbar-link">Releases</a>
         <a href="javadoc.html" class="topbar-link" target="_blank">Javadoc</a>
     </nav>
     <div class="topbar-right">
-        <span class="topbar-badge">Flink 2.0+</span>
+        <div class="search-box" id="otter-search" role="button" tabindex="0" aria-label="Search documentation">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <span class="search-box-label">Search docs</span>
+        <span class="search-box-kbd">⌘K</span>
+    </div>
+    <span class="topbar-badge">Flink 2.0+</span>
         <a href="https://github.com/martourez21/otter-streams" class="gh-link" target="_blank">
             <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
             GitHub
@@ -177,18 +190,70 @@
 
         <div class="page-header">
             <div class="header-badge"><span class="header-dot"></span>Apache Flink &middot; DataStream & Table API &middot; Flink SQL integration</div>
-            <h1>Otter Streams &mdash; ML Inference for Apache Flink</h1>
+            <h1>Otter Streams &mdash; the Production AI Runtime for Apache Flink</h1>
             <p class="lead">
-                A production-grade library for embedding machine learning inference directly into Flink SQL
-                pipelines and DataStream jobs. Supports ONNX, TensorFlow, PyTorch, XGBoost, and PMML with
-                a single consistent API and first-class MinIO / S3 model loading.
+                A set of Java libraries that together form an embedded runtime for machine learning
+                inference inside Flink SQL pipelines and DataStream jobs — ONNX, TensorFlow, PyTorch,
+                XGBoost, and PMML behind one consistent API, with hot-swap/canary/shadow model
+                deployment, a YAML-configured Rule Engine, pluggable feature stores, and Kafka
+                publishing built in.
             </p>
             <div class="header-meta">
                 <span class="meta-pill">Version <span class="meta-pill-val">v0.0.4</span></span>
-                <span class="meta-pill">Flink <span class="meta-pill-val">2.0+</span></span>
-                <span class="meta-pill">Java <span class="meta-pill-val">17 & 21</span></span>
-                <span class="meta-pill">License <span class="meta-pill-val">MIT License</span></span>
+                <span class="meta-pill">Flink <span class="meta-pill-val">1.15&ndash;2.0</span></span>
+                <span class="meta-pill">Java <span class="meta-pill-val">17</span></span>
+                <span class="meta-pill">License <span class="meta-pill-val">Apache 2.0</span></span>
             </div>
+        </div>
+
+        <!-- ══ Landing grid — this page (index.html) is the docs site's home page; everything
+             else links from here. See modules.html/rules.html for deep-dives. ══ -->
+        <div class="landing-grid">
+            <a class="landing-card" href="#quickstart">
+                <span class="landing-card-icon">▶</span>
+                <span class="landing-card-title">Quick Start</span>
+                <span class="landing-card-desc">Add the dependency, write your first async inference call</span>
+            </a>
+            <a class="landing-card" href="#architecture">
+                <span class="landing-card-icon">◆</span>
+                <span class="landing-card-title">Architecture</span>
+                <span class="landing-card-desc">DataStream + SQL paths, OtterRuntime, engine modules</span>
+            </a>
+            <a class="landing-card" href="modules.html#runtime">
+                <span class="landing-card-icon">⬡</span>
+                <span class="landing-card-title">Runtime Layer</span>
+                <span class="landing-card-desc">Provider SPI, Lifecycle Manager, hot-swap, canary, shadow</span>
+            </a>
+            <a class="landing-card" href="rules.html">
+                <span class="landing-card-icon">⚑</span>
+                <span class="landing-card-title">Rule Engine</span>
+                <span class="landing-card-desc">Turn inference results into flagged decisions — YAML by default</span>
+            </a>
+            <a class="landing-card" href="modules.html#feature-stores">
+                <span class="landing-card-icon">▤</span>
+                <span class="landing-card-title">Feature Stores</span>
+                <span class="landing-card-desc">Redis, JDBC, and Feast providers for feature lookups</span>
+            </a>
+            <a class="landing-card" href="api.html">
+                <span class="landing-card-icon">{ }</span>
+                <span class="landing-card-title">API Reference</span>
+                <span class="landing-card-desc">InferenceEngine, InferenceResult, ModelCache, connector DDL</span>
+            </a>
+            <a class="landing-card" href="datastream.html">
+                <span class="landing-card-icon">→</span>
+                <span class="landing-card-title">DataStream Guide</span>
+                <span class="landing-card-desc">Full Java code for every engine module</span>
+            </a>
+            <a class="landing-card" href="examples.html">
+                <span class="landing-card-icon">✎</span>
+                <span class="landing-card-title">Examples</span>
+                <span class="landing-card-desc">Fraud detection, IoT anomaly detection, MinIO pipeline demo</span>
+            </a>
+            <a class="landing-card" href="https://github.com/martourez21/otter-streams/blob/main/otter-control-plane/ARCHITECTURE.md" target="_blank">
+                <span class="landing-card-icon">◎</span>
+                <span class="landing-card-title">Control Plane</span>
+                <span class="landing-card-desc">Topology, tracing, rule dashboard — architected, not yet built</span>
+            </a>
         </div>
 
         <div class="breadcrumb">
@@ -217,6 +282,10 @@
 
             <!-- ══ Introduction ══════════════════════════════════════ -->
             <h2 id="intro">Introduction</h2>
+            <p>
+                This page (<code>index.html</code>) is the home page of the Otter Streams documentation
+                site — every other page is reachable from the grid above or the top navigation bar.
+            </p>
 
             <p>
                 Otter Streams bridges the gap between machine learning model deployment and Apache Flink's
@@ -367,11 +436,12 @@ SELECT ml_score(
             <p>
                 Otter Streams is built on two parallel tracks: a <strong>DataStream API</strong> path for
                 low-level operator control and an <strong>SQL / Table API</strong> path for declarative
-                pipelines. Both converge on the same <code>InferenceEngine</code> abstraction and share
-                the <code>ModelCache</code> singleton. Models are fetched from MinIO (or any S3-compatible
-                store) once per session and reused across task slots. Flink is always a
-                <code>provided</code> dependency — it is never bundled in the shaded JAR, so the same
-                artifact runs across Flink 2.0+ without recompilation.
+                pipelines. Both converge on <strong><code>OtterRuntime</code></strong> — the Provider SPI,
+                Lifecycle Manager, and Model Registry that handle hot swaps, canary and shadow deployments,
+                and dynamic loading (see the <a href="modules.html#runtime">Runtime Layer</a>) — which in
+                turn dispatches to whichever <code>InferenceEngine</code> your model format needs. Flink is
+                always a <code>provided</code> dependency — never bundled in the shaded JAR, so the same
+                artifact runs across Flink 1.15&ndash;2.0 without recompilation.
             </p>
 
             <!-- Enlarged Mermaid architecture diagram with zoom controls -->
@@ -381,7 +451,7 @@ SELECT ml_score(
                     <button class="mermaid-zoom-btn" onclick="zoomDiagram('arch', 0.8)">-</button>
                     <button class="mermaid-zoom-btn mermaid-zoom-reset" onclick="resetZoom('arch')">Reset</button>
                 </div>
-                <div class="mermaid-title">Otter Streams — System Architecture (Flink 2.0+ / Java 17/21)</div>
+                <div class="mermaid-title">Otter Streams — System Architecture (Flink 1.15&ndash;2.0 / Java 17)</div>
                 <div class="mermaid-container" id="arch-diagram-container" style="overflow: auto; cursor: grab;">
                     <div class="mermaid" style="transform-origin: top left; transition: transform 0.2s ease;" id="arch-mermaid">
                         flowchart TB
@@ -392,83 +462,83 @@ SELECT ml_score(
                         DB[("Database\nCDC")]
                         end
 
-                        subgraph FLINK["&nbsp;Apache Flink 2.0+ Cluster (Java 17/21)&nbsp;"]
+                        subgraph FLINK["&nbsp;Apache Flink 1.15&ndash;2.0 Cluster (Java 17)&nbsp;"]
                         direction TB
-
-                        subgraph JM["Job Manager"]
-                        JMC["Job Coordination\n& Scheduling"]
-                        end
 
                         subgraph TM["Task Managers  (N slots)"]
                         direction TB
 
                         subgraph DS_PATH["DataStream API path"]
                         direction LR
-                        SRC["SourceFunction\n/ KafkaSource"]
+                        SRC["KafkaSource /\nSourceFunction"]
                         ASYNC["AsyncDataStream\n.unorderedWait()"]
-                        AMIF["AsyncModelInference\nFunction"]
-                        SINK_DS["DataStream\nSink"]
-                        SRC --> ASYNC --> AMIF --> SINK_DS
+                        AMIF["AsyncModelInference\nFunction\n(dedicated executor)"]
+                        SRC --> ASYNC --> AMIF
                         end
 
                         subgraph SQL_PATH["Flink SQL / Table API path"]
                         direction LR
-                        GW["SQL Gateway\nSession"]
-                        UDF["MLInference\nFunction\n(ScalarFunction)"]
-                        LKP["MLInference\nLookupFunction\n(TableFunction)"]
-                        CONN["ml-inference\nConnector\n(DynamicTableSource)"]
-                        SINK_SQL["Table /\nKafka Sink"]
-                        GW --> UDF
-                        GW --> LKP
-                        GW --> CONN
-                        UDF --> SINK_SQL
-                        LKP --> SINK_SQL
+                        UDF["MLInference\nFunction"]
+                        LKP["MLInference\nLookupFunction"]
+                        CONN["ml-inference\nConnector"]
                         end
 
-                        subgraph CORE["ml-inference-core  (shared by both paths)"]
-                        direction LR
-                        MC["ModelCache\nCaffeine LRU\nsingleton"]
-                        IE["InferenceEngine&lt;C&gt;\ninterface"]
-                        IR["InferenceResult\n+ InferenceException"]
-                        MC --> IE --> IR
+                        subgraph RUNTIME["OtterRuntime  (shared by both paths)"]
+                        direction TB
+                        PROV["ProviderRegistry\nServiceLoader-discovered"]
+                        LIFE["LifecycleManager\nvalidate&nbsp;&rarr;&nbsp;warm&nbsp;&rarr;&nbsp;swap&nbsp;&rarr;&nbsp;drain"]
+                        REG["ModelRegistry\n(dynamic loading, rollback)"]
+                        PROV --> LIFE
+                        REG -.->|"watch() polls for\nnew versions"| LIFE
                         end
 
-                        AMIF -- "getEngine(name)" --> MC
-                        UDF  -- "getEngine(name)" --> MC
-                        LKP  -- "getEngine(name)" --> MC
-                        CONN -- "putEngine(name, engine)" --> MC
+                        AMIF -- "infer() /\ndeploy/canary/shadow" --> RUNTIME
+                        UDF  -- "infer()" --> RUNTIME
+                        LKP  -- "infer()" --> RUNTIME
+                        CONN -- "deploy()" --> RUNTIME
                         end
                         end
 
                         subgraph ENGINES["&nbsp;Engine Modules  (include only what you need)&nbsp;"]
                         direction LR
-                        ONNX["otter-stream-onnx\nONNX Runtime 1.23.2\nCPU / CUDA / TensorRT"]
-                        TF["otter-stream-tensorflow\nSavedModel format\nGPU acceleration"]
-                        XGB["otter-streams-xgboost\nXGBoost4J 3.1.1\nbinary / JSON / UBJ"]
-                        PMML["otter-stream-pmml\nJPMML 1.5.16\nregression / trees / NN"]
-                        REM["otter-stream-remote\nHTTP / gRPC\nSageMaker · Vertex AI"]
+                        ONNX["otter-stream-onnx"]
+                        TF["otter-stream-tensorflow"]
+                        PT["otter-stream-pytorch"]
+                        XGB["otter-streams-xgboost"]
+                        PMML["otter-stream-pmml"]
+                        REM["otter-stream-remote\nHTTP/gRPC/SageMaker/Vertex"]
+                        end
+
+                        subgraph FEATURES["&nbsp;Feature Providers&nbsp;"]
+                        direction LR
+                        REDIS["Redis"]
+                        JDBC["JDBC"]
+                        FEAST["Feast"]
+                        end
+
+                        subgraph DECIDE["&nbsp;Post-Inference&nbsp;"]
+                        direction LR
+                        RULES["otter-stream-rules\nYAML/properties/class\n&rarr; Decision"]
+                        KFK["otter-stream-kafka\n&rarr; publish downstream"]
+                        RULES --> KFK
                         end
 
                         subgraph STORE["&nbsp;Model Store&nbsp;"]
                         direction LR
-                        MINIO[("MinIO\nS3-compatible\nbucket")]
-                        S3AWS[("AWS S3")]
-                        LOCAL[("Local / HDFS\nfilesystem")]
+                        MINIO[("MinIO /\nS3 / HDFS")]
                         end
+
+                        CP["Otter Control Plane\n(topology, tracing, rule dashboard)\narchitected, see otter-control-plane/"]
 
                         SOURCES --> DS_PATH
                         SOURCES --> SQL_PATH
 
-                        IE -- "implements" --> ONNX
-                        IE -- "implements" --> TF
-                        IE -- "implements" --> XGB
-                        IE -- "implements" --> PMML
-                        IE -- "implements" --> REM
+                        LIFE -- "createEngine(format)" --> ENGINES
+                        AMIF -.->|"optional"| FEATURES
+                        AMIF -.->|"optional"| RULES
+                        REG -- "resolve(modelId)" --> MINIO
 
-                        CONN -- "MinioModelLoader\ndownloads on\ntable creation" --> MINIO
-                        AMIF -- "ModelConfig\n.modelPath" --> MINIO
-                        MINIO -.->|"also supports"| S3AWS
-                        MINIO -.->|"also supports"| LOCAL
+                        RUNTIME -.->|"spans + lifecycle events\n(TelemetryExporter, planned)"| CP
 
                         classDef flinkBox  fill:#1a1f28,stroke:#0091d5,color:#c9d1d9,rx:6
                         classDef coreBox   fill:#0a2a3d,stroke:#0091d5,color:#a5d6ff,rx:6
@@ -476,19 +546,27 @@ SELECT ml_score(
                         classDef storeBox  fill:#2a1a0d,stroke:#b45309,color:#fde68a,rx:6
                         classDef srcBox    fill:#1a1a2a,stroke:#5c6878,color:#b0bac8,rx:6
                         classDef pathBox   fill:#111827,stroke:#2c3340,color:#8492a6,rx:4
+                        classDef decideBox fill:#3a1010,stroke:#c0392b,color:#fca5a5,rx:6
+                        classDef cpBox     fill:#1a0d2a,stroke:#8a5cf6,color:#d8b4fe,rx:6,stroke-dasharray: 4 3
 
-                        class FLINK,JM,TM flinkBox
-                        class CORE coreBox
-                        class ENGINES,ONNX,TF,XGB,PMML,REM engineBox
-                        class STORE,MINIO,S3AWS,LOCAL storeBox
+                        class FLINK,TM flinkBox
+                        class RUNTIME coreBox
+                        class ENGINES,ONNX,TF,PT,XGB,PMML,REM engineBox
+                        class FEATURES,REDIS,JDBC,FEAST engineBox
+                        class STORE,MINIO storeBox
                         class SOURCES,K,S,DB srcBox
                         class DS_PATH,SQL_PATH pathBox
+                        class DECIDE,RULES,KFK decideBox
+                        class CP cpBox
                     </div>
                 </div>
                 <div class="mermaid-caption">
-                    Both the DataStream and SQL paths share a single <code>ModelCache</code> and
-                    <code>InferenceEngine</code> abstraction. Models are downloaded from MinIO at
-                    initialisation time and held for the session lifetime. <strong>Flink 2.0+ and Java 17/21 are fully supported.</strong>
+                    Both the DataStream and SQL paths call into a single <code>OtterRuntime</code>, which
+                    owns model lifecycle (hot swap, canary, shadow, rollback) and dispatches to whichever
+                    engine module your model format needs. Rule Engine and Kafka publishing are optional,
+                    composed downstream of inference — not built into the Runtime itself. The Control Plane
+                    (dashed, purple) is architected but not yet implemented — see
+                    <code>otter-control-plane/ARCHITECTURE.md</code>.
                 </div>
             </div>
 
@@ -633,7 +711,7 @@ SELECT ml_score(
             </div>
 
             <h3>Parameter entries &mdash; advisory only</h3>
-            <div class="table-wrap"><tr>
+            <div class="table-wrap"><table>
                 <thead><tr><th>#</th><th>Name</th><th>Type to select in Studio dropdown</th></tr></thead>
                 <tbody>
                 <tr><td>1</td><td><code>features</code></td><td><span class="tag tag-blue">MAP&lt;STRING,STRING&gt;</span></td></tr>
@@ -980,52 +1058,55 @@ LANGUAGE JAVA;</pre>
                 <tbody>
                 <tr>
                     <td><code>NoClassDefFoundError: InferenceException</code></td>
-                    <td><code>ml-inference-core</code> not bundled in the JAR</div>
-            <td>Rebuild with shade plugin; upload the <code>*-flink-udf.jar</code> classifier artifact, not the plain JAR</div>
-        </main>
-        <tr>
-            <td><code>ClassNotFoundException: MLInferenceFunction</code></td>
-            <td><code>ADD JAR</code> was skipped, or the JAR path on the Gateway container is wrong</div>
-<td>Run <code>SHOW JARS</code>; use the Studio path chips to confirm the correct container path</div>
-    </tr>
-    <tr>
-<td><code>already exists</code></div>
-<td>Function registered earlier in the same session under the same name</div>
-<td>Use <code>IF NOT EXISTS</code>, or <code>DROP TEMPORARY FUNCTION</code> then recreate</div>
-    </tr>
-    <tr>
-<td><code>NoSuchMethodError (Scala)</code></div>
-<td>Scala binary version mismatch between the JAR and the Flink cluster</div>
-<td>Rebuild against Flink's Scala binary version — 2.12 for Flink 1.17, 2.13 for Flink 2.0+</div>
-    </tr>
-    <tr>
-<td><code>ml_score</code> returns NULL for every row</div>
-<td>Model name not found in <code>ModelCache</code>; connector table not created yet</div>
-<td>Create the connector table to trigger MinIO download; verify the model name matches exactly</div>
-    </tr>
-    <tr>
-<td>MinIO download fails silently</div>
-<td>Wrong endpoint, credentials, or bucket; path-style access not enabled</div>
-<td>Set <code>'model.s3.path-style' = 'true'</code>; inspect TaskManager logs for the underlying exception</div>
-    </tr>
-    </tbody>
-    </table></div>
+                    <td><code>ml-inference-core</code> not bundled in the JAR</td>
+                    <td>Rebuild with shade plugin; upload the <code>*-flink-udf.jar</code> classifier artifact, not the plain JAR</td>
+                </tr>
+                <tr>
+                    <td><code>ClassNotFoundException: MLInferenceFunction</code></td>
+                    <td><code>ADD JAR</code> was skipped, or the JAR path on the Gateway container is wrong</td>
+                    <td>Run <code>SHOW JARS</code>; use the Studio path chips to confirm the correct container path</td>
+                </tr>
+                <tr>
+                    <td><code>already exists</code></td>
+                    <td>Function registered earlier in the same session under the same name</td>
+                    <td>Use <code>IF NOT EXISTS</code>, or <code>DROP TEMPORARY FUNCTION</code> then recreate</td>
+                </tr>
+                <tr>
+                    <td><code>NoSuchMethodError (Scala)</code></td>
+                    <td>Scala binary version mismatch between the JAR and the Flink cluster</td>
+                    <td>Rebuild against Flink's Scala binary version — 2.12 for Flink 1.17, 2.13 for Flink 2.0+</td>
+                </tr>
+                <tr>
+                    <td><code>ml_score</code> returns NULL for every row</td>
+                    <td>Model name not found in <code>ModelCache</code>; connector table not created yet</td>
+                    <td>Create the connector table to trigger MinIO download; verify the model name matches exactly</td>
+                </tr>
+                <tr>
+                    <td>MinIO download fails silently</td>
+                    <td>Wrong endpoint, credentials, or bucket; path-style access not enabled</td>
+                    <td>Set <code>'model.s3.path-style' = 'true'</code>; inspect TaskManager logs for the underlying exception</td>
+                </tr>
+                </tbody>
+            </table></div>
 
-    </div><!-- /content-body -->
+            </div><!-- /content-body -->
 
-    <div class="doc-footer">
-      <span>Otter Streams v0.0.4 &mdash; Apache License 2.0 &mdash; CodedStreams &mdash;
-        <strong>Nestor Martourez Abiangang A.</strong> &mdash;
-        <a href="https://www.linkedin.com/in/nestor-abiangang/" target="_blank" style="color:var(--blue-primary)">linkedin.com/in/nestor-abiangang</a>
-      </span>
-        <div class="footer-links">
-            <a href="https://github.com/martourez21/otter-streams" target="_blank">GitHub</a>
-            <a href="releases.html">Releases</a>
-            <a href="api.html">API Reference</a>
-            <a href="javadoc.html" target="_blank">Javadoc</a>
-            <a href="mailto:nestorabiawuh@gmail.com">Contact</a>
-        </div>
-    </div>
+            <div class="page-nav">
+              <a class="page-nav-link next" href="api.html"><span class="page-nav-dir">Next &rarr;</span><span class="page-nav-title">API Reference</span></a>
+            </div>
+
+            <div class="doc-footer">
+              <span>Otter Streams v0.0.4 &mdash; MIT License &mdash; CodedStreams
+              </span>
+                <div class="footer-links">
+                    <a href="https://github.com/martourez21/otter-streams" target="_blank">GitHub</a>
+                    <a href="https://github.com/martourez21/otter-streams/edit/main/docs/otter-docs/index.html" target="_blank">Edit this page</a>
+                    <a href="releases.html">Releases</a>
+                    <a href="api.html">API Reference</a>
+                    <a href="javadoc.html" target="_blank">Javadoc</a>
+                    <a href="mailto:nestorabiawuh@gmail.com">Contact</a>
+                </div>
+            </div>
     </main>
     </div>
 
